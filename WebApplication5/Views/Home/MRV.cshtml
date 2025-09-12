@@ -1,0 +1,258 @@
+﻿@model WebApplication5.Models.GeneratePOViewModel
+@{
+    ViewBag.Title = "MRV";
+}
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Material Receipt Voucher</title>
+    <style>
+        /*        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+        }*/
+
+        .mrv-container {
+            width: 100%;
+            border: 2px solid black;
+            padding: 15px;
+            box-sizing: border-box;
+            padding-top: 30px;
+            margin-top: 30px;
+        }
+
+        footer {
+            position: fixed;
+        }
+
+        .header {
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+            .header .logo {
+                float: left;
+            }
+
+        .title {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            text-decoration: underline;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 5px;
+            margin-bottom: 10px;
+        }
+
+            table td, table th {
+                border: 1px solid black;
+                padding: 4px;
+                font-size: 14px;
+                vertical-align: top;
+            }
+
+        .no-border td {
+            border: none;
+        }
+
+        .section-table td {
+            height: 25px;
+        }
+
+        .qty-table th, .qty-table td {
+            text-align: center;
+        }
+
+        .footer-signature td {
+            border: 1px solid black;
+            height: 60px;
+            text-align: center;
+            vertical-align: bottom;
+        }
+    </style>
+</head>
+<body>
+    <div class="mrv-container">
+
+        <!-- Search bar to fetch PO Details -->
+        <h2>Local Purchase Order</h2>
+
+        @using (Html.BeginForm("PODetails", "Home", FormMethod.Post))
+        {
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Enter PO Number:</label>
+                <div class="col-sm-4">
+                    <input type="text" name="poNumber" class="form-control" placeholder="PO123" required />
+                </div>
+                <div class="col-sm-2">
+                    <button type="submit" class="btn btn-primary">Fetch</button>
+                </div>
+            </div>
+        }
+
+        @if (ViewBag.ErrorMessage != null)
+        {
+            <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
+        }
+        @using (Html.BeginForm("UpdatePOItems", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            <div class="header">
+                <div>
+
+                    <div class="company-header">@Model.UniversityName</div>
+                    <div>@Model.UniversityAddress</div>
+                    <div>Email: @Model.UniversityEmail</div>
+                    <div>Phone: @Model.UniversityPhone</div>
+
+                </div>
+            </div>
+
+            <div class="title">Material Receipt Voucher</div>
+
+            <table class="section-table">
+                <tr>
+                    <td style="width: 14%;">MRV No.:</td>
+                    <td style="width: 14%;"><input type="text" name="MRVNo" /></td>
+
+                    <td style="width: 8%;">Date:</td>
+                    <td style="width: 14%;"><input type="date" name="MRVDate" value="@DateTime.Now.ToString("yyyy-MM-dd")" /></td>
+
+                    <td style="width: 10%;">DC / Bill No.:</td>
+                    <td style="width: 14%;"><input type="text" name="BillNo" /></td>
+
+                    <td style="width: 8%;">Date:</td>
+                    <td style="width: 14%;"><input type="date" name="BillDate" value="@DateTime.Now.ToString("yyyy-MM-dd")" /></td>
+                </tr>
+
+                <tr>
+                    <td>Dept. Code:</td>
+                    <td colspan="2">IBS-HYD</td>
+
+                    <td>Dept. Name:</td>
+                    <td colspan="4"><input type="text" name="DepartmentName" style="width:100%;" /></td>
+                </tr>
+
+                <tr>
+                    <td>Supplier Code:</td>
+                    <td colspan="2"><input type="text" name="SupplierCode" style="width:100%;" /></td>
+
+                    <td>Supplier Name:</td>
+                    <td colspan="4"><input type="text" name="SupplierName" style="width:100%;" /></td>
+                </tr>
+
+                <tr>
+                    <td>Purchase Order No.:</td>
+                    <td colspan="2"><input type="text" name="PONumber" value="@Model.PONumber" style="width:100%;" /></td>
+
+                    <td>Date:</td>
+                    <td><input type="date" name="PODate" value="@Model.PODate" style="width:100%;" /></td>
+
+                    <td>MIP No.:</td>
+                    <td colspan="2"><input type="text" name="MIPNumber" style="width:100%;" /></td>
+                </tr>
+            </table>
+
+
+            <table class="qty-table">
+                <thead>
+                    <tr>
+                        @*<th style="width: 5%;">Sl.No</th>*@
+                        <th style="width: 45%;">Material Description</th>
+                        <th style="width: 10%;">Unit</th>
+                        <th style="width: 10%;">Received</th>
+                        <th style="width: 10%;">Accepted</th>
+                        <th style="width: 10%;">Rejected</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.PurchaseOrderItems.Count; i++)
+                    {
+                        <tr style="height: 50px;">
+                            <td>
+                                @Html.DisplayFor(m => m.PurchaseOrderItems[i].Description)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(m => m.PurchaseOrderItems[i].QtyOrdered)
+                            </td>
+                            <td>
+                                <input type="number" class="form-control" name="PurchaseOrderItems[@i].QtyReceived"
+                                       value="@Model.PurchaseOrderItems[i].QtyReceived" min="0" />
+                                <input type="hidden" name="PurchaseOrderItems[@i].POItemID"
+                                       value="@Model.PurchaseOrderItems[i].POItemID" />
+                            </td>
+                            @*<td>
+                                <input type="number" class="form-control" name="PurchaseOrderItems[@i].QtyReceived"
+                                       value="@Model.PurchaseOrderItems[i].Accepted" min="0" />
+                                <input type="hidden" name="PurchaseOrderItems[@i].POItemID"
+                                       value="@Model.PurchaseOrderItems[i].POItemID" />
+                            </td>
+                            <td>
+                                <input type="number" class="form-control" name="PurchaseOrderItems[@i].QtyReceived"
+                                       value="@Model.PurchaseOrderItems[i].Rejected" min="0" />
+                                <input type="hidden" name="PurchaseOrderItems[@i].POItemID"
+                                       value="@Model.PurchaseOrderItems[i].POItemID" />
+                            </td>*@
+
+                            <td>
+                                <input type="text" class="form-control" name="PurchaseOrderItems[@i].Remarks"
+                                       value="@Model.PurchaseOrderItems[i].Remarks" />
+                            </td>
+                        </tr>
+                    }
+
+                    <!-- Add more rows if needed -->
+                </tbody>
+            </table>
+
+            if (!string.IsNullOrEmpty(Model.StoreUploads))
+            {
+                <div class="mt-2">
+                    <label>Previously Uploaded Certificate:</label>
+                    <a href="@Url.Content(Model.StoreUploads)" target="_blank">View Certificate</a>
+                </div>
+            }
+            else
+            {
+
+                <div class="form-group">
+                    <label>Upload Certification Document</label>
+                    <input type="file" name="CertificationFile" class="form-control" accept=".pdf,.doc,.docx" />
+
+                </div>
+            }
+
+            <div class="text-end mt-3">
+                <button type="submit" class="btn btn-success">Save Updates</button>
+            </div>
+            <div class="text-lg-center mt-3">
+                <button type="button" class="btn btn-secondary" onclick="window.print()">Print PO</button>
+            </div>
+
+        }
+
+        <table class="footer-signature">
+            <tr>
+                <td><input type="text" name="ReceivedBy" placeholder="Enter Name" style="width: 100%; border: none; text-align: center;" /></td>
+                <td><input type="text" name="VerifiedBy" placeholder="Enter Name" style="width: 100%; border: none; text-align: center;" /></td>
+                <td><input type="text" name="AuthorizedBy" placeholder="Enter Name" style="width: 100%; border: none; text-align: center;" /></td>
+            </tr>
+            <tr>
+                <td>Received By</td>
+                <td>Verified and Accepted By</td>
+                <td>Authorized By</td>
+            </tr>
+        </table>
+
+    </div>
+</body>
+</html>

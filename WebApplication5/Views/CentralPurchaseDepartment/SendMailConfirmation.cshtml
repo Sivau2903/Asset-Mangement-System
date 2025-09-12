@@ -1,0 +1,31 @@
+﻿
+
+@{
+    Layout = "~/Views/Shared/_CentralPDLayout.cshtml"; // or your actual layout
+    var showPopup = TempData["ShowSuccessPopup"] != null;
+    var poNumber = TempData["PONumber"]?.ToString();
+}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+@section Scripts {
+    @if (showPopup)
+    {
+        <script>
+            window.onload = function () {
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Purchase Order @poNumber sent successfully.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '@Url.Action("RequestsRecevied", "CentralPurchaseDepartment")';
+                    }
+                });
+            };
+        </script>
+    }
+}
+
+<h2>Sending Email...</h2>
+<p>Please wait while the confirmation is shown.</p>

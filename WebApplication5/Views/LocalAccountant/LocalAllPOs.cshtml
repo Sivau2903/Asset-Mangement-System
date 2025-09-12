@@ -1,0 +1,97 @@
+﻿@model dynamic
+@{
+    Layout = "~/Views/Shared/_LocalAccountant.cshtml";
+    ViewBag.Title = "All Purchase Orders";
+    var draftPOs = ViewBag.DraftPOs as List<WebApplication5.Models.PurchaseOrder>;
+    var deliveredPOs = ViewBag.DeliveredPOs as List<WebApplication5.Models.PurchaseOrder>;
+}
+
+<style>
+    .po-wrapper {
+        display: flex;
+        gap: 40px;
+        padding: 20px;
+    }
+
+    .po-section {
+        flex: 1;
+        color: darkblue;
+        border: 1px solid #ccc;
+        padding: 15px;
+        height: 80vh;
+        overflow-y: auto;
+    }
+
+        .po-section h3 {
+            color: mediumvioletred;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+    .po-link {
+        display: block;
+        padding: 10px;
+        margin-bottom: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        text-decoration: none;
+        color: #333;
+        background-color: #f9f9f9;
+    }
+
+        .po-link:hover {
+            background-color: #e6f0ff;
+            border-color: #337ab7;
+        }
+
+    .po-number {
+        font-weight: bold;
+        color: darkblue;
+    }
+
+    .po-date {
+        font-size: 12px;
+        color: gray;
+    }
+</style>
+
+<div class="po-wrapper">
+    <!-- Not Delivered Section -->
+    <div class="po-section">
+        <h3>Not Delivered</h3>
+        @if (draftPOs.Any())
+        {
+            foreach (var po in draftPOs)
+            {
+                <a class="po-link" href="@Url.Action("LocalPODetails", "LocalAccountant", new { poNumber = po.PONumber })">
+                    <div class="po-number">PO No: @po.PONumber</div>
+                    <div class="po-date">Date: @po.PODate</div>
+                </a>
+            }
+        }
+        else
+        {
+            <p>No Draft POs found.</p>
+        }
+    </div>
+
+    <!-- Delivered Section -->
+    <div class="po-section">
+        <h3>Delivered</h3>
+        @if (deliveredPOs.Any())
+        {
+            foreach (var po in deliveredPOs)
+            {
+                <a class="po-link" href="@Url.Action("LocalPODetails", "LocalAccountant", new { poNumber = po.PONumber })">
+                    <div class="po-number">PO No: @po.PONumber</div>
+                    <div class="po-date">Date: @po.PODate</div>
+                </a>
+            }
+        }
+        else
+        {
+            <p>No Delivered POs found.</p>
+        }
+    </div>
+</div>

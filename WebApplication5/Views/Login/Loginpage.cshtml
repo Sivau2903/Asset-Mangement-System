@@ -1,0 +1,253 @@
+﻿@model  WebApplication5.Models.Loginviewmodel
+
+@{
+    Layout = null;
+    ViewBag.Title = "Login";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    <style>
+       
+        .captcha-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .captcha-input {
+            width: 80%;
+        }
+
+        .captcha-image {
+            height: 40px;
+            width:30%
+        }
+
+        .refresh-icon {
+            cursor: pointer;
+            font-size: 24px;
+            color: #b22222;
+            margin-left: 1px;
+            transition: transform 0.2s;
+        }
+
+            .refresh-icon:hover {
+                transform: rotate(90deg);
+            }
+   
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+            background: #f4f4f4;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            display: flex;
+            width: 100vw; /* Full width to eliminate white space */
+            height: 100vh; /* Full height */
+            background: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 0; /* Remove rounded corners to fit full width */
+            overflow: hidden;
+        }
+
+        .left-section {
+            width: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f8f8f8;
+            padding: 50px;
+        }
+
+            .left-section img {
+                width: 70%;
+                height: auto;
+                max-height: 80%;
+                object-fit: contain;
+            }
+
+        .right-section {
+            width: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 100px;
+        }
+
+        .form-container {
+            width: 230%;
+            max-width: 280px;
+            text-align: center;
+        }
+
+            .form-container h2 { 
+                color: #b22222;
+                font-size: 55px;
+                margin-bottom: 25px;
+                font-weight: bold;
+            }
+
+        /* Increase label and input text sizes */
+        .form-group label {
+            display: block;
+            font-size: 22px;
+            margin-bottom: 5px;
+            text-align: left; /* if you want it aligned left */
+            color: #333;
+/*            width:stretch;*/
+        }
+
+        .form-control {
+            font-size: 20px;
+            width: 112%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 5px solid #ccc;
+            border-radius: 16px
+        }
+
+            .form-control:focus {
+                border-color: #b22222;
+                outline: none;
+                box-shadow: 0 0 5px rgba(178, 34, 34, 0.5);
+            }
+
+        .forgot-password {
+            display: block;
+            text-align: right;
+            margin-top: 7px;
+            margin-bottom: 10px;
+            color: #b22222;
+            font-size: 16px;
+            text-decoration: none;
+            width: auto;
+        }
+
+            .forgot-password:hover {
+                text-decoration: underline;
+            }
+
+        .btn {
+            width: 85%;
+            padding: 10px;
+            background: #b22222;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 22px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+            .btn:hover {
+                background: #8b0000;
+            }
+           
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left-section">
+            <img src="~/Uploads/ICFAI.jpg" alt="Login Image">
+        </div>
+        <div class="right-section">
+            <div class="form-container">
+                <h2>Login</h2>
+
+                @if (TempData["Message"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        @TempData["Message"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        @TempData["ErrorMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+
+                @if (TempData["WarningMessage"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        @TempData["SuccessMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+                @if (TempData["Msg"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        @TempData["Msg"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+
+            <form action="@Url.Action("Login","Login")" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="form-group">
+                    <label for="userID">&#128100; Username</label>
+                    <input type="text" id="userID" name="UserID" class="form-control" placeholder="UserID" required />
+                    @Html.ValidationMessageFor(m => m.UserID, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group">
+                    <label for="password">&#128274; Password</label>
+                    <input type="password" id="password" name="Password" class="form-control" placeholder="Password" required />
+                    @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="captcha-row" style="width:115%">
+                    <input type="text" class="form-control captcha-input" name="CaptchaInput" placeholder="Enter CAPTCHA" required />
+                    <img src="@Url.Action("CaptchaImage", "Login")" id="captchaImage" alt="CAPTCHA" class="captcha-image" />
+                    <span id="refreshCaptcha" class="refresh-icon">&#x21bb;</span> <!-- Unicode for refresh arrow -->
+                </div>
+
+                <script>
+    document.getElementById("refreshCaptcha").addEventListener("click", function () {
+        document.getElementById("captchaImage").src = '@Url.Action("CaptchaImage", "Login")' + '?' + new Date().getTime();
+    });
+                </script>
+
+                <a href="@Url.Action("ForgotPassword", "Login")" class="forgot-password">Reset Password?</a>
+
+
+                <button type="submit" class="btn">Login</button>
+            </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        if (window.history && window.history.pushState) {
+            window.history.pushState(null, "", window.location.href);
+            window.onpopstate = function () {
+                window.history.pushState(null, "", window.location.href);
+            };
+        }
+    </script>
+
+</body>
+</html>

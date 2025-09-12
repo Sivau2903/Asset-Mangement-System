@@ -1,0 +1,249 @@
+﻿@model List<WebApplication5.Models.CentralSentRequest>
+
+@{
+    Layout = "~/Views/Shared/_LocalVendorLayout.cshtml";
+    ViewBag.Title = "Requests Received";
+}
+
+<div class="d-flex justify-content-between align-items-center">
+    <h2>Requests Received</h2>
+</div>
+
+@if (Model != null && Model.Any())
+{
+    var groupedRequests = Model
+     .GroupBy(r => r.OrderedDate.Date)
+     .OrderByDescending(g => g.Key);
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>S.No</th>
+                <th>Requested Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{ int serialNumber = 1; }
+            @foreach (var group in groupedRequests)
+            {
+                <tr class="request-date-row" data-date="@group.Key.ToString("yyyy-MM-dd")">
+                    <td class="text-center"><strong>@serialNumber</strong></td>
+                    <td class="text-center bg-info text-white" style="cursor: pointer;">
+                        <strong>@group.Key.ToString("dd-MMM-yyyy")</strong> <i class="fas fa-chevron-down"></i>
+                    </td>
+                </tr>
+
+                <tr class="request-details-row" data-date="@group.Key.ToString("yyyy-MM-dd")" style="display: none;">
+                    <td colspan="2">
+                        <table class="table table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Request ID</th>
+                                    <th>PurchaseDepartmentID</th>
+                                    @*<th>University ID</th>*@
+                                    <th>Material Subcategory</th>
+                                    <th>Ordered Quantity</th>
+                                    <th>Price Per Quantity</th>
+                                    <th>Address</th>
+                                    <th>Issuing Quantity</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var request in group)
+                                {
+                                    <tr class="request-row" data-requestid="@request.RequestID" data-date="@group.Key.ToString("yyyy-MM-dd")">
+                                        <td>@request.RequestID</td>
+                                        <td>@request.CentralPurchaseDepartmentID</td>
+                                        @*<td>@request.UniversityID</td>*@
+                                        <td>@request.MaterialSubCategory</td>
+                                        <td>@request.OrderedQuantity</td>
+                                        <td>@request.PricePerQuantity</td>
+                                        <td>@request.Address</td>
+                                        <td>
+                                            <div class="issuing-quantity-container" style="display: none;">
+                                                <input type="number"
+                                                       class="form-control issuing-quantity"
+                                                       name="issuingQuantity"
+                                                       data-ordered="@request.OrderedQuantity"
+                                                       value="@request.IssuingQuantity"
+                                                       min="0"
+                                                       max="@request.OrderedQuantity"
+                                                       required />
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <select class="form-select action-dropdown">
+                                                <option value="">Select</option>
+                                                <option value="Approve">Approve</option>
+                                                <option value="Reject">Reject</option>
+                                            </select>
+
+                                            <input type="hidden" class="request-id" value="@request.RequestID" />
+
+                                            <button class="btn btn-success btn-sm mt-2 submit-quantity" style="display: none;">Submit</button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+
+                serialNumber++;
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-warning">No raised requests found.</div>
+}
+
+<!-- Reject Modal -->
+<div class="modal fade" id="remarksModal" tabindex="-1" aria-labelledby="remarksModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="remarksModalLabel">Enter Remarks</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="rejectRequestId" />
+                <div class="mb-3">
+                    <label for="remarksInput" class="form-label">Reason for Rejection:</label>
+                    <textarea class="form-control" id="remarksInput" rows="3" required></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="submitRejectBtn">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // Toggle request rows under each date
+        $(".request-date-row").click(function () {
+            var date = $(this).data("date");
+            var detailsRow = $(".request-details-row[data-date='" + date + "']");
+            if (detailsRow.is(":visible")) {
+                detailsRow.hide();
+                $(this).find("i").removeClass("fa-chevron-up").addClass("fa-chevron-down");
+            } else {
+                detailsRow.show();
+                $(this).find("i").removeClass("fa-chevron-down").addClass("fa-chevron-up");
+            }
+        });
+
+        // Action Dropdown Change
+        $(".action-dropdown").change(function () {
+            const row = $(this).closest("tr");
+            const selectedAction = $(this).val();
+            const issuingInputContainer = row.find(".issuing-quantity-container");
+            const submitBtn = row.find(".submit-quantity");
+            const requestId = row.find(".request-id").val();
+
+            if (selectedAction === "Approve") {
+                issuingInputContainer.show();
+                submitBtn.show();
+            } else if (selectedAction === "Reject") {
+                issuingInputContainer.hide();
+                submitBtn.hide();
+
+                // Show modal
+                $("#rejectRequestId").val(requestId);
+                $("#remarksInput").val("");
+                const modal = new bootstrap.Modal(document.getElementById("remarksModal"));
+                modal.show();
+            } else {
+                issuingInputContainer.hide();
+                submitBtn.hide();
+            }
+        });
+
+        // Handle Approve Submit
+       $(".submit-quantity").click(function () {
+    const row = $(this).closest("tr");
+    const input = row.find(".issuing-quantity");
+    const requestId = $(this).data("requestid");
+    const enteredQty = parseInt(input.val(), 10);
+    const orderedQty = parseInt(input.data("ordered"), 10);
+
+    if (isNaN(enteredQty)) {
+        alert("Please enter a valid Issuing Quantity.");
+        return;
+    }
+
+    if (enteredQty < 1) {
+        alert("Issuing Quantity must be at least 1.");
+        return;
+    }
+
+    if (enteredQty > orderedQty) {
+        alert("Issuing Quantity cannot exceed Ordered Quantity.");
+        return;
+    }
+
+    // Valid input, proceed with AJAX
+    $.ajax({
+        url: '@Url.Action("UpdateIssuingQuantity", "CentralVendor")',
+        type: 'POST',
+        data: {
+            requestId: requestId,
+            issuingQuantity: enteredQty
+        },
+        success: function (response) {
+            if (response.success) {
+                alert("Issued successfully!");
+            } else {
+                alert("Error: " + response.message);
+            }
+        },
+        error: function () {
+            alert("An error occurred while updating.");
+        }
+    });
+});
+
+
+        // Handle Reject Submit
+        $("#submitRejectBtn").click(function () {
+            const requestId = $("#rejectRequestId").val();
+            const remarks = $("#remarksInput").val().trim();
+
+            if (!remarks) {
+                alert("Please enter remarks.");
+                return;
+            }
+
+            $.ajax({
+                url: '@Url.Action("RejectRequest", "CentralVendor")',
+                type: 'POST',
+                data: {
+                    requestId: requestId,
+                    remarks: remarks
+                },
+                success: function (response) {
+                    if (response.success) {
+                        alert("Request rejected with remarks.");
+                        const modal = bootstrap.Modal.getInstance(document.getElementById("remarksModal"));
+                        modal.hide();
+                    } else {
+                        alert("Error: " + response.message);
+                    }
+                },
+                error: function () {
+                    alert("An error occurred while submitting remarks.");
+                }
+            });
+        });
+    });
+</script>

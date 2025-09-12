@@ -1,0 +1,116 @@
+﻿
+
+@model List<WebApplication5.Models.HODRequestGroupedViewModel>
+
+@{
+    Layout = "~/Views/Shared/_HODLayout.cshtml";
+    ViewBag.Title = "MyRequests";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>View Requests</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .footer {
+            margin-top: 580px;
+        }
+    </style>
+</head>
+<body>
+
+    <form method="get" action="@Url.Action("MyRequests", "HOD")">
+        <div class="d-flex justify-content-center align-items-center mb-3">
+            <div class="form-group me-2">
+                <label for="fromDate" class="form-label">From Date:</label>
+                <input type="date" id="fromDate" name="fromDate" class="form-control"
+                       value="@Request.QueryString["fromDate"]" />
+            </div>
+
+            <div class="form-group me-2">
+                <label for="toDate" class="form-label">To Date:</label>
+                <input type="date" id="toDate" name="toDate" class="form-control"
+                       value="@Request.QueryString["toDate"]" />
+            </div>
+
+            <div class="form-group mt-4">
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </div>
+        </div>
+    </form>
+
+    <div class="container mt-4">
+        <h3 class="text-center">My Requests</h3>
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>SNo</th>
+                    <th>Request ID</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var request in Model)
+                {
+                    <tr class="clickable-row" data-toggle="details-@request.HODRequestID">
+                        <td>@request.SNo</td>
+                        <td><a href="javascript:void(0)" class="request-id" data-id="@request.HODRequestID">@request.HODRequestID</a></td>
+                    </tr>
+                    <tr id="details-@request.HODRequestID" class="details-row" style="display: none;">
+                        <td colspan="2">
+                            <strong>Status:</strong> @request.Status <br>
+                            <strong>Requested Date:</strong> @request.RequestedDate.ToString("dd-MM-yyyy") <br><br>
+
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Asset Type</th>
+                                        <th>Material Category</th>
+                                        <th>Sub-Category</th>
+                                        <th>Available Quantity</th>
+                                        <th>Requesting Quantity</th>
+
+                                        <th>Issuing Quantity</th>
+                                        <th>Pending Quantity</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var asset in request.AssetDetails)
+                                    {
+                                        <tr>
+                                            <td>@asset.AssetType</td>
+                                            <td>@asset.MaterialCategory</td>
+                                            <td>@asset.MSubCategory</td>
+                                            <td>@asset.AvailableQuantity</td>
+                                            <td>@asset.RequestingQuantity</td>
+
+                                            <td>@asset.IssuingQuantity</td>
+                                            <td>@asset.PendingQuantity</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $(".request-id").click(function () {
+                let requestID = $(this).data("id");
+                $("#details-" + requestID).toggle();
+            });
+        });
+    </script>
+
+</body>
+</html>
+
+

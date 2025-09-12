@@ -1,0 +1,56 @@
+﻿
+
+@model WebApplication5.Models.GeneratePOViewModel
+
+@{
+    ViewBag.Title = "Purchase Order Details";
+}
+
+<h2 class="mt-3">Purchase Order - @Model.PONumber</h2>
+
+<div class="card p-3 mt-3 shadow-sm">
+    <h5>PO Information</h5>
+    <div class="row mt-2">
+        <div class="col-md-6">
+            <p><strong>Requisition No:</strong> @Model.RequisitionNo</p>
+            <p><strong>Ship To:</strong> @Model.ShipTo</p>
+            <p><strong>Requisitioned By:</strong> @Model.RequisitionedBy</p>
+        </div>
+        <div class="col-md-6">
+            <p><strong>When to Ship:</strong> @Model.WhenShip?.ToShortDateString()</p>
+            <p><strong>Ship Via:</strong> @Model.ShipVia</p>
+            <p><strong>FOB Point:</strong> @Model.FOBPoint</p>
+            <p><strong>Terms:</strong> @Model.Terms</p>
+        </div>
+    </div>
+</div>
+
+<h5 class="mt-4">Items in Purchase Order</h5>
+<table class="table table-bordered table-striped mt-2">
+    <thead class="thead-dark">
+        <tr>
+            <th>Description</th>
+            <th>Qty Ordered</th>
+            <th>Qty Received</th>
+            <th>Unit Price</th>
+            <th>Total</th>
+            <th>Vendor Email</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.PurchaseOrderItems)
+        {
+            <tr>
+                <td>@item.Description</td>
+                <td>@item.QtyOrdered</td>
+                <td>@item.QtyReceived</td>
+                <td>@item.UnitPrice</td>
+                <td>@item.Total</td>
+
+                <td>@item.VendorEmail</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a href="@Url.Action("Index", "LocalPurchaseDepartment")" class="btn btn-secondary mt-3">Back to List</a>

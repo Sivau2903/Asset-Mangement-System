@@ -1,0 +1,158 @@
+﻿@model WebApplication5.Models.OTPViewModel
+
+@{
+    Layout = "~/Views/Shared/_ResetLayout.cshtml";
+    ViewBag.Title = "Verify OTP";
+}
+
+<div class="verify-otp-container">
+    <div class="card shadow-lg">
+        <div class="card-body p-5">
+            <h2 class="card-title text-center mb-4 fw-bold text-primary">Verify OTP</h2>
+
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+                    @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (TempData["Message"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+                    @TempData["Message"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            @using (Html.BeginForm("VerifyOTP", "Login", FormMethod.Post, new { @class = "form-horizontal" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="mb-4">
+                    <label for="OTP" class="form-label fw-bold">Enter OTP</label>
+                    <input type="text" name="OTP" id="OTP" class="form-control form-control-lg" placeholder="Enter the OTP sent to your email" required />
+                    @Html.ValidationMessageFor(m => m.OTP, "", new { @class = "text-danger mt-1" })
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg">Verify OTP</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+.verify-otp-container {
+    max-width: 450px;
+    margin: 80px auto;
+    padding: 20px;
+}
+
+.card {
+    border: none;
+    border-radius: 12px;
+    background-color: #ffffff;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.card-title {
+    color: #007bff; /* Bootstrap primary blue */
+    font-size: 1.8rem;
+    letter-spacing: 0.5px;
+}
+
+.form-label {
+    color: #333;
+    font-size: 1rem;
+}
+
+.form-control {
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    padding: 12px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+}
+
+.btn-primary {
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    background-color: #007bff;
+    border: none;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+.alert {
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.text-danger {
+    font-size: 0.85rem;
+}
+
+.d-grid {
+    display: grid;
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #f8f9fa;
+    padding: 10px 0;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+@@media (max-width: 576px) {
+    .verify-otp-container {
+        margin: 20px;
+        padding: 10px;
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+    }
+
+    .btn-primary {
+        font-size: 1rem;
+        padding: 10px;
+    }
+}
+</style>

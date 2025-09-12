@@ -1,0 +1,65 @@
+﻿@model List<WebApplication5.Models.CentralPurchaseOrderGroupedViewModel>
+
+@{
+    Layout = "~/Views/Shared/_CentralPDLayout.cshtml";
+}
+
+<div class="container">
+    <h2>My Requests</h2>
+
+    @foreach (var group in Model)
+    {
+        <div class="card mb-3">
+            <div class="card-header">
+                <strong>PO Number:</strong> @group.PONumber |
+                <strong>Date:</strong> @group.PODate.ToString("dd-MM-yyyy")
+
+                <button class="btn btn-sm btn-primary float-right"
+                        type="button"
+                        data-toggle="collapse"
+                        data-target="#po@(group.PONumber)">
+                    View Items
+                </button>
+
+            </div>
+
+            <div id="po@(group.PONumber)" class="collapse card-body">
+
+                @if (group.CentralPurchaseOrderItems.Any())
+                {
+                    <p><strong>Total Items:</strong> @group.CentralPurchaseOrderItems.Count</p>
+
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Description</th>
+                                <th>Qty Ordered</th>
+                                <th>Unit Price</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in group.CentralPurchaseOrderItems)
+                            {
+                                <tr>
+                                    <td>@item.Description</td>
+                                    <td>@item.QtyOrdered</td>
+                                    <td>@item.UnitPrice</td>
+                                    <td>@(item.QtyOrdered * item.UnitPrice)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p>No items found under this PO.</p>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Bootstrap JS (for collapse functionality) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>

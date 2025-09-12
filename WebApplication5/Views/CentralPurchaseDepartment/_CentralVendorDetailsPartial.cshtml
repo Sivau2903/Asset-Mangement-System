@@ -1,0 +1,78 @@
+﻿@model List<WebApplication5.Models.CentralVendorDetail>
+
+@if (Model.Any())
+{
+    <table class="table table-bordered table-hover" id="vendorTable">
+        <thead class="table-dark">
+            <tr>
+                <th>Select</th>
+                <th>VendorName</th>
+                <th>EmailID</th>
+                @*<th>Phone Number</th>*@
+                <th>Address</th>
+                <th>GSTNO</th>
+                <th>GST%</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var vendor in Model)
+            {
+                <tr class="vendor-row" data-vendorid="@vendor.VendorID" data-price="@vendor.PricePerUnit">
+                    <td>
+                        <input type="radio" name="selectedVendor" class="select-vendor">
+                    </td>
+                    <td>@vendor.VendorName</td>
+                    <td>@vendor.EmailID</td>
+                    @*<td>@vendor.PhoneNumber</td>*@
+                    <td>@vendor.Address</td>
+                    <td>@vendor.GSTNO</td>
+                    @*<td>@vendor.GST%</td>*@
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button class="btn btn-primary mt-2" id="confirmVendorSelection">Confirm Selection</button>
+}
+else
+{
+    <p class="text-danger">No vendors found for this material.</p>
+}
+
+
+
+<script>
+    $(document).ready(function () {
+        $("#confirmVendorSelection").click(function () {
+            var selectedRow = $("#vendorTable .select-vendor:checked").closest("tr");
+
+            if (selectedRow.length === 0) {
+                alert("Please select a vendor.");
+                return;
+            }
+
+            var vendorName = selectedRow.find("td:eq(1)").text().trim();
+            var email = selectedRow.find("td:eq(2)").text().trim();
+            var address = selectedRow.find("td:eq(3)").text().trim();
+            var gst = selectedRow.find("td:eq(4)").text().trim();
+            var gstpercent = "18"; // Set GST% statically or pass it from model if needed
+            var price = selectedRow.data("price");
+            var material = $("#vendorModal").data("material"); // Set this from the main view
+
+            // Pass data to main view
+            window.postMessage({
+                vendorName: vendorName,
+                email: email,
+                address: address,
+                gst: gst,
+                gstpercent: gstpercent,
+                price: price,
+                material: material
+            }, "*");
+
+
+            $("#vendorModal").modal("hide");
+        });
+    });
+</script>
+

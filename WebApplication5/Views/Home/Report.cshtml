@@ -1,0 +1,120 @@
+﻿@model WebApplication5.Models.ReportViewModel
+
+@{
+    ViewBag.Title = "Report";
+
+    // Read date filter parameters to control rendering
+    var hasStart = Request.QueryString["startDate"];
+    var hasEnd = Request.QueryString["endDate"];
+    bool hasFilter = !string.IsNullOrEmpty(hasStart) && !string.IsNullOrEmpty(hasEnd);
+}
+
+<style>
+    footer {
+        position: page;
+        margin-top: 20px;
+    }
+
+    form {
+        padding-top: 30px;
+    }
+
+    h2 {
+        margin-top: 20px;
+    }
+
+    .btn-secondary {
+        margin-bottom: 15px;
+    }
+</style>
+<h3>Use Filter To get Issue Report</h3>
+<form method="get">
+    From: <input type="date" name="startDate" required />
+    To: <input type="date" name="endDate" required />
+    <button type="submit" class="btn btn-primary">Get Report</button>
+</form>
+
+@if (hasFilter && Model != null && Model.DetailedReports != null && Model.DetailedReports.Any())
+{
+    <div id="detailedReportSection">
+        <h2>Detailed Issue Report</h2>
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Material</th>
+                    <th>Issued To</th>
+                    <th>Role</th>
+                    <th>Requested Quantity</th>
+                    <th>Issued Date</th>
+                    <th>Issued Quantity</th>
+                    <th>Closing Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.DetailedReports)
+                {
+                    <tr>
+                        <td>@item.MaterialName</td>
+                        <td>@item.IssuedTo</td>
+                        <td>@item.Role</td>
+                        <td>@item.RequestedQuantity</td>
+                        <td>@item.IssuedDate.ToString("dd-MM-yyyy")</td>
+                        <td>@item.IssuedQuantity</td>
+                        <td>@item.ClosingQuantity</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="text-center mt-3">
+        <button type="button" class="btn btn-secondary" onclick="printSection('detailedReportSection')">Print Detailed Report</button>
+    </div>
+
+    if (Model.SummaryReports != null && Model.SummaryReports.Any())
+    {
+        <div id="summaryReportSection">
+            <h2>Summary Report</h2>
+
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Material</th>
+                        <th>Total Issued Quantity</th>
+                        <th>Latest Closing Quantity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var summary in Model.SummaryReports)
+                    {
+                        <tr>
+                            <td>@summary.MaterialName</td>
+                            <td>@summary.TotalIssuedQuantity</td>
+                            <td>@summary.ClosingQuantity</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="text-center mt-3">
+            <button type="button" class="btn btn-secondary" onclick="printSection('summaryReportSection')">Print Summary Report</button>
+        </div>
+    }
+}
+else if (hasFilter)
+{
+    <p>No data available for the selected date range.</p>
+}
+<script>
+    function printSection(sectionId) {
+        var printContent = document.getElementById(sectionId).innerHTML;
+        var originalContent = document.body.innerHTML;
+
+        document.body.innerHTML = printContent;
+        window.print();
+        document.body.innerHTML = originalContent;
+        location.reload();
+    }
+</script>

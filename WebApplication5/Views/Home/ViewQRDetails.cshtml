@@ -1,0 +1,92 @@
+﻿
+@{
+    ViewBag.Title = "ViewQRDetails";
+}
+
+<h2>ViewQRDetails</h2>
+
+@model WebApplication5.Models.QRDetailsViewModel
+
+<div class="container mt-4">
+    <h3 class="text-primary mb-4">Issued Material Details</h3>
+    <hr />
+
+    <!-- QR ID and Date -->
+    <div class="mb-3">
+        <h5><strong>QR ID:</strong> @Model.QRID</h5>
+    </div>
+
+    <!-- Employee Details -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-info text-white">
+            <h5>Employee Details</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>Name:</strong> @Model.Employee.FirstName</p>
+            <p><strong>Department:</strong> @Model.Employee.DepName</p>
+            <p><strong>Email:</strong> @Model.Employee.EmailID</p>
+        </div>
+    </div>
+
+    <!-- Material Details -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-secondary text-white">
+            <h5>Material Details</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>Material Subcategory:</strong> @Model.MaterialSubCategory</p>
+            <p><strong>Total Issued Quantity:</strong> @Model.TotalIssuedQty</p>
+        </div>
+    </div>
+
+    <!-- Vendor Details Table -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h5>Vendor-Wise Issued Details</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Vendor Name</th>
+                        <th>Material</th>
+                        <th> Vendor Email</th>
+                        <th>Make</th>
+                        <th>Unit</th>
+                        <th>Expiry Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var vendor in Model.Vendors)
+                    {
+                        <tr>
+                            <td>@vendor.VendorName</td>
+                            <td>@vendor.MaterialName</td>
+                            <td>@vendor.vendorEmail</td>
+                            <td>@vendor.Make</td>
+                            <td>@vendor.Unit</td>
+                            <td>@vendor.ExpiryDate</td>
+                            
+                            @*<td>@vendor.IssuedQuantity</td>*@
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <div class="mt-4">
+        <a href="@Url.Action("EmployeeRequests", "Home")" class="btn btn-primary">Back to Requests</a>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 10px;
+    }
+
+    .card-header {
+        border-radius: 10px 10px 0 0;
+    }
+</style>

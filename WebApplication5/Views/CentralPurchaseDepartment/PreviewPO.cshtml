@@ -1,0 +1,189 @@
+﻿@model WebApplication5.Models.CentralGeneratePOViewModel
+
+@{
+    Layout = "~/Views/Shared/_CentralPDLayout.cshtml";
+    ViewBag.Title = "Preview Purchase Order";
+    var today = DateTime.Now.ToString("dd-MM-yyyy");
+}
+
+@using Newtonsoft.Json
+@using System.Web
+
+<style>
+    .po-container {
+        border: 2px solid black;
+        padding: 30px;
+        max-width: 800px;
+        margin: auto;
+        font-family: Arial, sans-serif;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+
+    th, td {
+        border: 1px solid black;
+        padding: 6px;
+        text-align: left;
+    }
+
+    .signature {
+        margin-top: 50px;
+        text-align: right;
+    }
+
+    #annexureSection, #termsSection {
+        margin-top: 50px;
+        page-break-before: always;
+    }
+</style>
+
+@using (Html.BeginForm("BulkPO", "CentralPurchaseDepartment", FormMethod.Post))
+{
+    <div class="po-container">
+
+        <!-- Hidden Fields -->
+        @Html.HiddenFor(m => m.PONumber)
+        @Html.HiddenFor(m => m.TermsConditions)
+        @Html.HiddenFor(m => m.UniversityName)
+        @Html.HiddenFor(m => m.UniversityEmail)
+        @Html.HiddenFor(m => m.UniversityPhone)
+        @Html.HiddenFor(m => m.UniversityAddress)
+        @Html.HiddenFor(m => m.ShipTo)
+        @Html.HiddenFor(m => m.RequisitionNo)
+        @Html.HiddenFor(m => m.RequisitionedBy)
+        @Html.HiddenFor(m => m.WhenShip)
+        @Html.HiddenFor(m => m.ShipVia)
+        @Html.HiddenFor(m => m.FOBPoint)
+        @Html.HiddenFor(m => m.Terms)
+        @Html.HiddenFor(m => m.TotalQuantity)
+        @Html.HiddenFor(m => m.TotalCost)
+
+        @Html.HiddenFor(m => m.VendorName)
+        @Html.HiddenFor(m => m.VendorEmail)
+        @Html.HiddenFor(m => m.VendorAddress)
+        @Html.HiddenFor(m => m.VendorGSTNo)
+        @Html.HiddenFor(m => m.VendorGSTPercent)
+
+        <!-- Serialize PurchaseOrderItems -->
+        <input type="hidden" name="SerializedItems" value="@Html.Raw(HttpUtility.UrlEncode(JsonConvert.SerializeObject(Model.PurchaseOrderItems)))" />
+
+        <!-- HEADER -->
+        <div class="d-flex justify-content-between">
+            <div style="width: 48%;">
+                <div><strong>@Model.UniversityName</strong></div>
+                <div>Email: @Model.UniversityEmail</div>
+                <div>Phone: @Model.UniversityPhone</div>
+                <div>Address: @Model.UniversityAddress</div>
+
+                <div style="margin-top: 10px;">
+                    <strong>Vendor Details:</strong><br />
+                    <div><strong>Name:</strong> @Model.VendorName</div>
+                    <div><strong>Email:</strong> @Model.VendorEmail</div>
+                    <div><strong>Address:</strong> @Model.VendorAddress</div>
+                    <div><strong>GST No:</strong> @Model.VendorGSTNo</div>
+                </div>
+            </div>
+
+            <div style="width: 48%; text-align: right;">
+                <h4>Purchase Order</h4>
+                <div><strong>PO No:</strong> @Model.PONumber</div>
+                <div><strong>Date:</strong> @today</div>
+
+                <table>
+                    <tr><td><strong>Requisition No:</strong> @Model.RequisitionNo</td></tr>
+                    <tr><td><strong>Requisitioned By:</strong> @Model.RequisitionedBy</td></tr>
+                    <tr><td><strong>Ship To:</strong> @Model.ShipTo</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <hr />
+
+        <!-- PO INFO -->
+        <table>
+            <tr>
+                <th>Requisitioned By</th>
+                <th>When Ship</th>
+                <th>Ship Via</th>
+                <th>F.O.B. Point</th>
+                <th>Terms</th>
+            </tr>
+            <tr>
+                <td>@Model.RequisitionedBy</td>
+                <td>@Model.WhenShip</td>
+                <td>@Model.ShipVia</td>
+                <td>@Model.FOBPoint</td>
+                <td>@Model.Terms</td>
+            </tr>
+        </table>
+
+        <!-- SUMMARY -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Specification</th>
+                    <th>Quantity</th>
+                    <th>Total (Including Taxes)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>As per Annexure</td>
+                    <td>@Model.TotalQuantity</td>
+                    <td>₹@Model.TotalCost</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- SIGNATURE -->
+        <div class="signature">
+            <p>AUTHORIZED BY</p>
+            <strong>@Model.RequisitionedBy</strong>
+            <p>___________________________</p>
+        </div>
+
+        <!-- ANNEXURE -->
+        <div id="annexureSection">
+            <h4 class="text-center">Annexure</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th>Qty Ordered</th>
+                        <th>Unit Price (₹)</th>
+                        <th>Total (₹)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.PurchaseOrderItems != null)
+                    {
+                        foreach (var item in Model.PurchaseOrderItems)
+                        {
+                            <tr>
+                                <td>@item.Description</td>
+                                <td>@item.QtyOrdered</td>
+                                <td>@item.UnitPrice</td>
+                                <td>@item.Total</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- TERMS -->
+        <div id="termsSection">
+            <h5 class="text-center">Terms and Conditions</h5>
+            <p>@Html.Raw(Model.TermsConditions?.Replace("\n", "<br />"))</p>
+        </div>
+
+        <!-- ACTION BUTTON -->
+        <div class="text-center mt-5">
+            <button type="submit" class="btn btn-success">Send PO</button>
+        </div>
+    </div>
+}

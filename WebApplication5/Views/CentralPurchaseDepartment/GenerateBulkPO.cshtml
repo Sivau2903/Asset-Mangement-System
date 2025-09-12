@@ -1,0 +1,216 @@
+﻿@model WebApplication5.Models.CentralGeneratePOViewModel
+
+@{
+    var uni = ViewBag.University as WebApplication5.Models.CentralPurchaseDepartment;
+
+    Layout = "~/Views/Shared/_LocalPDLayout.cshtml";
+    ViewBag.Title = "Purchase Order";
+    var today = DateTime.Now.ToString("dd-MM-yyyy");
+}
+
+<style>
+    .po-container {
+        border: 2px solid black;
+        padding: 30px;
+        max-width: 800px;
+        height: 800px;
+        margin: auto;
+        font-family: Arial, sans-serif;
+    }
+
+    .po-title {
+        font-size: 28px;
+        font-weight: bold;
+        text-align: right;
+    }
+
+    .company-header {
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    table {
+        width: 100%;
+        height: 50px;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+
+    th, td {
+        border: 1px solid black;
+        padding: 6px;
+        text-align: left;
+    }
+
+    .no-border {
+        border: none;
+    }
+
+    .signature {
+        margin-top: 50px;
+        text-align: right;
+    }
+
+    .print-button {
+        margin-top: 30px;
+        text-align: center;
+    }
+
+    .company-header {
+        font-weight: bold;
+        font-size: 18px;
+        margin-bottom: 5px;
+    }
+
+    .po-title {
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    .input-no-border {
+        width: 100%;
+        border: none;
+        border-bottom: 1px solid black;
+    }
+</style>
+
+@using (Html.BeginForm("GenerateBulkPO123", "CentralPurchaseDepartment", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <div class="po-container">
+        <div class="d-flex justify-content-between">
+            <!-- Left side: University details stacked vertically -->
+            <div>
+                @if (uni != null)
+                {
+                    <div class="company-header">@uni.CentralDepartmentName</div>
+                    <div>@uni.CentralDepartmentAddress</div>
+                    <div>Email: @uni.CentralDepartmentEmail</div>
+                    <div>Phone: @uni.CentralDepartmentPhone</div>
+                }
+                else
+                {
+                    <div class="text-danger">University details are missing.</div>
+                }
+            </div>
+
+            <!-- Right side: PO title -->
+            <div class="po-title text-end">
+                <div>Purchase Order</div>
+                <div style="font-size: 14px;">PO No: @ViewBag.PONumber</div>
+            </div>
+        </div>
+
+        <!-- Hidden fields for dynamic values -->
+        @Html.HiddenFor(m => m.PONumber)
+
+        <!-- Hidden fields for dynamic university data -->
+        @Html.Hidden("VendorEmail", (string)ViewBag.VendorEmail)
+        @Html.Hidden("UniversityName", (string)uni?.CentralDepartmentName)
+        @Html.Hidden("UniversityAddress", (string)uni?.CentralDepartmentAddress)
+        @Html.Hidden("UniversityEmail", (string)uni?.CentralDepartmentEmail)
+        @Html.Hidden("UniversityPhone", (string)uni?.CentralDepartmentPhone)
+
+        <table>
+            <tr>
+                <td><strong>Date:</strong> @today</td>
+                <td>
+                    <strong>Requisition No:</strong> @Model.RequisitionNo
+                </td>
+            </tr>
+
+            <tr>
+                <td colspan="2">
+                    <strong>Ship To:</strong>
+                    @Html.TextBoxFor(m => m.ShipTo, new { @class = "input-no-border", @Value = uni?.CentralDepartmentAddress, @readonly = "readonly", required = "required" })
+                </td>
+            </tr>
+        </table>
+
+        <table>
+            <tr>
+                <th>Requisitioned By</th>
+                <th>When Ship</th>
+                <th>Ship Via</th>
+                <th>F.O.B. Point</th>
+                <th>Terms</th>
+            </tr>
+            <tr>
+                <td>@Html.TextBoxFor(m => m.RequisitionedBy, new { @class = "input-no-border", @readonly = "readonly", required = "required" })</td>
+                <td>@Html.TextBoxFor(m => m.WhenShip, new { @class = "input-no-border", required = "required", type = "date" })</td>
+                <td>@Html.TextBoxFor(m => m.ShipVia, new { @class = "input-no-border", required = "required" })</td>
+                <td>@Html.TextBoxFor(m => m.FOBPoint, new { @class = "input-no-border", required = "required" })</td>
+                <td>@Html.TextBoxFor(m => m.Terms, new { @class = "input-no-border", required = "required" })</td>
+            </tr>
+        </table>
+
+        <!-- Check if PurchaseOrderItems is not null and has items -->
+        @if (Model.PurchaseOrderItems != null && Model.PurchaseOrderItems.Count > 0)
+        {
+            <table>
+                <tr>
+                    <th>QTY ORDERED</th>
+                    <th>STOCK NO. / DESCRIPTION</th>
+                    <th>UNIT PRICE</th>
+                    <th>TOTAL</th>
+                </tr>
+
+                @for (int i = 0; i < Model.PurchaseOrderItems.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            <input name="PurchaseOrderItems[@i].QtyOrdered"
+                                   value="@Model.PurchaseOrderItems[i].QtyOrdered"
+                                   class="input-no-border" readonly />
+                        </td>
+                        <td>
+                            <input name="PurchaseOrderItems[@i].Description"
+                                   value="@Model.PurchaseOrderItems[i].Description"
+                                   class="input-no-border" readonly />
+                        </td>
+                        <td>
+                            <input name="PurchaseOrderItems[@i].UnitPrice"
+                                   value="@Model.PurchaseOrderItems[i].UnitPrice"
+                                   class="input-no-border" readonly />
+                        </td>
+                        <td>
+                            <input name="PurchaseOrderItems[@i].Total"
+                                   value="@Model.PurchaseOrderItems[i].Total"
+                                   class="input-no-border" readonly />
+                        </td>
+                    </tr>
+                }
+            </table>
+        }
+        else
+        {
+            <div class="text-danger">No purchase order items available.</div>
+        }
+
+    @*<div class="form-group">
+        <label for="CertificationFile">Upload Certification Document</label>
+        <input type="file" name="CertificationFile" class="form-control" accept=".pdf,.doc,.docx" />
+    </div>*@
+
+        <div style="font-size: 13px; margin-top: 10px;">
+            <p>
+                1. Please send
+                @Html.TextBoxFor(m => m.CopiesOfInvoice, new { type = "number", min = "1", style = "width: 60px; text-align: center;", required = "required" })
+                copies of your invoice.
+            </p>
+
+            <p>2. Order is to be entered in accordance with prices, delivery and specifications shown above.</p>
+            <p>3. Notify us immediately if you are unable to ship as specified.</p>
+        </div>
+
+        <div class="signature">
+            <strong>AUTHORIZED BY</strong><br />
+            @Html.TextBoxFor(m => m.AuthorizedBy, new { @class = "input-no-border", placeholder = "Enter Name", required = "required" })
+            <br /><br />
+            ___________________________
+        </div>
+
+        <div class="text-center mt-3">
+            <button type="submit" class="btn btn-success">Send PO</button>
+        </div>
+    </div>
+}

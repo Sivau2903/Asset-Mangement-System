@@ -1,0 +1,103 @@
+﻿@model List<WebApplication5.Models.RequiredMaterial>
+
+@{
+    Layout = "~/Views/Shared/_StoreAdminLayout.cshtml";
+    ViewBag.Title = "My Requests";
+}
+
+<h2>My Raised Requests</h2>
+
+@if (Model != null && Model.Any())
+{
+    // Group requests by RequestedDate
+    var groupedRequests = Model.GroupBy(r => r.RequestedDate.HasValue ? r.RequestedDate.Value.Date : DateTime.MinValue)
+                            .OrderByDescending(g => g.Key);
+
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>Request ID</th>
+                <th>Requested Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var group in groupedRequests)
+            {
+                // Show the first Request ID of that date
+                var firstRequestID = group.First().RequiredMaterialID;
+
+                <tr class="request-date-row" data-date="@group.Key.ToString("yyyy-MM-dd")">
+                    <td class="text-center"><strong>@firstRequestID</strong></td>
+                    <td class="text-center bg-info text-white" style="cursor: pointer;">
+                        <strong>@group.Key.ToString("dd-MMM-yyyy")</strong> <i class="fas fa-chevron-down"></i>
+                    </td>
+                </tr>
+
+                <!-- Hidden details row -->
+                <tr class="request-details-row" data-date="@group.Key.ToString("yyyy-MM-dd")" style="display: none;">
+                    <td colspan="2">
+                        <table class="table table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Request ID</th>
+                                    <th>Asset Type</th>
+                                    <th>Material Category</th>
+                                    <th>Material Subcategory</th>
+                                    <th>Role</th>
+                                    <th>UserID</th>
+                                    <th>Requesting Quantity</th>
+                                    <th>Status</th>
+                                    @*<th>Store Admin ID</th>*@
+                                    @*<th>University ID</th>*@
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var request in group)
+                                {
+                                    <tr>
+                                        <td>@request.RequiredMaterialID</td>
+                                        <td>@request.AssetType</td>
+                                        <td>@request.MaterialCategory</td>
+                                        <td>@request.MaterialSubCategory</td>
+                                        <td>@request.Role</td>
+                                        <td>@request.UserID</td>
+                                        <td>@request.RequiredQuantity</td>
+                                        <td>
+                                            <span class="badge bg-warning text-dark">@request.Status</span>
+                                        </td>
+                                        @*<td>@request.StoreAdminID</td>*@
+                                        @*<td>@request.UniversityID</td>*@
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-warning">No raised requests found.</div>
+}
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $(".request-date-row").click(function () {
+                var date = $(this).data("date");
+                var detailsRow = $(".request-details-row[data-date='" + date + "']");
+
+                if (detailsRow.is(":visible")) {
+                    detailsRow.hide();
+                    $(this).find("i").removeClass("fa-chevron-up").addClass("fa-chevron-down");
+                } else {
+                    detailsRow.show();
+                    $(this).find("i").removeClass("fa-chevron-down").addClass("fa-chevron-up");
+                }
+            });
+        });
+    </script>
+

@@ -1,0 +1,272 @@
+﻿@model List<WebApplication5.Models.RequiredMaterial>
+
+@{
+    ViewBag.Title = "Raise Request";
+}
+
+<style>
+    /* Reduce input field width */
+    select.form-control-sm, input.form-control-sm {
+        width: 100%;
+        max-width: 100%;
+        padding: 5px;
+    }
+
+    h4 {
+        padding-top: 20px;
+    }
+
+    table {
+        padding-top: 20px;
+        margin-top: 20px;
+    }
+    /* Adjust padding for filter section */
+    .filter-container {
+        padding-top: 100px;
+        margin-top: 20px;
+    }
+
+    /* Align filter row items */
+    .row .col-md-4, .row .col-md-5, .row .col-md-2 {
+        padding-bottom: 5px;
+    }
+</style>
+<script>
+    window.onload = function () {
+        if (!window.location.search) {
+            document.getElementById("filterForm").reset(); // Reset filter form when the page loads without filters
+        }
+    };
+</script>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<!-- Filters Section -->
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Filter by Material</h4>
+            <form id="filterForm" method="get" action="@Url.Action("RaiseRequest", "Home")">
+                <div class="row align-items-center">
+                    <div class="col-md-3">
+                        <select id="assetType" name="assetType" class="form-control form-control-sm">
+                            <option value="">Select Asset Type</option>
+                            @foreach (var asset in ViewBag.AssetTypes as List<string>)
+                            {
+                                <option value="@asset">@asset</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="materialCategory" name="materialCategory" class="form-control form-control-sm">
+                            <option value="">Select Category</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="materialSubCategory" name="materialSubCategory" class="form-control form-control-sm">
+                            <option value="">Select Subcategory</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 text-center">
+                        <button type="submit" class="btn btn-primary btn-sm w-100">Filter</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+
+        <div class="col-md-6">
+            <h4>Filter by Date</h4>
+            <form id="dateFilterForm" method="get" action="@Url.Action("RaiseRequest", "Home")">
+                <div class="row">
+                    <div class="col-md-5">
+                        <input type="date" name="fromDate" class="form-control form-control-sm" />
+                    </div>
+                    <div class="col-md-5">
+                        <input type="date" name="toDate" class="form-control form-control-sm" />
+                    </div>
+                    <div class="col-md-2 text-center">
+                        <button type="submit" class="btn btn-secondary btn-sm">Filter</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- Data Table -->
+<table class="table table-bordered table-striped table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>Asset Type</th>
+            <th>Material Category</th>
+            <th>Material Subcategory</th>
+            <th>Requested Quantity</th>
+            <th>Role</th>
+            <th>UserID</th>
+            <th>Requested Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var request in Model)
+        {
+            <tr>
+                <td>@request.AssetType</td>
+                <td>@request.MaterialCategory</td>
+                <td>@request.MaterialSubCategory</td>
+                <td>@request.RequiredQuantity</td>
+                <td>@request.Role</td>
+                <td>@request.UserID</td>
+                <td>@request.RequestedDate</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Total Requested Quantity -->
+<!-- Total Requested Quantity (Display Only When Filters Are Applied) -->
+<!-- Total Requested Quantity and Raise Request Button (Only Display After Filtering) -->
+
+@using (Html.BeginForm("RaiseRequestAction", "Home", FormMethod.Post, new { id = "raiseRequestForm" }))
+{
+    <input type="hidden" name="AssetType" id="AssetType" value="@ViewBag.SelectedAssetType" />
+    <input type="hidden" name="MaterialCategory" id="MaterialCategory" value="@ViewBag.SelectedMaterialCategory" />
+    <input type="hidden" name="MaterialSubCategory" id="MaterialSubCategory" value="@ViewBag.SelectedMaterialSubCategory" />
+    <input type="hidden" name="TotalRequestedQuantity" id="TotalRequestedQuantity" value="@ViewBag.TotalRequestedQuantity" />
+
+    <button type="submit" class="btn btn-primary">Raise Request</button>
+}
+
+
+
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // When Asset Type changes
+        $('#assetType').change(function () {
+            var assetType = $(this).val();
+            $('#materialCategory').empty().append('<option value="">Select Category</option>');
+            $('#materialSubCategory').empty().append('<option value="">Select Subcategory</option>');
+
+            $.ajax({
+                url: '@Url.Action("GetMaterialCategoriesByAssetType", "Home")', // Updated URL
+                type: 'GET',
+                data: { assetType: assetType },
+                dataType: 'json',
+                success: function (response) {
+                    console.log("Response from server:", response);
+                    $.each(response, function (index, category) {
+                        $('#materialCategory').append('<option value="' + category + '">' + category + '</option>');
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.log("AJAX Error:", xhr.responseText);
+                }
+            });
+
+        });
+
+
+        // When Material Category changes
+        $('#materialCategory').change(function () {
+            var assetType = $('#assetType').val();  // Ensure Asset Type is selected
+            var materialCategory = $(this).val();
+            $('#materialSubCategory').empty().append('<option value="">Select Subcategory</option>');
+
+            if (materialCategory && assetType) {
+                $.get('@Url.Action("GetMaterialSubCategories1", "Home")', { assetType: assetType, materialCategory: materialCategory }, function (data) {
+                    console.log("Subcategories:", data); // Debugging
+                    $.each(data, function (index, subCategory) {
+                        $('#materialSubCategory').append('<option value="' + subCategory + '">' + subCategory + '</option>');
+                    });
+                });
+            }
+        });
+
+
+    });
+</script>
+
+<script>
+   $(document).ready(function () {
+    $('#raiseRequestBtn').click(function () {
+        var assetType = $('#assetType').val();
+        var materialCategory = $('#materialCategory').val();
+        var materialSubCategory = $('#materialSubCategory').val();
+        var requestingQuantity = @ViewBag.TotalRequestedQuantity;
+
+        // Ensure filtered values are selected and at least one row is present in the table
+        if (!assetType || !materialCategory || !materialSubCategory || requestingQuantity <= 0) {
+            alert("Please filter and select material details before raising a request.");
+            return;
+        }
+
+        $.ajax({
+            url: '@Url.Action("RaiseRequestAction", "Home")', // Controller method to handle request
+            type: 'POST',
+            data: {
+                assetType: assetType,
+                materialCategory: materialCategory,
+                materialSubCategory: materialSubCategory,
+                requestingQuantity: requestingQuantity
+            },
+            success: function (response) {
+                if (response.success) {
+                    alert(response.message);
+                    location.reload(); // Reload page to reflect changes
+                } else {
+                    alert("Error: " + response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.log("Error:", xhr.responseText);
+                alert("Error while raising request. Please try again.");
+            }
+        });
+        $("#raiseRequestForm").submit(function (e) {
+            e.preventDefault(); // Prevent default form submission
+
+            var formData = {
+                AssetType: $("#AssetType").val(),
+                MaterialCategory: $("#MaterialCategory").val(),
+                MaterialSubCategory: $("#MaterialSubCategory").val(),
+                TotalRequestedQuantity: $("#TotalRequestedQuantity").val()
+            };
+
+            $.ajax({
+                url: '@Url.Action("RaiseRequestAction", "Home")',
+                type: 'POST',
+                data: formData,
+                success: function (response) {
+                    alert(response.message);
+                },
+                error: function () {
+                    alert("Error submitting request.");
+                }
+            });
+        });
+
+
+    });
+});
+
+</script>
+
+

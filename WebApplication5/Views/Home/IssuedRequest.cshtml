@@ -1,0 +1,105 @@
+﻿@model List<WebApplication5.Models.IssueGroupedViewModel>
+
+@{
+    Layout = "~/Views/Shared/_StoreAdminLayout.cshtml";
+    ViewBag.Title = "Issued Materials";
+}
+<form method="get" action="@Url.Action("IssuedRequest", "Home")">
+    <div class="d-flex justify-content-center align-items-center mb-3">
+        <div class="form-group me-2">
+            <label for="fromDate" class="form-label">From Date:</label>
+            <input type="date" id="fromDate" name="fromDate" class="form-control"
+                   value="@Request.QueryString["fromDate"]" />
+        </div>
+
+        <div class="form-group me-2">
+            <label for="toDate" class="form-label">To Date:</label>
+            <input type="date" id="toDate" name="toDate" class="form-control"
+                   value="@Request.QueryString["toDate"]" />
+        </div>
+
+        <div class="form-group mt-4">
+            <button type="submit" class="btn btn-primary">Filter</button>
+        </div>
+    </div>
+</form>
+<div class="container mt-4">
+    <h3 class="text-center mb-4">Issued Material Requests</h3>
+
+    @if (Model != null && Model.Count > 0)
+    {
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>S.No</th>
+                    <th>Request ID</th>
+                    <th>Issued Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                    var group = Model[i];
+                    <tr class="clickable-row" data-toggle="details-@group.RequestID">
+                        <td>@(i + 1)</td>
+                        <td>
+                            <a href="javascript:void(0)" class="request-id" data-id="@group.RequestID">
+                                @group.RequestID
+                            </a>
+                        </td>
+                        <td>@group.RequestDate.ToString("dd-MM-yyyy")</td>
+                    </tr>
+
+                    <tr id="details-@group.RequestID" class="details-row" style="display: none;">
+                        <td colspan="3">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Asset Type</th>
+                                        <th>Material Category</th>
+                                        <th>Sub-Category</th>
+                                        <th>Available Qty</th>
+                                        <th>Requesting Qty</th>
+                                        <th>Approved Qty</th>
+                                        <th>Issuing Qty</th>
+                                        <th>Closing Qty</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in group.Materials)
+                                    {
+                                        <tr>
+                                            <td>@item.AssetType</td>
+                                            <td>@item.MaterialCategory</td>
+                                            <td>@item.MSubCategory</td>
+                                            <td>@item.AvailableQuantity</td>
+                                            <td>@item.RequestingQuantity</td>
+                                            <td>@item.ApprovedQuantity</td>
+                                            <td>@item.IssuingQuantity</td>
+                                            <td>@item.ClosingQuantity</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-info text-center">No Issued Material Requests found.</div>
+    }
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $(".request-id").click(function () {
+            var requestID = $(this).data("id");
+            $("#details-" + requestID).toggle();
+        });
+    });
+</script>

@@ -1,0 +1,238 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+
+    <!-- Bootstrap & FontAwesome -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, #f8f9fa, #e9ecef);
+        }
+
+        /* Top Navigation Bar */
+        .top-nav {
+            background: brown;
+            color: white;
+            padding: 8px 0;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        /* Main Navigation */
+        .navbar {
+            background: white;
+            padding: 25px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-size-adjust: 50%;
+        }
+
+        .navbar-brand {
+            font-size: 26px;
+            font-weight: bold;
+            color: brown;
+        }
+
+        .navbar-nav .nav-link {
+            font-weight: 600;
+            color: firebrick;
+            transition: 0.3s;
+            padding: 10px 15px;
+            font-size: larger;
+        }
+
+            .navbar-nav .nav-link:hover {
+                color: forestgreen;
+            }
+
+        /* Centered Title as black h2 */
+        .navbar h1 {
+            color: darkred;
+            font-weight: bold;
+            text-align: right;
+            margin-bottom: 0; /* remove default margin under h2 */
+        }
+
+        /* Dropdown Animation */
+        .dropdown-menu {
+            display: none;
+            opacity: 0;
+            transform: translateY(15px);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .nav-item:hover .dropdown-menu {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+
+        /* Footer */
+        .footer {
+            background: firebrick;
+            color: white;
+            text-align: center;
+            padding: 8px 0;
+            font-size: 16px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        /* Smooth Hover Effect for Buttons */
+        .btn-custom {
+            background: #E96C20;
+            color: white;
+            font-weight: bold;
+            padding: 10px 20px;
+            transition: 0.3s;
+            border-radius: 5px;
+        }
+
+            .btn-custom:hover {
+                background: #c45418;
+                color: white;
+            }
+    </style>
+</head>
+<body>
+
+
+    <!-- Main Navigation -->
+    <nav class="navbar navbar-expand-lg ">
+        <div class="container-fluid d-flex align-items-center justify-content-between">
+
+            <a class="navbar-brand p-0 me-auto mx-lg-5" href="#">
+                <img src="~/Uploads/ICFAI.jpg"
+                     alt="ICFAI Logo"
+                     style="height: 70px; width: 200px; ">
+            </a>
+
+            <h1 class="my-0 text-center mx-lg-5">Asset Management System</h1>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="@Url.Action("CVDashBoard", "CentralVendor")">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="@Url.Action("RequestsRecevied", "CentralVendor")">Received Request</a></li>
+                    <li class="nav-item"><a class="nav-link" href="@Url.Action("SentMaterials", "CentralVendor")">Sent Materials</a></li>
+                    <li class="nav-item"><a class="nav-link" href="@Url.Action("SubmittoAccountant", "CentralVendor")">Submit PO</a></li>
+                    <li class="nav-item"><a class="nav-link" href="@Url.Action("Update", "CentralVendor")">Update Price</a></li>
+
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="icfaiLifeMenu" role="button">My Profile</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item nav-link" id="myProfileLink" href="@Url.Action("MyProfile", "Login")">Profile Details</a></li>
+                            <li><a class="dropdown-item" href="@Url.Action("Logout", "Login")">Logout</a></li>
+                        </ul>
+
+                        <!-- The modal container -->
+                        <div class="modal fade" id="myProfileModal" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content" id="myProfileContent">
+                                    <!-- Partial content will load here -->
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Render the actual page content here -->
+    <div class="container">
+        @RenderBody()
+    </div>
+
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2025 ICFAI Foundation for Higher Education. All Rights Reserved.</p>
+    </footer>
+
+    <!-- Bootstrap & jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom Script -->
+    <!-- Custom Script -->
+    <script>
+
+        $(document).ready(function () {
+            // Function to hide the submenu
+            function hideSubmenu() {
+                $('.dropdown-menu').removeClass('show'); // Hide all dropdowns
+                $('.dropdown-toggle').attr('aria-expanded', 'false'); // Reset aria-expanded
+            }
+
+            $('#addTypesSubmenu').click(function (e) {
+                e.preventDefault();
+                $(this).next('.dropdown-menu').toggleClass('d-none'); // Correct line to toggle d-none
+            });
+
+            $('#addTypesSubmenu1').click(function (e) {
+                e.preventDefault();
+                $(this).next('.dropdown-menu').toggleClass('d-none'); // Correct line to toggle d-none
+            });
+            $('#addTypesSubmenu2').click(function (e) {
+                e.preventDefault();
+                $(this).next('.dropdown-menu').toggleClass('d-none'); // Correct line to toggle d-none
+            });
+
+            //Hide submenu when clicking outside
+            $(document).click(function (e) {
+                if (!$(e.target).closest('.dropend').length) {
+                    hideSubmenu();
+                }
+            });
+
+            // Auto-refresh after opening a link in the SUBMENU only
+            $('#addTypesSubmenu .dropdown-menu .dropdown-item').click(function () {
+                location.reload(); // Reload the page
+            });
+            $('#addTypesSubmenu1 .dropdown-menu .dropdown-item').click(function () {
+                location.reload(); // Reload the page
+            });
+            $('#addTypesSubmenu2 .dropdown-menu .dropdown-item').click(function () {
+                location.reload(); // Reload the page
+            });
+
+            $("#myProfileLink").click(function (e) {
+                e.preventDefault();
+
+                // AJAX call to fetch partial
+                $.get("/Login/MyProfile", function (data) {
+                    // Insert partial HTML into modal content
+                    $("#myProfileContent").html(data);
+
+                    // Show the modal
+                    $("#myProfileModal").modal("show");
+                });
+            });
+            (function () {
+                window.history.pushState(null, "", window.location.href);
+                window.onpopstate = function () {
+                    window.history.pushState(null, "", window.location.href);
+                };
+            })();
+
+        });</script>
+
+</body>
+</html>

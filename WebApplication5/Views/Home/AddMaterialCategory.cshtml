@@ -1,0 +1,143 @@
+﻿@model WebApplication5.Models.MaterialCategory
+@{
+    Layout = "~/Views/Shared/_StoreAdminLayout.cshtml";
+    ViewBag.Title = "AddMaterialCategory";
+}
+
+@{
+    ViewBag.Title = "Add Material Category";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Add Material Category</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style>
+        body {
+            background-color: #f5f7fa;
+            font-family: Arial, sans-serif;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: auto;
+        }
+
+        .card {
+            border-radius: 12px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            background: #ffffff;
+            padding: 20px;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            text-align: center;
+            font-weight: bold;
+            padding: 15px;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .form-control {
+            height: 45px;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .category-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn-small {
+            font-size: 16px;
+           
+            padding: 5px 10px;
+            border-radius: 50%;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-success {
+            background: #28a745;
+            border: none;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header">
+                <h4>Add Material Category</h4>
+            </div>
+            <div class="card-body">
+                @using (Html.BeginForm("MaterialCategoryView", "Home", FormMethod.Post, new { id = "categoryForm" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Asset Type</label>
+                            @Html.DropDownList("AssetTypeID", ViewBag.AssetTypeID as SelectList, "-- Select Asset Type --", new { @class = "form-control", id = "AssetTypeID", required = "required" })
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Material Category</label>
+                            <div id="categoryContainer">
+                                <div class="category-item">
+                                    <input type="text" name="MCategoryNames" class="form-control category-input" placeholder="Enter Material Category" required />
+                                    <button type="button" class="btn btn-success btn-small addItem">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end mt-4">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            // Add new material category input dynamically
+            $(document).on("click", ".addItem", function () {
+                var newItem = `
+                        <div class="category-item">
+                            <input type="text" name="MCategoryNames" class="form-control category-input" placeholder="Enter Material Category" required />
+                            <button type="button" class="btn btn-success btn-small addItem">+</button>
+                            <button type="button" class="btn btn-danger btn-small removeItem">-</button>
+                        </div>`;
+                $("#categoryContainer").append(newItem);
+
+                // Ensure the first row only has a "+" and no "-"
+                $("#categoryContainer .category-item").first().find(".removeItem").remove();
+            });
+
+            // Remove material category input
+            $(document).on("click", ".removeItem", function () {
+                $(this).closest(".category-item").remove();
+            });
+        });
+    </script>
+</body>
+</html>
+

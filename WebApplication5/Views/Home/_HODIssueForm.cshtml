@@ -1,0 +1,128 @@
+﻿
+@model WebApplication5.Models.HODIssueMaterial
+
+
+<div class="container p-3">
+    <h4 class="mb-4 text-primary">Issue Material</h4>
+
+
+    @*@if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+
+        @if (TempData["WarningMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["WarningMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }*@
+    <hr class="mb-4" />
+
+    @using (Html.BeginForm("HODIssueMaterial", "Home", FormMethod.Post, new { @class = "needs-validation", @novalidate = "novalidate" }))
+    {
+        @Html.HiddenFor(m => m.RequestID)
+
+        @Html.HiddenFor(m => m.HODID)
+        @Html.HiddenFor(m => m.AssetType)
+        @Html.HiddenFor(m => m.MaterialCategory)
+        @Html.HiddenFor(m => m.MaterialSubCategory)
+        @Html.HiddenFor(m => m.AvailableQuantity)
+        @Html.HiddenFor(m => m.IssuedBy)
+
+        <div class="mb-3">
+            <label for="RequestingQuantity" class="form-label text-dark">Requesting Quantity</label>
+            @Html.TextBoxFor(m => m.RequestingQuantity, new { @class = "form-control", type = "number", min = "0", id = "RequestingQuantity", required = "required" })
+            <div class="invalid-feedback">
+                Please enter the requesting quantity.
+            </div>
+        </div>
+
+
+
+        <div class="mb-3">
+            <label for="AvailableQuantity" class="form-label text-dark">Available Quantity</label>
+            <input class="form-control" type="text" value="@Model.AvailableQuantity" disabled id="AvailableQuantity" />
+        </div>
+
+        <div class="mb-3">
+            <label for="IssuingQuantity" class="form-label text-dark">Issued Quantity</label>
+            @Html.TextBoxFor(m => m.IssuingQuantity, new { @class = "form-control", type = "number", min = "0", id = "IssuingQuantity", @readonly = "Readonly" })
+            <div class="invalid-feedback">
+                Please enter the issuing quantity.
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="IssuingQuantity" class="form-label text-dark">Issuing Quantity</label>
+            @Html.TextBoxFor(m => m.Issue, new { @class = "form-control", type = "number", min = "0", id = "IssuingQuantity", required = "required" })
+            <div class="invalid-feedback">
+                Please enter the issuing quantity.
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Confirm Issue</button>
+    }
+</div>
+
+<script>
+    (function () {
+        'use strict'
+
+        var forms = document.querySelectorAll('.needs-validation')
+
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+    })();
+
+    function safeParseInt(value) {
+        let parsed = parseInt(value);
+        return isNaN(parsed) ? 0 : parsed;
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const issuingQtyInput = document.querySelector('#IssuingQuantity');
+        const requestingQtyInput = document.querySelector('#RequestingQuantity');
+        const previousIssuedQtyInput = document.querySelector('#PreviousIssuedQuantity');
+        const modal = new bootstrap.Modal(document.getElementById('validationModal'));
+        const modalBody = document.getElementById('validationModalBody');
+
+        if (issuingQtyInput && requestingQtyInput && previousIssuedQtyInput) {
+            issuingQtyInput.addEventListener('change', function (event) {
+                let issuingQty = safeParseInt(event.target.value);
+                let requestingQty = safeParseInt(requestingQtyInput.value);
+                let previousIssuedQty = safeParseInt(previousIssuedQtyInput.value);
+
+                console.log("IssuingQty:", issuingQty, "RequestingQty:", requestingQty, "PrevIssuedQty:", previousIssuedQty);
+
+                if (issuingQty > requestingQty) {
+                    modalBody.textContent = "Issuing Quantity should not be greater than the Requesting Quantity (" + requestingQty + ").";
+                    modal.show();
+                    event.target.value = previousIssuedQty;
+                } else if (issuingQty < previousIssuedQty) {
+                    modalBody.textContent = "Issuing Quantity should not be less than the previously issued quantity (" + previousIssuedQty + ").";
+                    modal.show();
+                    event.target.value = previousIssuedQty;
+                }
+            });
+        } else {
+            console.error("[ERROR] One or more input fields missing. Check input IDs.");
+        }
+    });
+</script>
+
+
+

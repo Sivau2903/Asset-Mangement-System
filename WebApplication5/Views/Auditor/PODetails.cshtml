@@ -1,0 +1,192 @@
+﻿@model WebApplication5.Models.AuditPOViewModel
+
+@{
+    ViewBag.Title = "Audit Purchase Order";
+    Layout = "~/Views/Shared/_AuditorLayout.cshtml"; // Adjust based on your layout
+}
+
+<!-- Bootstrap and FontAwesome -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+<style>
+    .audit-container {
+        max-width: 800px;
+        margin: 30px auto;
+        padding: 25px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    }
+
+
+    .audit-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #343a40;
+        margin-bottom: 10px;
+    }
+
+    .university-name {
+        font-size: 1.4rem;
+        color: #007bff;
+        font-weight: 500;
+        margin-bottom: 20px;
+    }
+    .container, .container-md, .container-sm {
+        max-width: 720px;
+        height: 900px;
+    }
+    .doc-section {
+        font-size: 1.1rem;
+        margin-bottom: 15px;
+    }
+
+        .doc-section i {
+            color: #17a2b8;
+            margin-right: 10px;
+        }
+
+    .doc-link {
+        font-weight: 500;
+        margin-left: 10px;
+        color: #28a745;
+    }
+
+        .doc-link:hover {
+            text-decoration: underline;
+            color: #218838;
+        }
+
+    hr {
+        margin-top: 30px;
+        margin-bottom: 30px;
+    }
+</style>
+
+<div class="audit-container">
+    <div class="audit-title">📝 Audit the Purchase Order</div>
+    <div class="university-name"><i class="fas fa-university"></i> @Model.UniversityName</div>
+
+    <hr />
+
+    <div class="doc-section">
+        <i class="fas fa-check-circle"></i><strong>IUCD Approval:</strong>
+        @if (!string.IsNullOrEmpty(Model.IUCDApprovalDoc))
+        {
+            <a class="doc-link" href="@Url.Content(Model.IUCDApprovalDoc)" target="_blank">View Document</a>
+        }
+        else
+        {
+            <span class="text-danger ml-2">Not uploaded</span>
+        }
+    </div>
+
+    <div class="doc-section">
+        <i class="fas fa-file-contract"></i><strong>PO Details:</strong>
+        @if (Model.PODetails != null && Model.PODetails.Length > 0)
+        {
+            <a class="doc-link" href="@Url.Action("GetPOFile", "Auditor", new { poNumber = Model.PONumber })" target="_blank">View PO</a>
+        }
+        else
+        {
+            <span class="text-danger ml-2">Not uploaded</span>
+        }
+    </div>
+
+
+
+    <div class="doc-section">
+        <i class="fas fa-truck"></i><strong>Delivery Challan:</strong>
+        @if (!string.IsNullOrEmpty(Model.StoreUploads))
+        {
+            <a class="doc-link" href="@Url.Content(Model.StoreUploads)" target="_blank">View Challan</a>
+        }
+        else
+        {
+            <span class="text-danger ml-2">Not uploaded</span>
+        }
+    </div>
+
+    <div class="doc-section">
+        <i class="fas fa-file-alt"></i><strong>MRV Details:</strong>
+        @if (!string.IsNullOrEmpty(Model.MRVDetails))
+        {
+            <a class="doc-link" href="@Url.Content(Model.MRVDetails)" target="_blank">View MRV</a>
+        }
+        else
+        {
+            <span class="text-danger ml-2">Not uploaded</span>
+        }
+    </div>
+
+    <div class="doc-section">
+        <i class="fas fa-receipt"></i><strong>Invoice Details:</strong>
+        @if (!string.IsNullOrEmpty(Model.InvoiceDetails))
+        {
+            <a class="doc-link" href="@Url.Content(Model.InvoiceDetails)" target="_blank">View Invoice</a>
+        }
+        else
+        {
+            <span class="text-danger ml-2">Not uploaded</span>
+        }
+    </div>
+</div>
+<div class="text-center mt-4">
+    <button type="button" class="btn btn-success mr-3" id="btnApprove">
+        <i class="fas fa-check"></i> Approve
+    </button>
+    <button type="button" class="btn btn-danger" id="btnSendBack">
+        <i class="fas fa-undo"></i> Send Back
+    </button>
+</div>
+
+<!-- Approve Section -->
+<div id="approveSection" class="mt-4" style="display:none;">
+    <form method="post" action="@Url.Action("ApprovePO", "Auditor")">
+        <input type="hidden" name="PONumber" value="@Model.PONumber" />
+        <div class="form-group">
+            <label><strong>Message to Accountant:</strong></label>
+            <textarea name="AccountantMessage" class="form-control" rows="3" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit Approval</button>
+    </form>
+</div>
+
+<!-- Send Back Section -->
+<div id="sendBackSection" class="mt-4" style="display:none;">
+    <form method="post" action="@Url.Action("SendBackPO", "Auditor")">
+        <input type="hidden" name="PONumber" value="@Model.PONumber" />
+        <div class="form-group">
+            <label><strong>Remarks:</strong></label>
+            <textarea name="Remarks" class="form-control" rows="3" required></textarea>
+        </div>
+        <div class="form-group">
+            <label><strong>Send Back To:</strong></label>
+            <select name="SendBackTo" class="form-control" required>
+                <option value="">-- Select --</option>
+                <option value="IUCD">IUCD</option>
+                <option value="StoreDepartment">Store Department</option>
+                <option value="PurchaseDepartment">Purchase Department</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-warning">Send Back</button>
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+<script>
+    $(document).ready(function () {
+        $("#btnApprove").click(function () {
+            $("#approveSection").show();
+            $("#sendBackSection").hide();
+        });
+
+        $("#btnSendBack").click(function () {
+            $("#sendBackSection").show();
+            $("#approveSection").hide();
+        });
+    });
+</script>

@@ -1,0 +1,102 @@
+﻿@model List<WebApplication5.Models.VendorDetail>
+
+@if (Model.Any())
+{
+    <table class="table table-bordered table-hover" id="vendorTable">
+        <thead class="table-dark">
+            <tr>
+                <th>Select</th>
+                <th>VendorName</th>
+                <th>PhoneNumber</th>
+                <th>Email ID</th>
+                <th>Address</th>
+                <th>Material</th>
+                <th>GSTNO</th>
+                <th>GST%</th>
+                <th>Price Per Unit</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var vendor in Model)
+            {
+                <tr class="vendor-row"
+                    data-vendorid="@vendor.VendorID"
+                    data-vendorname="@vendor.VendorName"
+                    data-phonenumber="@vendor.PhoneNumber"
+                    data-emailid="@vendor.EmailID"
+                    data-address="@vendor.Address"
+                    data-material="@vendor.Material"
+                    data-gstno="@vendor.GSTNO"
+                    data-gstpercent="@vendor.GSTPercentage"
+                    data-price="@vendor.PricePerUnit">
+
+                    <td>
+                        <input type="radio" name="selectedVendor" class="select-vendor">
+                    </td>
+                    <td>@vendor.VendorName</td>
+                    <td>@vendor.PhoneNumber</td>
+                    <td>@vendor.EmailID</td>
+                    <td>@vendor.Address</td>
+                    <td>@vendor.Material</td>
+                    <td>@vendor.GSTNO</td>
+                    <td>@vendor.GSTPercentage</td>
+                    <td>@vendor.PricePerUnit</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button class="btn btn-primary mt-2" id="confirmVendorSelection">Confirm Selection</button>
+}
+else
+{
+    <p class="text-danger">No vendors found for this material.</p>
+}
+
+<script>
+    $(document).on('click', '#confirmVendorSelection', function () {
+        var selectedRow = $("#vendorTable .select-vendor:checked").closest("tr");
+
+        if (selectedRow.length === 0) {
+            alert("Please select a vendor.");
+            return;
+        }
+
+        var vendorId = selectedRow.data("vendorid");
+        var vendorName = selectedRow.data("vendorname");
+        var phoneNumber = selectedRow.data("phonenumber");
+        var emailId = selectedRow.data("emailid");
+        var price = parseFloat(selectedRow.data("price"));
+        var material = selectedRow.data("material");
+       
+        var address = selectedRow.data("address");
+        var gstNo = selectedRow.data("gstno");
+        var gstPercent = parseFloat(selectedRow.data("gstpercent")) || 0;
+
+        // Find the correct row in the main view
+        var targetRow = $("tbody tr").filter(function () {
+            return $(this).find('input.materialName').val() === material;
+        });
+
+        var qty = parseInt(targetRow.find('input.orderQuantity').val()) || 0;
+        var cost = qty * price;
+        var totalWithGST = cost + (cost * gstPercent / 100);
+
+        // Set values in the main table row
+        targetRow.find('.vendorIDCell').text(vendorId);
+        targetRow.find('.vendorNameCell').text(vendorName);
+        targetRow.find('.phoneNumberCell').text(phoneNumber);
+        targetRow.find('.addressCell').text(address);
+        targetRow.find('.gstNoCell').text(gstNo);
+        targetRow.find('.gstPercentCell').text(gstPercent);
+        targetRow.find('.emailCell').text(emailId);
+        targetRow.find('.priceInput').val(price);
+        targetRow.find('.costCell').text(cost.toFixed(2));
+        targetRow.find('.totalCostCell').text(totalWithGST.toFixed(2));
+
+        // Hide the modal
+        var modal = bootstrap.Modal.getInstance(document.getElementById('vendorModal'));
+        modal.hide();
+    });
+</script>

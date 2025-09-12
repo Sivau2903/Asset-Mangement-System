@@ -1,0 +1,247 @@
+﻿@model  List<WebApplication5.Models.MaterialSubCategory>
+@{
+    Layout = "~/Views/Shared/_StoreAdminLayout.cshtml";
+    ViewBag.Title = "AddMaterialSubCategory";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Add Material Subcategory</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style>
+        body {
+            background-color: #f5f7fa;
+            font-family: Arial, sans-serif;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        .card {
+            border-radius: 12px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            background: #ffffff;
+            padding: 20px;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            text-align: center;
+            font-weight: bold;
+            padding: 15px;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .form-control {
+            height: 45px;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+            .form-control:focus {
+                border-color: #007bff;
+                box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+            }
+
+        .subcategory-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn-submit {
+            font-weight: bold;
+            padding: 10px 20px;
+            font-size: 14px;
+            border-radius: 5px;
+            color: white;
+        }
+
+        .btn-submit {
+            background: #007bff;
+        }
+
+            .btn-submit:hover {
+                background: #0056b3;
+            }
+
+        .btn-small {
+            font-size: 16px;
+            padding: 5px 10px;
+            border-radius: 50%;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-success {
+            background: #28a745;
+            border: none;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header">
+                <h4>Add Material Subcategory</h4>
+            </div>
+            <div class="card-body">
+                @using (Html.BeginForm("MaterialSubCategoryView", "Home", FormMethod.Post, new { id = "subcategoryForm" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Asset Type</label>
+                            @Html.DropDownList("AssetTypeID", ViewBag.AssetTypeID as SelectList, "-- Select Asset Type --", new { @class = "form-control", id = "AssetTypeID", required = "required" })
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Material Category</label>
+                            @Html.DropDownList("MID", ViewBag.MID as SelectList, "-- Select --", new { @class = "form-control", id = "MID", required = "required" })
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Purchase Department</label>
+                            <select name="PurchaseDepartment" class="form-control" required>
+                                <option value="">-- Select Department --</option>
+                                <option value="1">Local</option>
+                                <option value="2">Central</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Material Subcategory</label>
+                            <div id="subcategoryContainer">
+                                <div class="subcategory-item">
+                                    <input type="text" name="MSubCategoryNames" class="form-control subcategory-input" placeholder="Enter Subcategory" required />
+                                    <button type="button" class="btn btn-success btn-small addItem">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end mt-4">
+                        <button type="submit" class="btn btn-submit">Save</button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+
+<script>
+    $(document).ready(function () {
+        // Fetch Material Categories based on Asset Type
+        $("#AssetTypeID").change(function () {
+            var assetTypeID = $(this).val();
+            if (assetTypeID) {
+                $.ajax({
+                    url: '@Url.Action("GetMaterialCategories1", "Home")',
+                    type: 'GET',
+                    data: { assetTypeID: assetTypeID },
+                    success: function (data) {
+                        var categoryDropdown = $("#MID");
+                        categoryDropdown.empty();
+                        categoryDropdown.append('<option value="">-- Select Material Category --</option>');
+                        $.each(data, function (index, item) {
+                            categoryDropdown.append('<option value="' + item.MID + '">' + item.MCategoryName + '</option>');
+                        });
+                    },
+                    error: function () {
+                        alert("Error loading material categories.");
+                    }
+                });
+            }
+        });
+
+        // Add new subcategory input dynamically
+        $(document).on("click", ".addItem", function () {
+            var newItem = `
+                <div class="subcategory-item">
+                    <input type="text" name="MSubCategoryNames" class="form-control subcategory-input" placeholder="Enter Subcategory" required />
+                    <button type="button" class="btn btn-success btn-small addItem">+</button>
+                    <button type="button" class="btn btn-danger btn-small removeItem">-</button>
+                </div>`;
+            $("#subcategoryContainer").append(newItem);
+
+            // Ensure the first row only has a "+" and no "-"
+            $("#subcategoryContainer .subcategory-item").first().find(".removeItem").remove();
+        });
+
+        // Remove subcategory input
+        $(document).on("click", ".removeItem", function () {
+            $(this).closest(".subcategory-item").remove();
+        });
+
+        // Handle form submission via AJAX
+        $("#subcategoryForm").submit(function (e) {
+            e.preventDefault();
+
+            var MID = $("#MID").val();
+            var purchaseDepartment = $("#PurchaseDepartment").val();
+            var subcategoryNames = [];
+
+            $(".subcategory-item input").each(function () {
+                var subcategory = $(this).val().trim();
+                if (subcategory && !subcategoryNames.includes(subcategory.toLowerCase())) {
+                    subcategoryNames.push(subcategory.toLowerCase());
+                }
+            });
+
+            if (!purchaseDepartment) {
+                alert("Please select a Purchase Department.");
+                return;
+            }
+
+            if (subcategoryNames.length === 0) {
+                alert("Please enter at least one valid subcategory.");
+                return;
+            }
+
+            $.ajax({
+                url: $(this).attr("action"),
+                type: $(this).attr("method"),
+                data: {
+                    MID: MID,
+                    PurchaseDepartment: purchaseDepartment,  // Send Purchase Department value
+                    MSubCategoryNames: subcategoryNames
+                },
+                success: function (response) {
+                    alert(response.message);
+                    if (response.success) location.reload();
+                },
+                error: function () {
+                    alert("An error occurred while saving subcategories.");
+                }
+            });
+        });
+
+        });
+
+</script>
+
+
+</body>
+</html>
+
+

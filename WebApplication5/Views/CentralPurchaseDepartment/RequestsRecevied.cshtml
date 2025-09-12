@@ -1,0 +1,372 @@
+﻿@model List<WebApplication5.Models.CentralRequestViewModel>
+@{
+    Layout = "~/Views/Shared/_CentralPDLayout.cshtml";
+    ViewBag.Title = "University-wise Requests";
+}
+
+<style>
+    .university-card {
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+        margin-bottom: 20px;
+        overflow: hidden;
+        border: none;
+    }
+
+    .university-header {
+        background: linear-gradient(to right, #4e73df, #224abe);
+        color: white;
+        padding: 15px 20px;
+        font-size: 18px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+        .university-header:hover {
+            background: #2c5de5;
+        }
+
+    .university-body {
+        padding: 15px;
+        background-color: #fdfdfd;
+    }
+
+    .university-table th, .university-table td {
+        vertical-align: middle !important;
+    }
+
+    .university-table th {
+        background-color: #e9ecef;
+    }
+
+    .btn-view-vendor {
+        background-color: #20c997;
+        color: white;
+    }
+
+        .btn-view-vendor:hover {
+            background-color: #17a589;
+        }
+
+    .no-data {
+        text-align: center;
+        color: gray;
+        font-style: italic;
+    }
+
+    .vendor-details {
+        font-size: 14px;
+        margin-top: 10px;
+        background-color: #f8f9fa;
+        border-left: 3px solid #20c997;
+        padding: 10px;
+    }
+</style>
+
+<h2 class="mb-4">📦 University Based Requets</h2>
+
+<div class="accordion" id="universityAccordion">
+    @{
+        var groupedByUniversity = Model.GroupBy(m => m.UniversityName);
+        int index = 0;  
+    }
+
+    @foreach (var universityGroup in groupedByUniversity)
+    {
+        var groupId = $"collapseUniversity{index}";
+        <div class="card university-card">
+            <div class="university-header d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#@groupId">
+                <span>🏫 @universityGroup.Key</span>
+                <span class="badge bg-light text-dark px-3 py-1">📌 Click to view details</span>
+            </div>
+
+
+            <div id="@groupId" class="collapse" data-bs-parent="#universityAccordion">
+                <div class="university-body">
+                    @if (!universityGroup.Any())
+                    {
+                        <p class="no-data">No requests found.</p>
+                    }
+                    else
+                    {
+                        <button id="generateBulkPO" class="btn btn-success">Generate PO for Selected</button>
+
+                        <table class="table table-bordered university-table">
+                            <thead>
+                                <tr>
+                                    <th>Select</th>
+                                    <th>📅 Requested Date</th>
+                                    <th>📦 Material</th>
+                                    <th>🔢 Order Quantity</th>
+                                    <th>✅ IUCD Approved Qty</th>
+                                    @*<th>📁 Uploads</th>*@
+                                    <th>🏷️ Vendor</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in universityGroup)
+                                {
+                                    var materialKey = item.MaterialName.Trim().ToLower();
+                                    <tr data-material="@materialKey">
+
+                                        <td><input type="checkbox" class="material-checkbox" /></td>
+                                        <td>@item.RequestedDate.ToShortDateString()</td>
+                                        <td>
+                                            <strong class="material-name">@item.MaterialName</strong>
+
+                                            <div class="vendor-details">
+                                                <div><strong>Vendor Name:</strong> <span class="vendorName">-</span></div>
+                                                <div><strong>Email:</strong> <span class="vendorEmail">-</span></div>
+                                                <div><strong>Address:</strong> <span class="vendorAddress">-</span></div>
+                                                <div><strong>GST No:</strong> <span class="vendorGST">-</span></div>
+                                                <div><strong>GST %:</strong> <span class="vendorGSTPercent">-</span></div>
+                                                <div>
+                                                    <strong>Price Per Unit (₹):</strong> <input type="number" class="form-control pricePerUnit" min="0" step="0.01" />
+                                                </div>
+                                                <div class="mt-2">
+                                                    @*<button class="btn btn-sm btn-success generatePOBtn">Generate PO</button>*@
+                                                    @*<button class="btn btn-sm btn-view-vendor viewVendorBtn" type="button" data-material="@item.MaterialName">
+                                                    View Vendors
+                                                </button>*@
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>@item.OrderQuantity</td>
+                                        <td>
+                                            <input type="number" name="IUCDApprovedQty" class="form-control approvedQty" min="1" value="@item.IUCDApprovedQty" />
+                                        </td>
+                                        <!--<td>
+                                    <input type="file" class="form-control mb-1" name="ApprovalDocument" />-->
+                                        @*<input type="file" class="form-control" name="QuotationDocument" />*@
+                                        <!--</td>-->
+                                        <td>
+                                            <form method="get" action="/CentralPurchaseDepartment/CentralGeneratePO">
+                                                <input type="hidden" name="UniversityName" value="@item.UniversityName" />
+                                                <input type="hidden" name="VendorName" class="poVendorName" />
+                                                <input type="hidden" name="VendorEmail" class="poVendorEmail" />
+                                                <input type="hidden" name="VendorAddress" class="poVendorAddress" />
+                                                <input type="hidden" name="VendorGSTNo" class="poVendorGST" />
+                                                <input type="hidden" name="GSTPercent" class="poGSTPercent" />
+
+                                                <input type="hidden" name="Material" value="@item.MaterialName" />
+                                                <input type="hidden" name="Qty" class="poQty" />
+                                                <input type="hidden" name="Price" class="poPrice" />
+                                                <input type="hidden" name="Cost" class="poCost" />
+
+                                                @*<button class="btn btn-success generatePOBtn" type="submit">Generate PO</button>*@
+                                                <button class="btn btn-sm btn-view-vendor viewVendorBtn" type="button" data-material="@item.MaterialName">
+                                                    View Vendors
+                                                </button>
+                                            </form>
+                                            @*<button class="btn btn-sm btn-view-vendor viewVendorBtn" type="button" data-material="@item.MaterialName">
+                                            View Vendors
+                                        </button>*@
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+
+                        @*<button id="generateBulkPO" class="btn btn-success">Generate PO for Selected</button>*@
+
+                    }
+                </div>
+            </div>
+        </div>
+        index++;
+    }
+
+
+</div>
+
+<!-- Vendor Modal -->
+<div class="modal fade" id="vendorModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title">Select Vendor</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="vendorModalBody"></div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(document).on('click', '.viewVendorBtn', function () {
+            var material = $(this).data('material').trim().toLowerCase();
+
+            // Pass material to modal
+            $("#vendorModal").data("material", material);
+
+            // Load vendor partial
+            $.get("@Url.Action("GetVendors", "CentralPurchaseDepartment")", { material: material }, function (data) {
+                $("#vendorModalBody").html(data);
+                $("#vendorModal").modal("show");
+            });
+        });
+
+        function selectVendor(vendorId, emailId, pricePerQuantity, material, vendorName, address, gstNo, gstPercent) {
+            // Locate the row using material name
+            var row = $('tr[data-material="' + material.toLowerCase() + '"]');
+
+            var detailDiv = row.find('.vendor-details');
+            detailDiv.find('.vendorName').text(vendorName);
+            detailDiv.find('.vendorEmail').text(emailId);
+            detailDiv.find('.vendorAddress').text(address);
+            detailDiv.find('.vendorGST').text(gstNo);
+            detailDiv.find('.vendorGSTPercent').text(gstPercent);
+            row.find('.pricePerUnit').val(pricePerQuantity);
+
+            // Optional: Highlight update
+            detailDiv.css("background-color", "#e6fff2").delay(800).queue(function (next) {
+                $(this).css("background-color", "#f8f9fa");
+                next();
+            });
+        }
+
+        $(document).on('click', '.selectVendorBtn', function () {
+            var vendorName = $(this).data("vendorname");
+            var email = $(this).data("vendoremail");
+            var address = $(this).data("vendoraddress");
+            var gst = $(this).data("vendorgst");
+            var gstpercent = $(this).data("vendorgstpercent");
+            var material = $(this).data("material").trim().toLowerCase();
+
+            var row = $('tr[data-material="' + material + '"]');
+            var detailDiv = row.find('.vendor-details');
+
+            detailDiv.find('.vendorName').text(vendorName);
+            detailDiv.find('.vendorEmail').text(email);
+            detailDiv.find('.vendorAddress').text(address);
+            detailDiv.find('.vendorGST').text(gst);
+            detailDiv.find('.vendorGSTPercent').text(gstpercent);
+
+            detailDiv.css("background-color", "#e6fff2").delay(800).queue(function (next) {
+                $(this).css("background-color", "#f8f9fa");
+                next();
+            });
+
+            $("#vendorModal").modal("hide");
+        });
+
+        window.addEventListener("message", function (event) {
+            console.log("Message received:", event.data);
+
+            var data = event.data;
+            if (!data || !data.vendorName) return;
+
+            var material = data.material.trim().toLowerCase();
+            var row = $('tr[data-material="' + material + '"]');
+            var detailDiv = row.find('.vendor-details');
+
+            detailDiv.find('.vendorName').text(data.vendorName);
+            detailDiv.find('.vendorEmail').text(data.email);
+            detailDiv.find('.vendorAddress').text(data.address);
+            detailDiv.find('.vendorGST').text(data.gst);
+            detailDiv.find('.vendorGSTPercent').text(data.gstpercent);
+            detailDiv.find('.pricePerUnit').val(data.price);
+        });
+
+
+
+        $(document).on("click", ".generatePOBtn", function () {
+            var row = $(this).closest("tr");
+
+            var qty = parseFloat(row.find("input.approvedQty").val()) || 0;
+            var price = parseFloat(row.find("input.pricePerUnit").val()) || 0;
+            var gstPercent = parseFloat(row.find(".vendorGSTPercent").text().trim()) || 0;
+
+            var baseCost = qty * price;
+            var totalCost = (baseCost + (baseCost * gstPercent / 100)).toFixed(2);
+
+            var vendorName = row.find(".vendorName").text().trim();
+            var email = row.find(".vendorEmail").text().trim();
+            var address = row.find(".vendorAddress").text().trim();
+            var gst = row.find(".vendorGST").text().trim();
+
+            row.find(".poQty").val(qty);
+            row.find(".poVendorName").val(vendorName);
+            row.find(".poVendorEmail").val(email);
+            row.find(".poVendorAddress").val(address);
+            row.find(".poVendorGST").val(gst);
+            row.find(".poGSTPercent").val(gstPercent);
+
+            row.find(".poPrice").val(price);
+            row.find(".poCost").val(totalCost);
+        });
+
+                                        
+        $("#generateBulkPO").click(function () {
+            var selectedRows = $(".material-checkbox:checked").closest("tr");
+            if (selectedRows.length === 0) {
+                alert("Select at least one material.");
+                return;
+            }
+
+            var vendor = null;
+            var university = null;
+            var materials = [];
+            var valid = true;
+
+            selectedRows.each(function () {
+                var row = $(this);
+
+                var currentVendor = row.find(".vendorEmail").text().trim();
+                var currentUniversity = row.find("input[name='UniversityName']").val();
+
+                if (!vendor) vendor = currentVendor;
+                if (!university) university = currentUniversity;
+
+                if (currentVendor !== vendor || currentUniversity !== university) {
+                    alert("Selected materials must belong to the same university and vendor.");
+                    valid = false;
+                    return false; // break loop
+                }
+
+                var qty = parseFloat(row.find("input.approvedQty").val()) || 0;
+                var price = parseFloat(row.find("input.pricePerUnit").val()) || 0;
+                var gst = parseFloat(row.find(".vendorGSTPercent").text()) || 0;
+                var desc = row.find(".material-name").text().trim();
+                var cost = qty * price * (1 + gst / 100);
+
+                materials.push({
+                    Description: desc,
+                    QtyOrdered: qty,
+                    UnitPrice: price,
+                    Total: cost.toFixed(2)
+                });
+            });
+
+            if (!valid) return;
+
+            var firstRow = selectedRows.first();
+            var vendorName = firstRow.find(".vendorName").text().trim();
+            var vendorEmail = firstRow.find(".vendorEmail").text().trim();
+            var vendorAddress = firstRow.find(".vendorAddress").text().trim();
+            var vendorGST = firstRow.find(".vendorGST").text().trim();
+            var vendorGSTPercent = firstRow.find(".vendorGSTPercent").text().trim();
+
+            // Redirect with query parameters
+            const form = $('<form>', {
+                method: 'POST',
+                action: '@Url.Action("CentralGeneratePO", "CentralPurchaseDepartment")'
+            });
+
+            form.append($('<input>', { type: 'hidden', name: 'UniversityName', value: university }));
+            form.append($('<input>', { type: 'hidden', name: 'VendorName', value: vendorName }));
+            form.append($('<input>', { type: 'hidden', name: 'VendorEmail', value: vendorEmail }));
+            form.append($('<input>', { type: 'hidden', name: 'VendorAddress', value: vendorAddress }));
+            form.append($('<input>', { type: 'hidden', name: 'VendorGSTNo', value: vendorGST }));
+            form.append($('<input>', { type: 'hidden', name: 'GSTPercent', value: vendorGSTPercent }));
+            form.append($('<input>', { type: 'hidden', name: 'materialsJson', value: JSON.stringify(materials) }));
+
+            $('body').append(form);
+            form.submit();
+        });
+
+
+    });
+</script>

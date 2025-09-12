@@ -1,0 +1,125 @@
+﻿@model List<WebApplication5.Models.PurchaseOrder>
+@{
+    Layout = "~/Views/Shared/_IUCDLayout.cshtml";
+    ViewBag.Title = "DashBoard";
+    var hasAlerts = ViewBag.Alerts != null && ViewBag.Alerts.Count > 0;
+    string userId = Session["UserID"]?.ToString();
+}
+
+<style>
+    .dashboard-content {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f9f9f9;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        text-align: center;
+        width: 90%;
+        max-width: 700px;
+        margin: 30px auto;
+        transition: box-shadow 0.3s ease-in-out;
+        animation: fadeIn 0.4s ease-out forwards;
+    }
+
+    .greeting-text {
+        color: #333;
+        font-size: 2em;
+        font-weight: 700;
+        margin-bottom: 15px;
+        letter-spacing: -0.5px;
+    }
+
+    .highlight {
+        color: #007bff;
+    }
+
+    .system-name {
+        color: #555;
+        font-size: 1.1em;
+        font-weight: 400;
+        margin-top: 8px;
+    }
+
+    .alert-button {
+        margin-top: 20px;
+    }
+
+    .modal-body p {
+        margin-bottom: 8px;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+@if (TempData["UploadSuccess"] != null)
+{
+    <div class="alert alert-success">@TempData["UploadSuccess"]</div>
+}
+
+<div class="dashboard-content">
+    <h1 class="greeting-text">
+        Hello, <span class="highlight">Welcome</span> to the
+        <span class="highlight">Icfai University Coordination Department DashBoard</span>
+    </h1>
+    <p class="system-name">of the Asset Management System</p>
+
+    @if (hasAlerts)
+    {
+        <div class="alert-button">
+            <a href="#" class="btn btn-warning" data-toggle="modal" data-target="#remarksModal">
+                🔔 View Auditor Remarks
+            </a>
+        </div>
+    }
+</div>
+
+@if (hasAlerts)
+{
+    <!-- Remarks Modal -->
+    <div class="modal fade" id="remarksModal" tabindex="-1" role="dialog" aria-labelledby="remarksModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title" id="remarksModalLabel">Remarks from Auditor</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    @foreach (var po in ViewBag.Alerts)
+                    {
+                        <p><strong>PO Number:</strong> @po.PONumber</p>
+                        <p><strong>Remark:</strong> @po.Remarks</p>
+                        <form action="@Url.Action("UploadCPDDocuments", "IUCD")" method="post" enctype="multipart/form-data">
+                            <input type="hidden" name="PONumber" value="@po.PONumber" />
+
+                            <div class="form-group">
+                                <label>Upload Committee Approved Document</label>
+                                <input type="file" name="CommityApprovedDoc" class="form-control" accept=".pdf,.jpg,.png" />
+                            </div>
+
+                            @*<div class="form-group">
+                                    <label>Upload Invoice</label>
+                                    <input type="file" name="InvoiceDetails" class="form-control" accept=".pdf,.jpg,.png" />
+                                </div>*@
+
+                            <button type="submit" class="btn btn-primary mt-2">Upload Documents</button>
+                        </form>
+
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>

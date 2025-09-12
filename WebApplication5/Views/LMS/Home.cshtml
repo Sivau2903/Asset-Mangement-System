@@ -1,0 +1,123 @@
+﻿@{
+    Layout = "~/Views/Shared/_LMSLayout.cshtml";
+    ViewBag.Title = "EmployeeDashBoard";
+}
+
+<style>
+    /* Styles specific to the dashboard content within the layout */
+    .dashboard-content {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f9f9f9; /* Light background for content area */
+        padding: 50px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        text-align: center;
+        width: 90%;
+        max-width: 700px;
+        margin: 30px auto; /* Center with more top margin for navbar */
+        transition: box-shadow 0.3s ease-in-out;
+    }
+
+        .dashboard-content:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+    footer {
+        position: fixed;
+    }
+    /* Top Navigation Bar */
+    .top-nav {
+        background: brown;
+        color: white;
+        padding: 8px 0;
+        font-size: 14px;
+        text-align: center;
+    }
+
+    /* Main Navigation */
+    .navbar {
+        background: white;
+        padding: 25px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        text-size-adjust: 50%;
+    }
+
+    .navbar-brand {
+        font-size: 26px;
+        font-weight: bold;
+        color: brown;
+    }
+
+    .dashboard-wrapper {
+        display: flex;
+        justify-content: center; /* Horizontal center */
+        align-items: center; /* Vertical center */
+        height: 50vh; /* Full viewport height */
+        /*background-color: #eaeaea;*/ /* Optional background */
+    }
+
+    .greeting-text {
+        color: #333;
+        font-size: 2em;
+        font-weight: 700;
+        margin-bottom: 15px;
+        letter-spacing: -0.5px;
+    }
+
+    .highlight {
+        color: #007bff; /* A modern primary color */
+    }
+
+    .system-name {
+        color: #555;
+        font-size: 1.1em;
+        font-weight: 400;
+        margin-top: 8px;
+    }
+
+    /* Animation (optional) */
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .dashboard-content {
+        animation: fadeIn 0.4s ease-out forwards;
+    }
+
+    /* Responsive adjustments */
+    @@media (max-width: 600px) {
+        .dashboard-content {
+            padding: 20px;
+            border-radius: 6px;
+            margin: 20px auto;
+        }
+
+        .greeting-text {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+
+        .system-name {
+            font-size: 1em;
+        }
+    }
+</style>
+<div class="dashboard-wrapper">
+    <div class="dashboard-content">
+        <h1 class="greeting-text">
+            Hello, <span class="highlight">Welcome</span> to the
+            <span class="highlight">Librarian DashBoard</span>
+        </h1>
+        <p class="system-name">
+            of the Library Management System
+        </p>
+    </div>
+</div>

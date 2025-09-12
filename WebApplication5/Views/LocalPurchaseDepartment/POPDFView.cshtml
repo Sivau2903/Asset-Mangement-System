@@ -1,0 +1,173 @@
+﻿@model WebApplication5.Models.CentralGeneratePOViewModel
+
+@{
+    var university = ViewBag.University as WebApplication5.Models.University;
+    //var user = ViewBag.Central as WebApplication5.Models.CentralPurchaseDepartment;
+
+    Layout = null;
+    ViewBag.Title = "Purchase Order";
+    var today = DateTime.Now.ToString("dd-MM-yyyy");
+}
+
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    .po-container {
+        padding: 40px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .header, .footer {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .section {
+        page-break-after: always;
+    }
+
+        .section:last-child {
+            page-break-after: avoid;
+        }
+
+    .university-info, .vendor-info, .po-info {
+        margin-bottom: 20px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+
+    th, td {
+        border: 1px solid black;
+        padding: 8px;
+        text-align: left;
+    }
+
+    .signature {
+        margin-top: 40px;
+        text-align: right;
+    }
+
+    .annexure-title, .terms-title {
+        text-align: center;
+        font-weight: bold;
+        font-size: 18px;
+        margin-bottom: 20px;
+    }
+</style>
+
+<!-- SECTION 1: PO SUMMARY -->
+<div class="section po-container">
+    <div class="header">
+        <h2>Purchase Order</h2>
+        <p>Date: @today</p>
+    </div>
+
+    <div class="university-info">
+        <strong>University:</strong> @Model.UniversityName<br />
+        <strong>Email:</strong> @Model.UniversityEmail<br />
+        <strong>Phone:</strong> @Model.UniversityPhone<br />
+        <strong>Address:</strong> @Model.UniversityAddress
+    </div>
+
+    <div class="vendor-info">
+        <strong>Vendor:</strong> @Model.VendorName<br />
+        <strong>Email:</strong> @Model.VendorEmail<br />
+        <strong>Phone:</strong> @Model.PhoneNumber<br />
+        <strong>Address:</strong> @Model.VendorAddress<br />
+        <strong>GST No:</strong> @Model.VendorGSTNo
+    </div>
+
+    <div class="po-info">
+        <table>
+            <tr>
+                <th>PO Number</th>
+                <th>Requisition No</th>
+                <th>Requisitioned By</th>
+                <th>Ship To</th>
+            </tr>
+            <tr>
+                <td>@Model.PONumber</td>
+                <td>@Model.RequisitionNo</td>
+                <td>@Model.RequisitionedBy</td>
+                <td>@Model.UniversityName</td>
+            </tr>
+        </table>
+
+        <table>
+            <tr>
+                <th>When Ship</th>
+                <th>Ship Via</th>
+                <th>F.O.B. Point</th>
+                <th>Terms</th>
+            </tr>
+            <tr>
+                <td>@Model.WhenShip?.ToString("dd-MM-yyyy")</td>
+                <td>@Model.ShipVia</td>
+                <td>@Model.FOBPoint</td>
+                <td>@Model.Terms</td>
+            </tr>
+        </table>
+
+        <table>
+            <tr>
+                <th>Description</th>
+                <th>Total Quantity</th>
+                <th>Total Cost (Incl. Taxes)</th>
+            </tr>
+            <tr>
+                <td>As per Annexure</td>
+                <td>@Model.TotalQuantity</td>
+                <td>₹@Model.TotalCost</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="signature">
+        <p>Authorized By</p>
+        <strong>@Model.RequisitionedBy</strong>
+    </div>
+</div>
+
+<!-- SECTION 2: ANNEXURE -->
+<div class="section po-container">
+    <div class="annexure-title">Annexure</div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th>Qty Ordered</th>
+                <th>Unit Price (₹)</th>
+                <th>Total (Incl. Taxes)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.PurchaseOrderItems)
+            {
+                <tr>
+                    <td>@item.Description</td>
+                    <td>@item.QtyOrdered</td>
+                    <td>@item.UnitPrice</td>
+                    <td>@item.Total</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- SECTION 3: TERMS AND CONDITIONS -->
+<div class="section po-container">
+    <div class="terms-title">Terms and Conditions</div>
+    <p style="white-space: pre-wrap;">
+        @Model.TermsConditions
+    </p>
+</div>

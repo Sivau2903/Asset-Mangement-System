@@ -1,0 +1,331 @@
+﻿
+
+@model  List<WebApplication5.Models.Request>
+
+@{
+    Layout = "~/Views/Shared/_EmpLayout.cshtml";
+    ViewBag.Title = "Raise Request";
+}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Raise Request</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            background-color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            margin-top: 30px;
+        }
+
+        .field-labels {
+            display: flex;
+            gap: 10px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            padding-top: 3px;
+            align-content:center;
+            align-items:center;
+        }
+
+            .field-labels div {
+                width: 180px;
+                font-size: 15px;
+                text-align: left;
+            }
+
+        .request-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+
+            .request-item select, .request-item input {
+                width: 180px;
+                font-size: 15px;
+            }
+
+        .btn-submit {
+            font-weight: bold;
+            font-size: 14px;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            padding: 5px 15px;
+            background: #007bff;
+        }
+
+        .addItem, .removeItem {
+            font-size: 12px;
+            padding: 3px 7px;
+            border: none;
+            color: white;
+            font-weight: bold;
+            border-radius: 5px;
+        }
+
+        .addItem {
+            background: #28a745;
+        }
+
+        .removeItem {
+            background: #dc3545;
+        }
+
+        .submit-container {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        footer{
+            position:fixed;
+        }
+
+        h2 {
+            padding-top: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="text-center">Raise Request</h2>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+
+        <form method="post" action="@Url.Action("RaiseRequest", "Employee")">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="EmpID" value="@ViewBag.EmpID" />
+
+            <!-- Field Labels -->
+            <div class="field-labels">
+                <div>Asset Type</div>
+                <div>Material Category</div>
+                <div>Sub-Category</div>
+                @*<div>Available Quantity</div>*@
+                <div>Required Quantity</div>
+            </div>
+
+            <div id="requestItems">
+                <div class="request-item">
+                    @Html.DropDownList("model[0].AssetType", (IEnumerable<SelectListItem>)ViewBag.AssetType, "Asset Type", new { @class = "form-control assetTypeDropdown", required = "required" })
+                    <select name="model[0].MaterialCategory" class="form-control categoryDropdown" disabled required>
+                        <option value="">Material Category</option>
+                    </select>
+                    <select name="model[0].MSubCategory" class="form-control subCategoryDropdown" disabled required>
+                        <option value="">Sub-Category</option>
+                    </select>
+                    @*<input type="text" class="form-control availableQuantity" readonly placeholder="Available Quantity" value="0" />*@
+                    <input type="number" name="model[0].RequestingQuantity" class="form-control" min="1" required placeholder="Required Quantity" />
+                    <button type="button" class="btn addItem">+</button>
+                </div>
+            </div>
+
+            <!-- Submit Button initially inside last row -->
+            <div class="submit-container">
+                <button type="submit" class="btn btn-submit">Submit</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+
+        $(document).ready(function () {
+            function fetchAvailableQuantity(item) {
+                let assetType = item.find(".assetTypeDropdown").val();
+                let category = item.find(".categoryDropdown").val();
+                let subCategory = item.find(".subCategoryDropdown").val();
+                let availableQtyInput = item.find(".availableQuantity");  // Correct selector
+
+                if (assetType && category && subCategory) {
+                    $.getJSON('@Url.Action("GetAvailableQuantity", "HOD")', {
+                        assetTypeId: assetType,
+                        categoryId: category,
+                        subCategoryId: subCategory
+                    }, function (data) {
+                        if (data.success) {
+                            availableQtyInput.val(data.AvailableQuantity).show(); // Update Available Quantity
+                        } else {
+                            availableQtyInput.val("0").show(); // Default to 0 if not found
+                        }
+                    });
+                } else {
+                    availableQtyInput.hide(); // Hide if values are missing
+                }
+            }
+            // Hide Available Quantity field initially
+            //$(".availableQuantity").hide();
+
+            // Fetch categories based on Asset Type
+            $(document).on("change", ".assetTypeDropdown", function () {
+                let assetTypeId = $(this).val();
+                let item = $(this).closest(".request-item");
+                let categoryDropdown = item.find(".categoryDropdown");
+                let subCategoryDropdown = item.find(".subCategoryDropdown");
+
+                $.getJSON('@Url.Action("GetCategoriesByAssetType", "HOD")', { assetTypeId }, function (data) {
+                    categoryDropdown.empty().append('<option value="">Select Category</option>');
+                    subCategoryDropdown.empty().append('<option value="">Select Sub-Category</option>').prop("disabled", true);
+
+                    $.each(data, function (index, item) {
+                        categoryDropdown.append(`<option value="${item.MID}">${item.MCategoryName}</option>`);
+                    });
+
+                    categoryDropdown.prop("disabled", false);
+                });
+
+                // Hide Available Quantity until all selections are made
+                item.find(".availableQuantity").hide();
+            });
+
+            // Fetch subcategories based on Category
+            $(document).on("change", ".categoryDropdown", function () {
+                let categoryId = $(this).val();
+                let item = $(this).closest(".request-item");
+                let subCategoryDropdown = item.find(".subCategoryDropdown");
+
+                $.getJSON('@Url.Action("GetSubCategoriesByCategory", "HOD")', { categoryId }, function (data) {
+                    subCategoryDropdown.empty().append('<option value="">Select Sub-Category</option>');
+
+                    $.each(data, function (index, item) {
+                        subCategoryDropdown.append(`<option value="${item.MSubCategoryID}">${item.MSubCategoryName}</option>`);
+                    });
+
+                    subCategoryDropdown.prop("disabled", false);
+                });
+
+                // Hide Available Quantity until all selections are made
+                item.find(".availableQuantity").hide();
+            });
+
+            // Fetch Available Quantity when all three fields are selected
+            $(document).on("change", ".subCategoryDropdown", function () {
+                let item = $(this).closest(".request-item");
+
+                // Fetch the actual selected text instead of just values
+                let assetType = item.find(".assetTypeDropdown option:selected").text();
+                let category = item.find(".categoryDropdown option:selected").text();
+                let subCategory = $(this).find("option:selected").text();
+
+                let availableQtyInput = item.find(".availableQuantity");
+                let requestingQtyInput = item.find("input[name$='RequestingQuantity']");
+
+                if (assetType && category && subCategory) {
+                    $.getJSON('@Url.Action("GetAvailableQuantity", "HOD")', {
+                        assetTypeId: item.find(".assetTypeDropdown").val(),
+                        categoryId: item.find(".categoryDropdown").val(),
+                        subCategoryId: $(this).val()
+                    }, function (data) {
+                        if (data.success && data.AvailableQuantity > 0) {
+                            availableQtyInput.val(data.AvailableQuantity).show();
+                            requestingQtyInput.prop("disabled", false);
+                        } else {
+                            //availableQtyInput.val("0").show();
+                            //requestingQtyInput.prop("disabled", true);
+
+                            //// Open the modal and populate fields with exact names
+                            //$("#requestMaterialModal").modal("show");
+                            //$("#modalAssetType").val(assetType);  // Use text, not ID
+                            //$("#modalCategory").val(category);
+                            //$("#modalSubCategory").val(subCategory);
+
+                            availableQtyInput.val("0").show();
+                            requestingQtyInput.prop("disabled", true);
+
+                            alert("The Requesting Material is Unavailable, will be available soon");
+
+                            // Reset the current row fields
+                            item.find(".assetTypeDropdown").val("");
+                            item.find(".categoryDropdown").empty().append('<option value="">Material Category</option>').prop("disabled", true);
+                            item.find(".subCategoryDropdown").empty().append('<option value="">Sub-Category</option>').prop("disabled", true);
+                            item.find(".availableQuantity").val("0").hide();
+                            requestingQtyInput.val("").prop("disabled", true);
+                        }
+                    });
+                }
+            });
+
+
+
+
+            // Validate Requesting Quantity
+            $(document).on("input", ".requestingQuantity", function () {
+                let item = $(this).closest(".request-item");
+                let availableQty = parseInt(item.find(".availableQuantity").val()) || 0;
+                let requestedQty = parseInt($(this).val()) || 0;
+
+                if (requestedQty > availableQty) {
+                    alert("Requesting Quantity cannot be greater than Available Quantity!");
+                    $(this).val(availableQty); // Reset to max allowed
+                }
+            });
+            function updateIndexes() {
+                $("#requestItems .request-item").each(function (index, item) {
+                    $(item).find("select, input").each(function () {
+                        let name = $(this).attr("name");
+                        if (name) {
+                            name = name.replace(/\d+/, index);
+                            $(this).attr("name", name);
+                        }
+                    });
+                });
+            }
+
+            function updateLastRowButtons() {
+                $(".removeItem").remove(); // Remove all "-" buttons
+                $(".submit-container").remove(); // Remove the Submit button container
+
+                let lastRow = $(".request-item").last();
+                if ($(".request-item").length > 1) {
+                    lastRow.append('<button type="button" class="btn removeItem">-</button>');
+                }
+
+                // Append Submit button in the last row
+                lastRow.append('<div class="submit-container"><button type="submit" class="btn btn-submit">Submit</button></div>');
+            }
+
+            $(document).on("click", ".addItem", function () {
+                let newItem = $(".request-item:first").clone();
+                newItem.find("input, select").each(function () {
+                    $(this).val("");
+                });
+
+                newItem.find(".availableQuantity").val("0").show();
+                $("#requestItems").append(newItem);
+                updateIndexes();
+                updateLastRowButtons(); // Ensure "-" is only in the last row, and Submit is inline
+            });
+
+            $(document).on("click", ".removeItem", function () {
+                $(this).closest(".request-item").remove();
+                updateIndexes();
+                updateLastRowButtons(); // Ensure "-" is only in the last row, and Submit remains inline
+            });
+
+            updateLastRowButtons(); // Initialize "-" button rule and ensure Submit is inline
+        });
+    </script>
+    @*@Html.Partial("_RequestMaterial")*@
+
+</body>
+</html>
+
+
+

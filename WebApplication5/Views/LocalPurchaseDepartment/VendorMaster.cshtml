@@ -1,0 +1,162 @@
+﻿@model WebApplication5.Models.VendorDetailViewModel
+
+@{
+    Layout = "~/Views/Shared/_LocalPDLayout.cshtml";
+    ViewBag.Title = "Add Vendor";
+    var assetTypes = ViewBag.AssetTypes as List<WebApplication5.Models.AssetType>;
+}
+
+<h2 class="text-center mb-4">Add Vendor</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@using (Html.BeginForm("VendorMaster1", "LocalPurchaseDepartment", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    <div class="container">
+        <div class="row mb-3">
+            <div class="col-md-4">
+                @Html.LabelFor(m => m.VendorName)
+                @Html.TextBoxFor(m => m.VendorName, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.VendorName, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-md-4">
+                @Html.LabelFor(m => m.EmailID)
+                @Html.TextBoxFor(m => m.EmailID, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.EmailID, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-md-4">
+                @Html.LabelFor(m => m.PhoneNumber)
+                @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.PhoneNumber, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-4">
+                @Html.LabelFor(m => m.GSTNO)
+                @Html.TextBoxFor(m => m.GSTNO, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.GSTNO, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-md-4">
+                @Html.LabelFor(m => m.PanNumber)
+                @Html.TextBoxFor(m => m.PanNumber, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.PanNumber, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                @Html.LabelFor(m => m.Address)
+                @Html.TextBoxFor(m => m.Address, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Address, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <h4 class="mt-4">Materials Supplied</h4>
+        <div id="materials-section">
+            @for (int i = 0; i < Model.Materials.Count; i++)
+            {
+                <div class="row mb-2 material-row" data-index="@i">
+                    <div class="col-md-2">
+                        <select class="form-control assetType" name="Materials[@i].AssetTypeID">
+                            <option value="">-- Asset Type --</option>
+                            @foreach (var at in assetTypes)
+                            {
+                                <option value="@at.AssetTypeID">@at.AssetType1</option>
+                            }
+                        </select>
+                        @Html.ValidationMessage($"Materials[{i}].AssetTypeID", "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-control materialCategory" name="Materials[@i].MaterialCategoryID">
+                            <option value="">-- Category --</option>
+                        </select>
+                        @Html.ValidationMessage($"Materials[{i}].MaterialCategoryID", "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-control subCategory" name="Materials[@i].MaterialSubCategoryID">
+                            <option value="">-- SubCategory --</option>
+                        </select>
+                        @Html.ValidationMessage($"Materials[{i}].MaterialSubCategoryID", "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-2">
+                        <input type="number" name="Materials[@i].GSTPercentage" placeholder="GST%" class="form-control" step="0.01" />
+                        @Html.ValidationMessage($"Materials[{i}].GSTPercentage", "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-2">
+                        <input type="number" name="Materials[@i].PricePerUnit" placeholder="PricePerUnit" class="form-control" step="0.01" />
+                        @Html.ValidationMessage($"Materials[{i}].PricePerUnit", "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-success add-row">+</button>
+                        <button type="button" class="btn btn-danger remove-row">−</button>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-primary">Save Vendor</button>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        function bindDropdowns(context) {
+            context.find(".assetType").change(function () {
+                const assetTypeId = $(this).val();
+                const categoryDropdown = context.find(".materialCategory");
+                $.getJSON('@Url.Action("GetCategoriesByAssetType", "LocalPurchaseDepartment")', { assetTypeId }, function (data) {
+                    categoryDropdown.empty().append('<option>-- Select --</option>');
+                    data.forEach(item => categoryDropdown.append(`<option value="${item.id}">${item.name}</option>`));
+                });
+            });
+
+            context.find(".materialCategory").change(function () {
+                const categoryId = $(this).val();
+                const subCategoryDropdown = context.find(".subCategory");
+                $.getJSON('@Url.Action("GetSubCategoriesByCategory", "LocalPurchaseDepartment")', { categoryId }, function (data) {
+                    subCategoryDropdown.empty().append('<option>-- Select --</option>');
+                    data.forEach(item => subCategoryDropdown.append(`<option value="${item.id}">${item.name}</option>`));
+                });
+            });
+        }
+
+        $(document).ready(function () {
+            bindDropdowns($(".material-row"));
+
+            $(".add-row").click(function () {
+                const index = $(".material-row").length;
+                const row = $(".material-row").first().clone();
+                row.attr("data-index", index);
+                row.find("select, input").each(function () {
+                    const name = $(this).attr("name");
+                    const newName = name.replace(/\[\d+\]/, `[${index}]`);
+                    $(this).attr("name", newName).val('');
+                });
+                row.appendTo("#materials-section");
+                bindDropdowns(row);
+            });
+
+            $("#materials-section").on("click", ".remove-row", function () {
+                if ($(".material-row").length > 1) {
+                    $(this).closest(".material-row").remove();
+                }
+            });
+        });
+    </script>
+}
+<style>
+    footer{
+        position:fixed;
+    }
+</style>

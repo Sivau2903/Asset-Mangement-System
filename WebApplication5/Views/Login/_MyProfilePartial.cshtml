@@ -1,0 +1,20 @@
+﻿
+@model WebApplication5.Models.Profileviewmodel
+
+<div class="p-3">
+    <h4>My Profile</h4>
+    <hr />
+    @if (Model != null)
+    {
+        <p><strong>Name:</strong> @Model.Name</p>
+        <p><strong>ID:</strong> @Model.ID</p>
+        <p><strong>PhoneNumber:</strong> @Model.PhoneNumber</p>
+        <p><strong>Email:</strong> @Model.Email</p>
+        <p><strong>Department:</strong> @Model.Department</p>
+        <p><strong>Role:</strong> @Model.Role</p>
+    }
+    else
+    {
+        <p>No profile details found.</p>
+    }
+</div>

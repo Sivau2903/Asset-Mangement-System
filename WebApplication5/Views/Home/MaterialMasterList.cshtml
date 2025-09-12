@@ -1,0 +1,192 @@
+﻿@model List<WebApplication5.Models.MaterialMasterList>
+
+@{
+    ViewBag.Title = "Add Material";
+    Layout = "~/Views/Shared/_StoreAdminLayout.cshtml";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Material Master</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        .form-control {
+            height: 30px;
+            font-size: 14px;
+            padding: 2px 8px;
+        }
+        footer{
+            position:fixed;
+        }
+
+        .btn {
+            padding: 4px 8px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-3 p-3" style="background: #f9f9f9; border: 1px solid #ddd;">
+        <h2 class="text-center mb-3">Reordering Point</h2>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+
+        @using (Html.BeginForm("MaterialMasterForm", "Home", FormMethod.Post, new { @id = "materialForm" }))
+        {
+            @* Hidden Fields to store the actual names *@
+            @Html.Hidden("AssetType", "")
+            @Html.Hidden("MaterialCategory", "")
+            @Html.Hidden("MaterialSubCategory", "")
+
+    <div class="row material-row mb-2 align-items-end">
+        <div class="col-md-2">
+            <label for="assetType">Asset Type</label>
+            <select id="assetType" class="form-control" required>
+                <option value="">Select Asset Type</option>
+                @foreach (var item in ViewBag.AssetType)
+                {
+                    <option value="@item.Value">@item.Text</option>
+                    <!-- Pass Text directly -->
+                }
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <label for="materialCategory">Material Category</label>
+            <select id="materialCategory" class="form-control" required>
+                <option value="">Select Category</option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <label for="materialSubCategory">Subcategory</label>
+            <select id="materialSubCategory" class="form-control" required>
+                <option value="">Select Subcategory</option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <label for="availableQuantity">Available Quantity</label>
+            <input type="number" id="availableQuantity" class="form-control" name="AvailableQuantity" required>
+        </div>
+
+        @*<div class="col-md-2">
+            <label for="units">Unit</label>
+            <input type="text" id="units" class="form-control" name="Units" required>
+        </div>
+
+        <div class="col-md-2">
+            <label for="make">Make</label>
+            <input type="text" id="make" class="form-control" name="Make">
+        </div>
+
+        <div class="col-md-2">
+            <label for="expiryDate">Expiry Date</label>
+            <input type="date" id="expiryDate" class="form-control" name="ExpiryDate">
+        </div>*@
+
+        <div class="col-md-2">
+            <label for="MinimumLimit">Minimum Limit</label>
+            <input type="number" id="minimumLimit" class="form-control" name="MinimumLimit">
+        </div>
+
+        <div class="col-md-12 text-end mt-2">
+            <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+    </div>
+        }
+    </div>
+
+    <script>
+        $(document).ready(function () {
+
+            // Load Material Categories based on Asset Type
+            $("#assetType").change(function () {
+                var assetTypeName = $("#assetType option:selected").text(); // Get Name
+                $("#AssetType").val(assetTypeName); // Set hidden input
+
+                var categoryDropdown = $("#materialCategory");
+                categoryDropdown.empty().append('<option value="">Select Category</option>');
+                $("#materialSubCategory").empty().append('<option value="">Select Subcategory</option>');
+
+                if (assetTypeName) {
+                    $.getJSON("@Url.Action("GetMaterialCategories", "Home")", { assetTypeName: assetTypeName }, function (data) {
+                        $.each(data, function (index, item) {
+                            categoryDropdown.append('<option value="' + item.MaterialCategory1 + '">' + item.MaterialCategory1 + '</option>');
+                        });
+                    });
+                }
+            });
+
+
+            // Load Subcategories based on Category
+            $("#materialCategory").change(function () {
+                var categoryName = $("#materialCategory option:selected").text(); // Get Name
+                $("#MaterialCategory").val(categoryName); // Set hidden input
+
+                var subCategoryDropdown = $("#materialSubCategory");
+                subCategoryDropdown.empty().append('<option value="">Select Subcategory</option>');
+
+                if (categoryName) {
+                    $.getJSON("@Url.Action("GetMaterialSubCategories", "Home")", { categoryName: categoryName }, function (data) {
+                        $.each(data, function (index, item) {
+                            subCategoryDropdown.append('<option value="' + item.MaterialSubCategory1 + '">' + item.MaterialSubCategory1 + '</option>');
+                        });
+                    });
+                }
+            });
+
+
+            // Subcategory change - update hidden field and check if material exists
+            $("#materialSubCategory").change(function () {
+                var subCategoryName = $("#materialSubCategory option:selected").text();
+                $("#MaterialSubCategory").val(subCategoryName); // Set hidden input
+
+                var assetType = $("#AssetType").val();
+                var materialCategory = $("#MaterialCategory").val();
+                var materialSubCategory = $("#MaterialSubCategory").val();
+
+                if (assetType && materialCategory && materialSubCategory) {
+                    $.ajax({
+                        url: "@Url.Action("CheckMaterialMaster", "Home")",
+                        type: "GET",
+                        data: {
+                            assetTypes: assetType,
+                            categories: materialCategory,
+                            subcategories: materialSubCategory
+                        },
+                        success: function (response) {
+                            if (response.exists) {
+                                $("#availableQuantity").val(response.availableQuantity);
+                                $("#make").val(response.make);
+                                $("#units").val(response.unit);
+                                $("#expiryDate").val(response.expiryDate);
+                                $("#minimumLimit").val(response.minimumLimit);
+                            } else {
+                                $("#availableQuantity").val('');
+                                $("#make").val('');
+                                $("#units").val('');
+                                $("#expiryDate").val('');
+                                $("#minimumLimit").val('');
+                            }
+                        }
+                    });
+                }
+            });
+
+           
+
+        });
+    </script>
+</body>
+</html>

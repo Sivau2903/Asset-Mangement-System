@@ -1,0 +1,222 @@
+﻿@model List<WebApplication5.Models.RequestingMaterial>
+
+@{
+    Layout = "~/Views/Shared/_UniversityLayout.cshtml";
+
+    ViewBag.Title = "MyRequests";
+}
+
+
+@if (Model != null && Model.Any())
+{
+    // Group requests by RequestedDate
+    var groupedRequests = Model.GroupBy(r => r.RequestedDate.Date)
+                               .OrderByDescending(g => g.Key);
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>SNO</th>
+                <th>Requested Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{ int serialNumber = 1; }
+            @foreach (var group in groupedRequests)
+            {
+                <tr class="request-date-row" data-date="@group.Key.ToString("yyyy-MM-dd")">
+                    <td class="text-center"><strong>@serialNumber</strong></td>
+                    <td class="text-center bg-info text-white" style="cursor: pointer;">
+                        <strong>@group.Key.ToString("dd-MMM-yyyy")</strong> <i class="fas fa-chevron-down"></i>
+                    </td>
+                </tr>
+
+                <!-- Hidden details row -->
+                <tr class="request-details-row" data-date="@group.Key.ToString("yyyy-MM-dd")" style="display: none;">
+                    <td colspan="2">
+                        <table class="table table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Request ID</th>
+                                    <th>Store Admin ID</th>
+                                    <th>Asset Type</th>
+                                    <th>Material Category</th>
+                                    <th>Material Subcategory</th>
+                                    <th>Requesting Quantity</th>
+                                    <th>Status</th>
+                                    @*<th>Actions</th>*@
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var request in group)
+                                {
+                                    <tr>
+                                        <td>@request.RequestID</td>
+                                        <td>@request.StoreAdminID</td>
+                                        <td>@request.AssetType</td>
+                                        <td>@request.MaterialCategory</td>
+                                        <td>@request.MaterialSubCategory</td>
+                                        <td>@request.RequestingQuantity</td>
+                                        <td>
+                                                <span class="badge bg-warning text-dark">@request.Status</span>
+                                            </td>
+                                        @*<td>
+                                            <button class="btn btn-info btn-sm viewPast" data-storeadminid="@request.StoreAdminID">Past</button>
+
+                                            <div class="dropdown d-inline-block">
+                                                <select class="form-select action-select"
+                                                        data-id="@request.RequestID-@request.MaterialSubCategory">
+                                                    <option selected disabled>Actions</option>
+                                                    <option value="approve">Approve</option>
+                                                    <option value="reject">Reject</option>
+                                                </select>
+                                            </div>
+                                        </td>*@
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                serialNumber++;
+            }
+        </tbody>
+    </table>
+
+    <!-- Past Requests Modal -->
+    <!--<div class="modal fade" id="pastRequestsModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Past Requests</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body" id="pastRequestsBody"></div>
+            </div>
+        </div>
+    </div>-->
+
+    <!-- Rejection Remarks Modal -->
+    <!--<div class="modal fade" id="remarksModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Rejection Remarks</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="remarks">Enter Remarks:</label>
+                        <textarea class="form-control" id="remarksText" rows="3"></textarea>
+                    </div>
+                    <button type="button" class="btn btn-danger mt-2" id="submitRemarks">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>-->
+}
+else
+{
+    <div class="alert alert-warning">No raised requests found.</div>
+}
+
+<!-- Include Bootstrap CSS & JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Load jQuery First -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        console.log("jQuery Loaded Successfully");
+    });
+    $(document).ready(function () {
+        // Expand/Collapse Request Details
+        $(".request-date-row").click(function () {
+            var date = $(this).data("date");
+            var detailsRow = $(".request-details-row[data-date='" + date + "']");
+
+            if (detailsRow.is(":visible")) {
+                detailsRow.hide();
+                $(this).find("i").removeClass("fa-chevron-up").addClass("fa-chevron-down");
+            } else {
+                detailsRow.show();
+                $(this).find("i").removeClass("fa-chevron-down").addClass("fa-chevron-up");
+            }
+        });
+
+        //// View Past Requests
+        //$(".viewPast").click(function () {
+        //    let storeadminId = $(this).data("storeadminid");
+        //    console.log("Fetching past requests for StoreAdminID:", storeadminId);
+
+        //    $.get("/University/GetPastRequests", { storeadminId: storeadminId }, function (data) {
+        //        $("#pastRequestsBody").html(data);
+        //        $("#pastRequestsModal").modal("show");
+        //    }).fail(function () {
+        //        alert("Error fetching past requests.");
+        //    });
+        //});
+
+        //// Handle Dropdown Change (Approve, Reject)
+        //$(".action-select").change(function () {
+        //    let dataId = $(this).data("id");
+
+        //    if (!dataId || !dataId.includes("-")) {
+        //        console.error("Invalid data-id format:", dataId);
+        //        alert("Invalid request data.");
+        //        return;
+        //    }
+
+        //    let requestId = dataId.split("-")[0];
+        //    let msubCategory = dataId.split("-")[1];
+        //    let actionType = $(this).val();
+        //    console.log("Action selected:", requestId, msubCategory, actionType);
+
+        //    if (actionType === "reject") {
+        //        $("#remarksModal").data("request-id", requestId);
+        //        $("#remarksModal").data("msub-category", msubCategory);
+        //        $("#remarksModal").modal("show");
+        //    } else if (actionType === "approve") {
+        //        updateReceviedRequest(requestId, msubCategory, actionType, "");
+        //    }
+        //});
+
+        //// Submit Remarks for Rejection
+        //$("#submitRemarks").click(function () {
+        //    let requestId = $("#remarksModal").data("request-id");
+        //    let msubCategory = $("#remarksModal").data("msub-category");
+        //    let remarks = $("#remarksText").val();
+
+        //    if (!remarks.trim()) {
+        //        alert("Remarks cannot be empty.");
+        //        return;
+        //    }
+
+        //    updateReceviedRequest(requestId, msubCategory, "reject", remarks);
+        //});
+
+        //// AJAX Request to Update Request
+        //function updateReceviedRequest(requestId, msubCategory, actionType, remarks) {
+        //    console.log("Updating request:", requestId, msubCategory, actionType, remarks);
+
+        //    $.ajax({
+        //        url: "/University/UpdateReceviedRequests",
+        //        type: "POST",
+        //        data: {
+        //            requestId: requestId,
+        //            msubCategory: msubCategory,
+        //            actionType: actionType,
+        //            remarks: actionType === "reject" ? remarks : null
+        //        },
+        //        success: function (response) {
+        //            alert(response.message);
+        //            if (response.success) location.reload();
+        //        },
+        //        error: function (xhr, status, error) {
+        //            console.error("AJAX Error:", error);
+        //            alert("Error updating request.");
+        //        }
+        //    });
+        //}
+    });
+</script>

@@ -1,0 +1,76 @@
+﻿@model List<WebApplication5.Models.Request>
+
+<style>
+    .past-requests-table {
+        width: 50%; /* Increased width to 95% */
+        max-width: 1200px; /* Added max-width for larger screens */
+        margin: 20px auto; /* Center the table horizontally */
+        border-collapse: collapse;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #000;
+    }
+
+        .past-requests-table th, .past-requests-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .past-requests-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .past-requests-table tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .past-requests-table tbody tr:hover {
+            background-color: #e0f7fa;
+        }
+
+        .past-requests-table th:first-child, .past-requests-table td:first-child {
+            width: 80px;
+        }
+
+        .past-requests-table th:nth-child(8), .past-requests-table td:nth-child(8) {
+            white-space: nowrap;
+        }
+
+    .past-requests-table {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+</style>
+
+<table class="past-requests-table">
+    <thead>
+        <tr>
+            <th>Request ID</th>
+            @*<th>Asset Type</th>
+            <th>Material Category</th>*@
+            <th>Sub-Category</th>
+            <th>Requesting Quantity</th>
+            <th>Approving Quantity</th>
+            @*<th>Status</th>*@
+            <th>Request Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var req in Model)
+        {
+            <tr>
+                <td>@req.RequestID</td>
+                @*<td>@req.AssetType</td>
+                <td>@req.MaterialCategory</td>*@
+                <td>@req.MSubCategory</td>
+                <td>@req.RequestingQuantity</td>
+                <td>@req.ApprovedQuantity</td>
+                @*<td>@req.Status</td>*@
+                <td>@req.RequestDate.</td>
+            </tr>
+        }
+    </tbody>
+</table>

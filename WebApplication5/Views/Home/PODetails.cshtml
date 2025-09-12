@@ -1,0 +1,290 @@
+﻿@model WebApplication5.Models.GeneratePOViewModel
+
+@{
+    //var uni = ViewBag.University as WebApplication5.Models.University;
+
+    Layout = "~/Views/Shared/_StoreAdminLayout.cshtml";
+    ViewBag.Title = "Purchase Order";
+    var today = DateTime.Now.ToString("dd-MM-yyyy");
+}
+
+<style>
+    .po-container {
+        border: 2px solid black;
+        padding: 30px;
+        max-width: 1300px;
+        height: auto;
+        margin-top:25px;
+
+        font-family: Arial, sans-serif;
+    }
+    .container{
+        height:auto;
+        margin-bottom:15px;
+    }
+
+    .po-title {
+
+        font-weight: normal;
+       padding-top:10px;
+
+    }
+
+    .company-header {
+
+        font-weight: normal;
+    }
+
+    table {
+        width: 100%;
+        height: 50px;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+
+    th, td {
+        border: 1px solid black;
+        padding: 6px;
+        text-align: left;
+        width:auto;
+    }
+
+    .no-border {
+        border: none;
+    }
+
+    .signature {
+        margin-top: 50px;
+        text-align: right;
+    }
+
+    .btn-secondary {
+        margin-top: 30px;
+        text-align: center;
+        background-color:blue;
+    }
+
+
+
+    h2{
+        text-align:center;
+    }
+
+    .input-no-border {
+        width: 100%;
+        border: none;
+        border-bottom: 1px solid black;
+    }
+
+    @@media print {
+        body * {
+            visibility: hidden;
+        }
+
+        .po-map, .po-map * {
+            visibility: visible;
+        }
+
+        .po-map {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+        }
+
+        .btn-secondary,
+        input[name="CertificationFile"],
+        input[name="MRVFile"],
+        label[for="CertificationFile"],
+        label[for="MRVFile"],
+        .form-group,
+        .text-end,
+        .text-lg-center,
+        .btn-success {
+            display: none !important;
+        }
+    }
+
+
+</style>
+
+@if (ViewBag.SuccessMessage != null)
+{
+    <div class="alert alert-success">@ViewBag.SuccessMessage</div>
+}
+
+
+<div class="po-container">
+    <!-- Search bar to fetch PO Details -->
+    <h2>Material Receipt Vocher</h2>
+
+    @if (Model == null)
+    {
+        using (Html.BeginForm("PODetails", "Home", FormMethod.Post))
+        {
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Enter PO Number:</label>
+                <div class="col-sm-4">
+                    <input type="text" name="poNumber" class="form-control" placeholder="PO123" required />
+                </div>
+                <div class="col-sm-2">
+                    <button type="submit" class="btn btn-primary">Fetch</button>
+                </div>
+            </div>
+        }
+    }
+
+
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
+    }
+
+
+    @if (Model != null)
+    {
+        <div class="po-map">
+
+            <div class="po-title text-center">
+                <!-- Left side: University details stacked vertically -->
+                <div>
+                    @*<div class="company-header" font-size="100px"><strong>@Model.UniversityName</strong></div>*@
+                    <h3 font-weight="bold">@Model.UniversityName</h3>
+                    <div>@Model.UniversityAddress</div>
+                    <div>Email: @Model.UniversityEmail, Phone: @Model.UniversityPhone</div>
+                </div>
+
+              
+            </div>
+          
+            <table>
+                <tr>
+                    <td>Purchase Order No.:</td>
+                    <td colspan="2"><input type="text" name="PONumber" value="@Model.PONumber" style="width:100%;" readonly /></td>
+
+                    <td>Date:</td>
+                    <td><input type="date" name="PODate" value="@Model.PODate.ToString("yyyy-MM-dd")" style="width:100%;" readonly /></td>
+                    <td>VendorName</td>
+                    <td><input type="text" name=" VendorName" value="@Model.VendorName" style="width:100%;" readonly  /></td>
+                </tr>
+
+            </table>
+
+
+            @using (Html.BeginForm("UpdatePOItems", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                @Html.HiddenFor(m => m.PONumber)
+
+                <table class="table">
+                    <tr>
+                        <th style="width: 30%;">Material Description</th>
+                        <th style="width: 10%;">Ordered Qty</th>
+                        <th style="width: 6%;">Received</th>
+                        <th style="width: 6%;">Accepted</th>
+                        <th style="width: 6%;">Rejected</th>
+                        <th style="width: 25%;">Remarks</th>
+                        <th style="width: 15%;">Unit</th>
+                        <th style="width: 25%;">Make</th>
+                        <th style="width: 8%;">ExpiryDate</th>
+                    </tr>
+
+                    @for (int i = 0; i < Model.PurchaseOrderItems.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(m => m.PurchaseOrderItems[i].Description)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(m => m.PurchaseOrderItems[i].QtyOrdered)
+                            </td>
+                            <td>
+                                <input type="number" class="form-control" name="PurchaseOrderItems[@i].QtyReceived"
+                                       value="@Model.PurchaseOrderItems[i].QtyReceived" min="0" ; />
+                                <input type="hidden" name="PurchaseOrderItems[@i].POItemID"
+                                       value="@Model.PurchaseOrderItems[i].POItemID" />
+                            </td>
+                            <td>
+                                <input type="number" class="form-control" name="PurchaseOrderItems[@i].AcceptedQty"
+                                       value="@Model.PurchaseOrderItems[i].AcceptedQty" min="0" />
+                                <input type="hidden" name="PurchaseOrderItems[@i].POItemID"
+                                       value="@Model.PurchaseOrderItems[i].POItemID" />
+                            </td>
+                            <td>
+                                <input type="number" class="form-control" name="PurchaseOrderItems[@i].RejectedQty"
+                                       value="@Model.PurchaseOrderItems[i].RejectedQty" min="0" />
+                                <input type="hidden" name="PurchaseOrderItems[@i].POItemID"
+                                       value="@Model.PurchaseOrderItems[i].POItemID" />
+                            </td>
+
+                            <td>
+                                <input type="text" class="form-control" name="PurchaseOrderItems[@i].Remarks"
+                                       value="@Model.PurchaseOrderItems[i].Remarks" />
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" name="PurchaseOrderItems[@i].Unit" value="@Model.PurchaseOrderItems[i].Unit" />
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" name="PurchaseOrderItems[@i].Make" value="@Model.PurchaseOrderItems[i].Make" />
+                            </td>
+                            <td>
+                            <input type="date" class="form-control" name="PurchaseOrderItems[@i].ExpiryDate" value="@Model.PurchaseOrderItems[i].ExpiryDate?.ToString(" yyyy-MM-dd")" />
+                        </td>
+
+                        </tr>
+                    }
+                </table>
+                <div class="no-print">
+                    @{
+                        if (!string.IsNullOrEmpty(Model.StoreUploads))
+                        {
+                            <div class="mt-2">
+                                <label>Uploaded DeliveryChallan:</label>
+                                <a href="@Url.Content(Model.StoreUploads)" target="_blank">View Certificate</a>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="form-group">
+                                <label>Upload DeliveryChallan </label>
+                                <input type="file" name="CertificationFile" class="form-control" accept=".pdf,.doc,.docx" style="width:auto" />
+                            </div>
+                        }
+
+                        if (!string.IsNullOrEmpty(Model.MRVDetails))
+                        {
+                            <div class="mt-2">
+                                <label>Uploaded MRV (PO):</label>
+                                <a href="@Url.Content(Model.MRVDetails)" target="_blank">View MRV</a>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="form-group">
+                                <label>Upload MRV (PO) </label>
+                                <input type="file" name="MRVFile" class="form-control" accept=".pdf,.doc,.docx" style="width:auto" />
+                            </div>
+                        }
+
+
+                    <p>Print the PO and upload it in the MRV Upload section.</p>
+                        }
+
+                    <div class="text-end mt-3">
+                        <button type="submit" class="btn btn-success">Save Updates</button>
+                    </div>
+                    <div class="text-lg-center mt-3">
+                        <button type="button" class="btn btn-secondary" onclick="window.print()">Print MRV</button>
+                    </div>
+                </div>
+
+
+
+            }
+
+            <!--</div>-->
+        </div>
+    }
+
+
+</div>
+

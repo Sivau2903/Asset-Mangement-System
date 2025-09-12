@@ -1,0 +1,302 @@
+﻿@model List<WebApplication5.Models.TempSelectedMaterial>
+
+@{
+    Layout = "~/Views/Shared/_LocalPDLayout.cshtml";
+    ViewBag.Title = "MyRequests";
+}
+
+<div class="d-flex justify-content-between align-items-center">
+    @*<h2>Requests Received</h2>*@
+    <div class="p-3 bg-warning text-dark rounded" id="budget-block" style="margin-top:20px;">
+        <strong>Available Budget: </strong> <span id="availableBudget">Loading...</span>
+    </div>
+</div>
+
+<div class="text-end mb-3">
+    <button class="btn btn-primary" id="generateGroupedPOBtn">Generate PO for Vendor</button>
+</div>
+
+
+
+@if (Model.Any())
+{
+    <h4 class="mt-4">Newly Added Materials</h4>
+    <table class="table table-bordered">
+        <thead class="table-secondary">
+            <tr>
+                <th>Select</th>
+                <th>Material</th>
+                <th>Order Quantity</th>
+                <th>Request Type</th>
+                <th>Vendor ID</th>
+                <th>Vendor Name</th>
+                <th>Address</th>
+                <th>GST No</th>
+                <th>Email ID</th>
+                <th>PhoneNumber</th>
+                <th>Price Per Unit</th>
+                @*<th>Cost</th>*@
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                var item = Model[i];
+                <tr data-material="@item.MaterialSubCategory.ToLower()">
+                    <td class="text-center"><input type="checkbox" class="materialCheckbox" /></td>
+                    <td><input type="text" class="form-control materialName" value="@item.MaterialSubCategory" readonly /></td>
+                    <td><input type="number" class="form-control orderQuantity" min="1" /></td>
+                    <td>
+                        <select class="form-control requestTypeSelect">
+                            <option value="">--Select--</option>
+                            <option value="Central">Central</option>
+                            <option value="Local">Local</option>
+                        </select>
+                    </td>
+                    <td class="vendorIDCell">-</td>
+                    <td class="vendorNameCell">-</td>
+
+                    <td class="addressCell">-</td>
+                    <td class="gstNoCell">-</td>
+                    <td class="emailCell">-</td>
+                    <td class="phoneNumberCell">-</td>
+                    <td><input type="number" class="form-control priceInput" step="0.01" /></td>
+                    @*<td class="costCell">-</td>*@
+                    <td>
+                        <input type="file" name="certificateUpload" class="form-control certificateUpload d-none" accept=".pdf,.doc,.docx" />
+                        <button class="btn btn-success sendCentral d-none">Send Request</button>
+                        <button class="btn btn-info viewLocal d-none" data-material="@item.MaterialSubCategory.ToLower()">View Vendors</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <form id="generatePOForm" method="post" action="/LocalPurchaseDepartment/GeneratePO">
+        <input type="hidden" id="vendorId" name="vendorId" />
+        <input type="hidden" id="VendorName" name="VendorName" />
+        <input type="hidden" id="VendorEmail" name="VendorEmail" />
+        <input type="hidden" id="PhoneNumber" name="PhoneNumber" />
+        <input type="hidden" id="VendorAddress" name="VendorAddress" />
+        <input type="hidden" id="VendorGSTNo" name="VendorGSTNo" />
+        <input type="hidden" id="GSTPercent" name="GSTPercent" />
+        <input type="hidden" id="materialJson" name="materialJson" />
+    </form>
+
+
+
+}
+
+<!-- Vendor Modal -->
+<div class="modal fade" id="vendorModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Select Vendor</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body" id="vendorModalBody"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // Load budget
+        $.get("@Url.Action("GetAvailableBudget", "LocalPurchaseDepartment")", function (data) {
+            $("#availableBudget").text(data);
+        }).fail(function () {
+            $("#availableBudget").text("Error fetching budget");
+        });
+
+        // Toggle Central/Local buttons
+        $('.requestTypeSelect').on('change', function () {
+            var row = $(this).closest('tr');
+            var selectedType = $(this).val();
+            row.find('.sendCentral').toggleClass('d-none', selectedType !== 'Central');
+            row.find('.certificateUpload').toggleClass('d-none', selectedType !== 'Central');
+            row.find('.viewLocal').toggleClass('d-none', selectedType !== 'Local');
+        });
+
+        // Central Request Submit
+        $('.sendCentral').on('click', function () {
+            var row = $(this).closest('tr');
+            var material = row.find('input.materialName').val();
+            var qty = parseInt(row.find('input.orderQuantity').val());
+            var fileInput = row.find('input.certificateUpload')[0];
+
+            if (!qty || qty <= 0) {
+                alert("Enter valid quantity.");
+                return;
+            }
+            if (!fileInput || fileInput.files.length === 0) {
+                alert("Please upload the certificate file.");
+                return;
+            }
+
+            var formData = new FormData();
+            formData.append("materialName", material);
+            formData.append("quantity", qty);
+            formData.append("certificateUpload", fileInput.files[0]);
+
+            $.ajax({
+                url: "@Url.Action("SendToCentral", "LocalPurchaseDepartment")",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    alert(res.message);
+                    if (res.success) row.remove();
+                }
+            });
+        });
+
+        // View Vendors Modal
+        $(document).on('click', '.viewLocal', function () {
+            var material = $(this).data("material").trim().toLowerCase();
+            $.get("@Url.Action("GetVendors", "LocalPurchaseDepartment")", { materialSubCategory: material }, function (data) {
+                $("#vendorModalBody").html(data);
+                new bootstrap.Modal(document.getElementById('vendorModal')).show();
+            }).fail(function () {
+                alert("Error fetching vendor details.");
+            });
+        });
+
+        // Vendor Selection
+        $(document).on('click', '.selectVendorBtn', function () {
+            var vendorId = $(this).data("vendorid");
+            var emailId = $(this).data("emailid");
+
+            var price = parseFloat($(this).data("price"));
+            var material = $(this).data("material").trim().toLowerCase();
+            var vendorName = $(this).data("vendorname");
+            var phoneNumber = $(this).data("phonenumber");
+            var address = $(this).data("address");
+            var gstNo = $(this).data("gstno");
+            var gstPercent = parseFloat($(this).data("gstpercent")) || 0;
+
+            var row = $('tr[data-material="' + material + '"]');
+            var qty = parseFloat(row.find('input.orderQuantity').val()) || 0;
+            var cost = qty * price;
+            var totalWithGST = cost + (cost * gstPercent / 100);
+
+            // Display data in row
+            row.find('.vendorIDCell').text(vendorId);
+            row.find('.vendorNameCell').text(vendorName);
+            row.find('.addressCell').text(address);
+            row.find('.gstNoCell').text(gstNo);
+            row.find('.emailCell').text(emailId);
+            row.find('.phoneNumberCell').text(phoneNumber);
+            row.find('.priceInput').val(price);
+            row.find('.costCell').text(cost.toFixed(2));
+
+            // ✅ Now bind vendor details to hidden form fields as well
+            $('#vendorId').val(vendorId);
+            $('#VendorName').val(vendorName);
+            $('#VendorEmail').val(emailId);
+            $('#PhoneNumber').val(phoneNumber);
+            $('#VendorAddress').val(address);
+            $('#VendorGSTNo').val(gstNo);
+            $('#GSTPercent').val(gstPercent);
+        });
+
+
+        // Generate Grouped PO
+        $('#generateGroupedPOBtn').on('click', function () {
+            let hasError = false;
+            let vendorSet = false;
+            let vendorDetails = {};
+            let materials = [];
+
+            $('tbody tr').each(function () {
+                let row = $(this);
+
+                if (row.find('input.materialCheckbox').is(':checked')) {
+                    let material = row.find('input.materialName').val().trim();
+                    let qty = parseFloat(row.find('input.orderQuantity').val()) || 0;
+                    let price = parseFloat(row.find('.priceInput').val()) || 0;
+                    let vendorId = row.find('.vendorIDCell').text().trim();
+                    let vendorName = row.find('.vendorNameCell').text().trim();
+                    let email = row.find('.emailCell').text().trim();
+                    let phoneNumber = row.find('.phoneNumberCell').text().trim();
+                    let address = row.find('.addressCell').text().trim();
+                    let gstNo = row.find('.gstNoCell').text().trim();
+                    let gstPercent = parseFloat(row.find('.gstPercentCell')?.text()) || 0;
+
+                    if (!vendorId || vendorId === '-') {
+                        alert(`Please select a vendor for material: ${material}`);
+                        hasError = true;
+                        return false;
+                    }
+
+                    if (!qty || !price) {
+                        alert(`Enter valid quantity and price for material: ${material}`);
+                        hasError = true;
+                        return false;
+                    }
+
+                    // Capture vendor details from the first selected row only
+                    if (!vendorSet) {
+                        vendorDetails = {
+                            VendorID: vendorId,
+                            VendorName: vendorName,
+                            Email: email,
+                            PhoneNumber: phoneNumber,
+                            Address: address,
+                            GSTNO: gstNo,
+                            GSTPercentage: gstPercent
+                        };
+                        vendorSet = true;
+                    }
+
+                    let baseCost = qty * price;
+                    let costWithGST = baseCost + (baseCost * gstPercent / 100);
+
+                    materials.push({
+                        Description: material,
+                        QtyOrdered: qty,
+                        UnitPrice: price,
+                        Total: costWithGST.toFixed(2)
+                    });
+                }
+
+            });
+            console.debug("Final materials array:", materials);
+
+            if (hasError || materials.length === 0) return;
+
+            $('#VendorName').val(vendorDetails.VendorName);
+            $('#PhoneNumber').val(vendorDetails.PhoneNumber);  // ✅ Fixed here
+            $('#VendorEmail').val(vendorDetails.Email);
+            $('#VendorAddress').val(vendorDetails.Address);
+            $('#VendorGSTNo').val(vendorDetails.GSTNO);
+            $('#GSTPercent').val(vendorDetails.GSTPercentage);
+            $('#materialJson').val(JSON.stringify(materials));
+
+
+
+            console.log("Final values before submit:", {
+                VendorID: $('#vendorId').val(),
+                VendorName: $('#VendorName').val(),
+                VendorEmail: $('#VendorEmail').val(),
+                PhoneNumber: $('#PhoneNumber').val(),
+                VendorAddress: $('#VendorAddress').val(),
+                VendorGSTNo: $('#VendorGSTNo').val(),
+                GSTPercent: $('#GSTPercent').val(),
+                materialJson: $('#materialJson').val()
+            });
+
+
+            $('#generatePOForm').submit();
+
+        });
+
+    });
+</script>

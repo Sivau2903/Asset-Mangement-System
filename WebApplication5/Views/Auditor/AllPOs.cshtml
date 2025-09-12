@@ -1,0 +1,91 @@
+﻿@model IEnumerable<IGrouping<string, WebApplication5.Models.PurchaseOrder>>
+
+@{
+    ViewBag.Title = "Auditor Dashboard";
+    Layout = "~/Views/Shared/_AuditorLayout.cshtml"; // Update as per your layout
+}
+
+<!-- Bootstrap Styles -->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+<style>
+    .card-header {
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+        .card-header:hover {
+            background-color: #0056b3;
+        }
+
+    .card-body {
+        background-color: #f8f9fa;
+    }
+
+    .po-link {
+        display: block;
+        padding: 10px;
+        border-bottom: 1px solid #dee2e6;
+        text-decoration: none;
+        color: #333;
+        transition: background-color 0.2s ease;
+    }
+
+        .po-link:hover {
+            background-color: #e2e6ea;
+            text-decoration: none;
+        }
+
+    .card {
+        margin-bottom: 20px;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+    }
+
+    .university-name {
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+
+    .icon {
+        margin-right: 8px;
+    }
+</style>
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Audit Purchase Orders by University</h2>
+
+    @foreach (var group in Model)
+    {
+        var collapseId = "collapse_" + group.Key.Replace(" ", "").Replace(".", "").Replace("&", "");
+        <div class="card">
+            <div class="card-header" data-toggle="collapse" data-target="#@collapseId" aria-expanded="false" aria-controls="@collapseId">
+                <span class="university-name"><i class="fas fa-university icon"></i>@group.Key</span>
+            </div>
+            <div id="@collapseId" class="collapse">
+                <div class="card-body">
+                    @if (!group.Any())
+                    {
+                        <p>No PO Numbers found.</p>
+                    }
+                    else
+                    {
+                        foreach (var po in group)
+                        {
+                            <a class="po-link" href="@Url.Action("PODetails", "Auditor", new { poNumber = po.PONumber })">
+                                <i class="fas fa-file-alt icon"></i>PO Number: <strong>@po.PONumber</strong>
+                            </a>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Font Awesome for icons -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>

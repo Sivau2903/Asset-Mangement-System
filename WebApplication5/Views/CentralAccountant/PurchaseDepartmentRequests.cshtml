@@ -1,0 +1,109 @@
+﻿@model List<WebApplication5.Models.CentralSentRequest>
+
+@{
+    Layout = "~/Views/Shared/_centralAccountant.cshtml";
+
+    ViewBag.Title = "MyRequests";
+}
+
+
+
+@if (Model != null && Model.Any())
+{
+    var groupedRequests = Model.GroupBy(r => r.OrderedDate.Date)
+                            .OrderByDescending(g => g.Key);
+
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>S.No</th>
+                <th>Requested Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{ int serialNumber = 1; }
+            @foreach (var group in groupedRequests)
+            {
+                <tr class="request-date-row" data-date="@group.Key.ToString("yyyy-MM-dd")">
+                    <td class="text-center"><strong>@serialNumber</strong></td>
+                    <td class="text-center bg-info text-white" style="cursor: pointer;">
+                        <strong>@group.Key.ToString("dd-MMM-yyyy")</strong> <i class="fas fa-chevron-down"></i>
+                    </td>
+                </tr>
+
+                <!-- Hidden details row -->
+                <tr class="request-details-row" data-date="@group.Key.ToString("yyyy-MM-dd")" style="display: none;">
+                    <td colspan="2">
+                        <table class="table table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Request ID</th>
+                                    <th>Material Subcategory</th>
+                                    <th>Ordered Quantity</th>
+
+                                    <th>Vendor ID</th>
+                                    <th>Price Per Quantity</th>
+                                    <th>Ordered Date</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var request in group)
+                                {
+                                    <tr data-requestid="@request.RequestID">
+                                        <td>@request.RequestID</td>
+                                        <td>@request.MaterialSubCategory</td>
+                                        <td>@request.OrderedQuantity</td>
+                                        @*<td>@request.Status</td>*@
+                                        <td>@request.VendorID</td>
+                                        <td>@request.PricePerQuantity</td>
+                                        <td>@request.OrderedDate</td>
+
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+
+                serialNumber++;
+            }
+        </tbody>
+    </table>
+
+
+}
+else
+{
+    <div class="alert alert-warning">No raised requests found.</div>
+}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        console.log("jQuery Loaded Successfully");
+
+        $(".request-date-row").click(function () {
+            var date = $(this).data("date");
+            var detailsRow = $(".request-details-row[data-date='" + date + "']");
+
+            if (detailsRow.is(":visible")) {
+                detailsRow.hide();
+                $(this).find("i").removeClass("fa-chevron-up").addClass("fa-chevron-down");
+            } else {
+                detailsRow.show();
+                $(this).find("i").removeClass("fa-chevron-down").addClass("fa-chevron-up");
+            }
+        });
+
+        var selectedRequestId = null;
+
+
+
+    });
+
+</script>

@@ -1,0 +1,41 @@
+﻿@model WebApplication5.Models.CentralAccountant
+@{
+    Layout = "~/Views/Shared/_centralAccountant.cshtml";
+    ViewBag.Title = "UpdateBudget";
+}
+
+<style>
+    footer {
+        position: fixed;
+    }
+
+    .form-control {
+        min-width: 200px;
+    }
+</style>
+
+<div class="container mt-5">
+    <h2 class="text-primary text-center mb-4">Update Available Budget</h2>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @using (Html.BeginForm("UpdateBudget", "CentralAccountant", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        <div class="row align-items-end mb-3">
+            <div class="col-auto">
+                <label for="AvailableBudget" class="form-label">Available Budget</label>
+                <input type="number" step="0.01" name="AvailableBudget" value="@Model.Budget" class="form-control" required />
+            </div>
+            <div class="col-auto mt-4">
+                <button type="submit" class="btn btn-primary">Update</button>
+            </div>
+        </div>
+    }
+</div>
