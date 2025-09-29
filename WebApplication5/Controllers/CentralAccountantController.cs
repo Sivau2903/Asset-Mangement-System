@@ -11,11 +11,11 @@ namespace WebApplication5.Controllers
     public class CentralAccountantController : BaseController
     {
         private readonly ASPEntities2 _db = new ASPEntities2();
-        // GET: CentralAccountant 
+       
 
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            if (Session["UserID"] == null) // Check if session exists
+            if (Session["UserID"] == null) 
             {
                 filterContext.Result = new RedirectToRouteResult(
                     new RouteValueDictionary(new { controller = "Login", action = "Loginpage" })
@@ -53,7 +53,7 @@ namespace WebApplication5.Controllers
                                   .OrderByDescending(po => po.PODate)
                                   .ToList();
 
-            //ViewBag.DraftPOs = draftPOs;
+          
             ViewBag.DeliveredPOs = deliveredPOs;
 
             return View();
@@ -70,7 +70,7 @@ namespace WebApplication5.Controllers
 
             if (string.IsNullOrEmpty(poNumber))
             {
-                return View(); // return empty if no PO number is passed
+                return View();
             }
 
             var po = _db.CentralPurchaseOrders.FirstOrDefault(p => p.PONumber.ToString() == poNumber);
@@ -126,7 +126,7 @@ namespace WebApplication5.Controllers
             var po = _db.CentralPurchaseOrders.FirstOrDefault(p => p.PONumber.ToString() == poNumber);
             if (po != null)
             {
-                po.Status = "Initiated"; // Or whatever the status field is
+                po.Status = "Initiated"; 
                 _db.SaveChanges();
                 TempData["SuccessMessage"] = $"Payment initiated for PO Number: {poNumber}.";
             }

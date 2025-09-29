@@ -20,7 +20,7 @@ namespace WebApplication5.Models
         public string IssuedBy { get; set; }
         public string QRID { get; set; }
         public string QRImageBase64 { get; set; }
-        public string QRCodeBase64 { get; set; } // <-- Add this property to fix CS1061
+        public string QRCodeBase64 { get; set; } 
         public List<VendorMaterialViewModel> Vendors { get; set; }
         public string EmployeeID { get; internal set; }
         public string MaterialID { get; internal set; }

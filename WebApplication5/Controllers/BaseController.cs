@@ -9,7 +9,7 @@ namespace WebApplication5.Controllers
 {
     public class BaseController : Controller
     {
-        // GET: Base
+      
 
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
@@ -41,7 +41,7 @@ namespace WebApplication5.Controllers
                 return;
             }
 
-            // Prevent caching for all pages to avoid back-navigation after logout
+         
             HttpCachePolicyBase cache = filterContext.HttpContext.Response.Cache;
             cache.SetCacheability(HttpCacheability.NoCache);
             cache.SetNoStore();

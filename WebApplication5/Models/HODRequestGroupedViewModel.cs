@@ -26,6 +26,6 @@ namespace WebApplication5.Models
         [NotMapped]
         public List<Request> Requests { get; set; }
        
-        public List<HODRequestViewModel> AssetDetails { get; set; }  // List of assets under this request
+        public List<HODRequestViewModel> AssetDetails { get; set; } 
     }
 }

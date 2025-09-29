@@ -60,7 +60,7 @@
                                        min="0"
                                        max="@Model.Vendors[i].AvailableQuantity"
                                        data-vendor="@Model.Vendors[i].VendorName"
-                                        data-email="@Model.Vendors[i].vendorEmail"
+                                       data-email="@Model.Vendors[i].vendorEmail"
                                        data-make="@Model.Vendors[i].Make"
                                        data-expiry="@Model.Vendors[i].ExpiryDate"
                                        data-unit="@Model.Vendors[i].Unit"
@@ -76,14 +76,16 @@
         <div class="mb-3">
             <label for="TotalIssuingQuantity" class="form-label text-dark">Total Issuing Quantity</label>
             <div class="input-group">
-                <input type="number" id="TotalIssuingQuantity" class="form-control" readonly />
+                <input type="number" id="TotalIssuingQuantity" class="form-control" readonly required="Required" />
                 <button type="button" class="btn btn-info" id="btnCalculateQuantity">Calculate</button>
             </div>
         </div>
 
         <div class="mb-3 text-end">
             <button type="submit" class="btn btn-primary" id="generateQrBtn">Confirm and Generate QR</button>
+            <button type="button" class="btn btn-secondary ms-2" onclick="closePartial()">Close</button>
         </div>
+
     </form>
 
     <!-- ✅ QR Code Container -->
@@ -91,6 +93,11 @@
 </div>
 
 <script>
+    function closePartial() {
+        $('#issueModal').modal('hide');
+        $('#issueModalContent').empty();
+    }
+
     (function () {
         'use strict';
         var form = document.getElementById('issueMaterialForm');
@@ -99,31 +106,51 @@
         form.addEventListener('submit', function (event) {
             event.preventDefault(); // Stop normal submit
 
-            if (!form.checkValidity()) {
-                event.stopPropagation();
-                form.classList.add('was-validated');
+            // Reset form validation
+            var valid = true;
+            var totalAllocated = 0;
+            var maxRequestQty = parseInt($('#RequestingQuantity').val(), 10) || 0;
+
+            $('.allocate-qty').each(function () {
+                var allocatedQty = parseInt($(this).val(), 10) || 0;
+                var availableQty = parseInt($(this).attr('max'), 10) || 0;
+
+                if (allocatedQty < 0) {
+                    alert("Allocated quantity cannot be negative.");
+                    valid = false;
+                    return false; // break each
+                }
+                if (allocatedQty > availableQty) {
+                    alert("Allocated quantity cannot exceed available quantity (" + availableQty + ").");
+                    valid = false;
+                    return false;
+                }
+
+                totalAllocated += allocatedQty;
+            });
+
+            if (!valid) return;
+
+            // ✅ Check if total quantity is filled
+            if (totalAllocated <= 0) {
+                alert("Please enter allocation for at least one vendor before generating QR.");
+                return; // Stop submission
+            }
+
+            if (totalAllocated > maxRequestQty) {
+                alert("Total issuing quantity (" + totalAllocated + ") cannot exceed requested quantity (" + maxRequestQty + ").");
                 return;
             }
 
-            //var expiryRaw = $(this).data('expiry'); // e.g., "30-09-2025 00:00:00"
-            //var expiryFormatted = null;
-
-            //if (expiryRaw) {
-            //    var parts = expiryRaw.split(' ')[0].split('-'); // ["30","09","2025"]
-            //    expiryFormatted = parts[2] + '-' + parts[1] + '-' + parts[0]; // "2025-09-30"
-            //}
-
-            // Build Vendors JSON
-            // Build Vendors JSON
+            // Build Vendors JSON and set hidden field
             var vendors = [];
             $('.allocate-qty').each(function () {
-                var expiryRaw = $(this).data('expiry'); // e.g., "30-09-2025 00:00:00"
+                var expiryRaw = $(this).data('expiry');
                 var expiryFormatted = null;
-
                 if (expiryRaw && expiryRaw.length > 0) {
-                    var parts = expiryRaw.split(' ')[0].split('-'); // ["30","09","2025"]
+                    var parts = expiryRaw.split(' ')[0].split('-');
                     if (parts.length === 3) {
-                        expiryFormatted = parts[2] + '-' + parts[1] + '-' + parts[0]; // "2025-09-30"
+                        expiryFormatted = parts[2] + '-' + parts[1] + '-' + parts[0]; // "yyyy-MM-dd"
                     }
                 }
 
@@ -131,16 +158,17 @@
                     VendorName: $(this).data('vendor'),
                     VendorEmail: $(this).data('email'),
                     Make: $(this).data('make'),
-                    ExpiryDate: expiryFormatted, // ✅ now in "yyyy-MM-dd" format
+                    ExpiryDate: expiryFormatted,
                     Unit: $(this).data('unit'),
                     MaterialName: $(this).data('material'),
                     AvailableQuantity: $(this).data('available'),
                     SelectedQuantity: $(this).val() || 0
                 });
             });
+
             $('#VendorsJson').val(JSON.stringify(vendors));
 
-
+            // Proceed with AJAX submission
             $.ajax({
                 url: form.action,
                 type: "POST",
@@ -167,7 +195,8 @@
 
         }, false);
 
-        // Calculate total issuing quantity
+
+        // Update total issuing quantity on button click
         $('#btnCalculateQuantity').on('click', function () {
             var total = 0;
             $('.allocate-qty').each(function () {
@@ -176,6 +205,7 @@
             $('#TotalIssuingQuantity').val(total);
         });
     })();
+
 
     function printQR() {
         var img = document.getElementById('generatedQR');

@@ -148,7 +148,7 @@ namespace WebApplication5.Controllers
 
                 foreach (var item in model)
                 {
-                    int requestID = GenerateUniqueRequestID(); // Move inside loop
+                    int requestID = GenerateUniqueRequestID(); 
 
                     Debug.WriteLine($"✅ Generated Request ID: {requestID} for {item.AssetType}, {item.MaterialCategory}, {item.MSubCategory}");
 
@@ -180,7 +180,7 @@ namespace WebApplication5.Controllers
 
                     Request newRequest = new Request
                     {
-                        RequestID = requestID,  // Each item gets a unique ID
+                        RequestID = requestID, 
                         AssetType = assetTypeName,
                         MaterialCategory = categoryName,
                         MSubCategory = subCatName,
@@ -301,7 +301,7 @@ namespace WebApplication5.Controllers
 
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            if (Session["UserID"] == null) // Check if session exists
+            if (Session["UserID"] == null) 
             {
                 filterContext.Result = new RedirectToRouteResult(
                     new RouteValueDictionary(new { controller = "Login", action = "Loginpage" })

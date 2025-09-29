@@ -24,8 +24,8 @@
         }*@
     <hr class="mb-4" />
 
-    @using (Html.BeginForm("HODIssueMaterial", "Home", FormMethod.Post, new { @class = "needs-validation", @novalidate = "novalidate" }))
-    {
+    <form id="issueMaterialForm" method="post" action="@Url.Action("HODIssueMaterial","Home")" class="needs-validation" novalidate>
+
         @Html.HiddenFor(m => m.RequestID)
 
         @Html.HiddenFor(m => m.HODID)
@@ -34,95 +34,221 @@
         @Html.HiddenFor(m => m.MaterialSubCategory)
         @Html.HiddenFor(m => m.AvailableQuantity)
         @Html.HiddenFor(m => m.IssuedBy)
+        @Html.Hidden("VendorsJson", "", new { id = "VendorsJson" })
+
+        <div class="col-md-2">
+            <label class="form-label text-dark">Requesting Quantity</label>
+            @Html.TextBoxFor(m => m.RequestingQuantity, new { @class = "form-control", type = "number", @readonly = "readonly" })
+        </div>
+
+
+
+        <div class="col-md-2">
+            <label class="form-label text-dark">Available Quantity</label>
+            <input class="form-control" type="number" value="@Model.AvailableQuantity" readonly />
+        </div>
+        <div class="col-md-2">
+            <label class="form-label text-dark">Previously Issued</label>
+            @Html.TextBoxFor(m => m.IssuingQuantity, new { @class = "form-control", type = "number", @readonly = "readonly" })
+        </div>
+
 
         <div class="mb-3">
-            <label for="RequestingQuantity" class="form-label text-dark">Requesting Quantity</label>
-            @Html.TextBoxFor(m => m.RequestingQuantity, new { @class = "form-control", type = "number", min = "0", id = "RequestingQuantity", required = "required" })
-            <div class="invalid-feedback">
-                Please enter the requesting quantity.
+            <h5 class="text-dark">Select Vendors & Allocate Quantity</h5>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Vendor Name</th>
+                        <th>Material</th>
+                        <th>Available Qty</th>
+                        <th>Allocate Qty</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Vendors.Count; i++)
+                    {
+                        <tr>
+                            <td>@Model.Vendors[i].VendorName</td>
+                            <td>@Model.Vendors[i].MaterialName</td>
+                            <td>@Model.Vendors[i].AvailableQuantity</td>
+                            <td>
+                                <input type="number"
+                                       class="form-control allocate-qty"
+                                       name="Vendors[@i].SelectedQuantity"
+                                       min="0"
+                                       max="@Model.Vendors[i].AvailableQuantity"
+                                       data-vendor="@Model.Vendors[i].VendorName"
+                                       data-email="@Model.Vendors[i].vendorEmail"
+                                       data-make="@Model.Vendors[i].Make"
+                                       data-expiry="@Model.Vendors[i].ExpiryDate"
+                                       data-unit="@Model.Vendors[i].Unit"
+                                       data-material="@Model.Vendors[i].MaterialName"
+                                       data-available="@Model.Vendors[i].AvailableQuantity" />
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mb-3">
+            <label for="TotalIssuingQuantity" class="form-label text-dark">Total Issuing Quantity</label>
+            <div class="input-group">
+                <input type="number" id="TotalIssuingQuantity" class="form-control" readonly />
+                <button type="button" class="btn btn-info" id="btnCalculateQuantity">Calculate</button>
             </div>
         </div>
 
-
-
-        <div class="mb-3">
-            <label for="AvailableQuantity" class="form-label text-dark">Available Quantity</label>
-            <input class="form-control" type="text" value="@Model.AvailableQuantity" disabled id="AvailableQuantity" />
+        <div class="mb-3 text-end">
+            <button type="submit" class="btn btn-primary" id="generateQrBtn">Confirm and Generate QR</button>
+            <button type="button" class="btn btn-secondary ms-2" onclick="closePartial()">Close</button>
         </div>
 
-        <div class="mb-3">
-            <label for="IssuingQuantity" class="form-label text-dark">Issued Quantity</label>
-            @Html.TextBoxFor(m => m.IssuingQuantity, new { @class = "form-control", type = "number", min = "0", id = "IssuingQuantity", @readonly = "Readonly" })
-            <div class="invalid-feedback">
-                Please enter the issuing quantity.
-            </div>
-        </div>
+    </form>
 
-        <div class="mb-3">
-            <label for="IssuingQuantity" class="form-label text-dark">Issuing Quantity</label>
-            @Html.TextBoxFor(m => m.Issue, new { @class = "form-control", type = "number", min = "0", id = "IssuingQuantity", required = "required" })
-            <div class="invalid-feedback">
-                Please enter the issuing quantity.
-            </div>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Confirm Issue</button>
-    }
+            <!-- ✅ QR Code Container -->
+            <div id="qrContainer" class="text-center mt-4" style="display:none;"></div>
+        
 </div>
 
 <script>
-    (function () {
-        'use strict'
-
-        var forms = document.querySelectorAll('.needs-validation')
-
-        Array.prototype.slice.call(forms)
-            .forEach(function (form) {
-                form.addEventListener('submit', function (event) {
-                    if (!form.checkValidity()) {
-                        event.preventDefault()
-                        event.stopPropagation()
-                    }
-                    form.classList.add('was-validated')
-                }, false)
-            })
-    })();
-
-    function safeParseInt(value) {
-        let parsed = parseInt(value);
-        return isNaN(parsed) ? 0 : parsed;
+  
+    function closePartial() {
+        $('#issueModal').modal('hide');
+        $('#issueModalContent').empty();
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
-        const issuingQtyInput = document.querySelector('#IssuingQuantity');
-        const requestingQtyInput = document.querySelector('#RequestingQuantity');
-        const previousIssuedQtyInput = document.querySelector('#PreviousIssuedQuantity');
-        const modal = new bootstrap.Modal(document.getElementById('validationModal'));
-        const modalBody = document.getElementById('validationModalBody');
+    (function () {
+        'use strict';
+        var form = document.getElementById('issueMaterialForm');
+        if (!form) return;
 
-        if (issuingQtyInput && requestingQtyInput && previousIssuedQtyInput) {
-            issuingQtyInput.addEventListener('change', function (event) {
-                let issuingQty = safeParseInt(event.target.value);
-                let requestingQty = safeParseInt(requestingQtyInput.value);
-                let previousIssuedQty = safeParseInt(previousIssuedQtyInput.value);
+        form.addEventListener('submit', function (event) {
+            event.preventDefault(); // Stop normal submit
 
-                console.log("IssuingQty:", issuingQty, "RequestingQty:", requestingQty, "PrevIssuedQty:", previousIssuedQty);
+            // Reset form validation
+            var valid = true;
+            var totalAllocated = 0;
+            var maxRequestQty = parseInt($('#RequestingQuantity').val(), 10) || 0;
 
-                if (issuingQty > requestingQty) {
-                    modalBody.textContent = "Issuing Quantity should not be greater than the Requesting Quantity (" + requestingQty + ").";
-                    modal.show();
-                    event.target.value = previousIssuedQty;
-                } else if (issuingQty < previousIssuedQty) {
-                    modalBody.textContent = "Issuing Quantity should not be less than the previously issued quantity (" + previousIssuedQty + ").";
-                    modal.show();
-                    event.target.value = previousIssuedQty;
+            $('.allocate-qty').each(function () {
+                var allocatedQty = parseInt($(this).val(), 10) || 0;
+                var availableQty = parseInt($(this).attr('max'), 10) || 0;
+
+                if (allocatedQty < 0) {
+                    alert("Allocated quantity cannot be negative.");
+                    valid = false;
+                    return false; // break each
+                }
+                if (allocatedQty > availableQty) {
+                    alert("Allocated quantity cannot exceed available quantity (" + availableQty + ").");
+                    valid = false;
+                    return false;
+                }
+
+                totalAllocated += allocatedQty;
+            });
+
+            if (!valid) return;
+
+            // ✅ Check if total quantity is filled
+            if (totalAllocated <= 0) {
+                alert("Please enter allocation for at least one vendor before generating QR.");
+                return; // Stop submission
+            }
+
+            if (totalAllocated > maxRequestQty) {
+                alert("Total issuing quantity (" + totalAllocated + ") cannot exceed requested quantity (" + maxRequestQty + ").");
+                return;
+            }
+
+            // Build Vendors JSON and set hidden field
+            var vendors = [];
+            $('.allocate-qty').each(function () {
+                var expiryRaw = $(this).data('expiry');
+                var expiryFormatted = null;
+                if (expiryRaw && expiryRaw.length > 0) {
+                    var parts = expiryRaw.split(' ')[0].split('-');
+                    if (parts.length === 3) {
+                        expiryFormatted = parts[2] + '-' + parts[1] + '-' + parts[0]; // "yyyy-MM-dd"
+                    }
+                }
+
+                vendors.push({
+                    VendorName: $(this).data('vendor'),
+                    VendorEmail: $(this).data('email'),
+                    Make: $(this).data('make'),
+                    ExpiryDate: expiryFormatted,
+                    Unit: $(this).data('unit'),
+                    MaterialName: $(this).data('material'),
+                    AvailableQuantity: $(this).data('available'),
+                    SelectedQuantity: $(this).val() || 0
+                });
+            });
+
+            $('#VendorsJson').val(JSON.stringify(vendors));
+
+            // Proceed with AJAX submission
+            $.ajax({
+                url: form.action,
+                type: "POST",
+                data: new FormData(form),
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response.success) {
+                        $("#qrContainer").show().html(
+                            '<h5 class="text-success mb-3">QR Generated Successfully!</h5>' +
+                            '<img id="generatedQR" src="' + response.qrImage + '" style="width:200px;height:200px;" />' +
+                            '<p class="mt-2"><strong>QR ID:</strong> ' + response.qrID + '</p>' +
+                            '<a href="' + response.qrUrl + '" target="_blank" class="d-block mb-2">' + response.qrUrl + '</a>' +
+                            '<button type="button" class="btn btn-outline-primary mt-2" onclick="printQR()">Print QR</button>'
+                        );
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function () {
+                    alert("Error processing request.");
                 }
             });
-        } else {
-            console.error("[ERROR] One or more input fields missing. Check input IDs.");
+
+        }, false);
+
+
+        // Update total issuing quantity on button click
+        $('#btnCalculateQuantity').on('click', function () {
+            var total = 0;
+            $('.allocate-qty').each(function () {
+                total += parseInt($(this).val(), 10) || 0;
+            });
+            $('#TotalIssuingQuantity').val(total);
+        });
+    })();
+
+
+        function printQR() {
+        var img = document.getElementById('generatedQR');
+        if (!img) {
+            alert("QR Code not found!");
+        return;
         }
-    });
+        var win = window.open('', '_blank');
+        win.document.write('<html><head><title>Print QR</title></head><body style="text-align:center;">');
+            win.document.write('<h3>Issued Asset QR Code</h3>');
+            win.document.write('<img src="' + img.src + '" style="width:300px;height:300px;" />');
+            win.document.write('</body></html>');
+        win.document.close();
+        win.focus();
+        win.print();
+    }
+
+        function closePartial() {
+            $('#issueModal').modal('hide');
+        $('#issueModalContent').empty();
+    }
 </script>
+
 
 
 

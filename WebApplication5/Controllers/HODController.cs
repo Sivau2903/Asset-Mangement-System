@@ -41,7 +41,7 @@ namespace WebApplication5.Controllers
                 return RedirectToAction("HODDashBoard");
             }
 
-            // Fetching and grouping requests
+           
             var query = db.Requests
                 .Where(r => r.HODID == hod.HODID && r.Status == "New")
                 .OrderByDescending(r => r.RequestDate)
@@ -69,7 +69,7 @@ namespace WebApplication5.Controllers
                 })
                 .ToList();
 
-            // Apply filters
+           
             if (fromDate.HasValue)
             {
                 query = query.Where(r => r.RequestDate >= fromDate.Value.Date).ToList();
@@ -81,14 +81,14 @@ namespace WebApplication5.Controllers
                 query = query.Where(r => r.RequestDate <= inclusiveToDate).ToList();
             }
 
-            // Pagination
+           
             int totalRequests = query.Count();
             var pagedRequests = query
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
 
-            // Create the wrapper ViewModel
+         
             var model = new HODDashboardViewModel
             {
                 Requests = pagedRequests,
@@ -136,7 +136,7 @@ namespace WebApplication5.Controllers
                     return Json(new { success = false, message = "Unauthorized access." });
                 }
 
-                // ✅ Fetch the HOD's UniversityID
+            
                 var hod = db.HODs.FirstOrDefault(e => e.HODID.ToString() == userID);
                 if (hod == null)
                 {
@@ -145,7 +145,7 @@ namespace WebApplication5.Controllers
 
                 var universityID = hod.UniversityID;
 
-                // ✅ Find the corresponding Store Admin with the same UniversityID
+                
                 var storeAdmin = db.StoreAdmins.FirstOrDefault(e => e.UniversityID == universityID );
 
                 if (storeAdmin == null)
@@ -153,7 +153,7 @@ namespace WebApplication5.Controllers
                     return Json(new { success = false, message = "No Store Admin found for this University." });
                 }
 
-                var storeAdminID = storeAdmin.StoreAdminID; // ✅ Store Admin ID fetched
+                var storeAdminID = storeAdmin.StoreAdminID; 
 
                 var existingRequest = db.Requests.FirstOrDefault(r => r.RequestID == requestId && r.MSubCategory == msubCategory);
                 if (existingRequest == null)
@@ -161,7 +161,7 @@ namespace WebApplication5.Controllers
                     return Json(new { success = false, message = "Request not found." });
                 }
 
-                // Perform updates based on action type
+              
                 if (actionType != null)
                 {
                     switch (actionType.ToLower())
@@ -178,24 +178,24 @@ namespace WebApplication5.Controllers
                             }
 
                             existingRequest.ApprovedQuantity = approvingQuantity.Value;
-                            existingRequest.StoreAdminID = storeAdminID; // ✅ Save StoreAdminID in Request table
+                            existingRequest.StoreAdminID = storeAdminID; 
 
-                            // Set status & PendingQuantity
+                           
                             if (approvingQuantity == existingRequest.RequestingQuantity)
                             {
-                                existingRequest.Status = "Approved"; // Fully approved
+                                existingRequest.Status = "Approved"; 
                                 existingRequest.PendingQuantity = 0;
                             }
                             else
                             {
-                                existingRequest.Status = "Ongoing"; // Partial approval
+                                existingRequest.Status = "Ongoing"; 
                                 existingRequest.PendingQuantity = existingRequest.RequestingQuantity - approvingQuantity.Value;
                             }
                             break;
 
                         case "reject":
                             existingRequest.Status = "Rejected";
-                            existingRequest.Remarks = remarks ?? "Rejected"; // Default remark if null
+                            existingRequest.Remarks = remarks ?? "Rejected"; 
                             break;
 
                         default:
@@ -219,12 +219,12 @@ namespace WebApplication5.Controllers
 
 
 
-        // Add this at the top
+       
 
         [HttpGet]
         public ActionResult EmployeeRequests(DateTime? fromDate, DateTime? toDate)
         {
-            // Validate HOD
+           
             string userID = Session["UserID"] as string;
             string userRole = Session["UserRole"] as string;
             if (string.IsNullOrEmpty(userID) || userRole != "HOD")
@@ -233,7 +233,7 @@ namespace WebApplication5.Controllers
                 return RedirectToAction("HODDashboard");
             }
 
-            // Find HOD
+           
             var hod = db.HODs.FirstOrDefault(h => h.HODID.ToString() == userID);
             if (hod == null)
             {
@@ -241,7 +241,7 @@ namespace WebApplication5.Controllers
                 return RedirectToAction("HODDashboard");
             }
 
-            // Base query: requests for this HOD excluding "New" status
+           
             var allRequests = db.Requests
                 .Where(r => r.HODID == hod.HODID && r.Status != "New");
 
@@ -256,7 +256,7 @@ namespace WebApplication5.Controllers
                 allRequests = allRequests.Where(r => r.RequestDate <= inclusiveToDate);
             }
 
-            // Sort each status group descending by date
+           
             var ongoing = allRequests
                 .Where(r => r.Status == "Ongoing")
                 .OrderByDescending(r => r.RequestDate)
@@ -284,7 +284,7 @@ namespace WebApplication5.Controllers
 
 
 
-        // GET: HOD
+       
         [HttpGet]
         public ActionResult RaiseRequest()
         {
@@ -492,7 +492,7 @@ namespace WebApplication5.Controllers
 
                 foreach (var item in model)
                 {
-                    int hodrequestID = GenerateUniqueRequestID(); // Move inside loop
+                    int hodrequestID = GenerateUniqueRequestID(); 
 
                     Debug.WriteLine($"✅ Generated Request ID: {hodrequestID} for {item.AssetType}, {item.MaterialCategory}, {item.MSubCategory}");
 
@@ -524,7 +524,7 @@ namespace WebApplication5.Controllers
 
                     HODRequest newhodRequest = new HODRequest
                     {
-                        HODRequestID = hodrequestID,  // Each item gets a unique ID
+                        HODRequestID = hodrequestID,  
                         AssetType = assetTypeName,
                         MaterialCategory = categoryName,
                         MSubCategory = subCatName,
@@ -599,13 +599,13 @@ namespace WebApplication5.Controllers
                 return RedirectToAction("HODDashBoard");
             }
 
-            // Grouping requests by HODRequestID
+           
             var myrequests = db.HODRequests
                 .Where(r => r.HODID == hod.HODID)
                 .OrderByDescending(r => r.RequestedDate)
                 .ToList()
-                .GroupBy(r => r.HODRequestID) // Group by RequestID
-                .Select((group, index) => new HODRequestGroupedViewModel  // Use Grouped ViewModel
+                .GroupBy(r => r.HODRequestID) 
+                .Select((group, index) => new HODRequestGroupedViewModel 
                 { 
                 SNo = index + 1,
                     HODRequestID = group.Key ?? 0,
@@ -647,7 +647,7 @@ namespace WebApplication5.Controllers
         }
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            if (Session["UserID"] == null) // Check if session exists
+            if (Session["UserID"] == null) 
             {
                 filterContext.Result = new RedirectToRouteResult(
                     new RouteValueDictionary(new { controller = "Login", action = "Loginpage" })

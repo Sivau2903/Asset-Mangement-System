@@ -17,8 +17,7 @@ namespace WebApplication5.Controllers
     public class LoginController : Controller
     {
         private readonly ASPEntities2 _db = new ASPEntities2();
-        // GET: Login
-
+       
         [OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
         public ActionResult Loginpage()
         {
@@ -31,7 +30,7 @@ namespace WebApplication5.Controllers
         {
             Debug.WriteLine("Login attempt started.");
 
-            // Validate CAPTCHA
+            
             string captchaStored = Session["Captcha"] as string;
             if (captchaStored == null || CaptchaInput == null || !captchaStored.Equals(CaptchaInput, StringComparison.OrdinalIgnoreCase))
             {
@@ -168,7 +167,7 @@ namespace WebApplication5.Controllers
         {
             using (var bitmap = new Bitmap(130, 40))
             using (var g = Graphics.FromImage(bitmap))
-            using (var font = new System.Drawing.Font("Arial", 20, FontStyle.Bold)) // ✅ Fix for ambiguity
+            using (var font = new System.Drawing.Font("Arial", 20, FontStyle.Bold)) 
             {
                 g.Clear(Color.White);
                 g.DrawString(captchaText, font, Brushes.Black, new PointF(10, 5));
@@ -182,7 +181,7 @@ namespace WebApplication5.Controllers
 
                 using (var ms = new MemoryStream())
                 {
-                    bitmap.Save(ms, ImageFormat.Png); // ✅ Requires using System.Drawing.Imaging;
+                    bitmap.Save(ms, ImageFormat.Png); 
                     return ms.ToArray();
                 }
             }
@@ -218,7 +217,7 @@ namespace WebApplication5.Controllers
         [HttpGet]
         public ActionResult MyProfile()
         {
-            // 1) Check session
+          
             if (Session["UserID"] == null || Session["UserRole"] == null)
             {
                 return RedirectToAction("Loginpage");
@@ -227,16 +226,14 @@ namespace WebApplication5.Controllers
             var userIdObj = Session["UserID"];
             var role = Session["UserRole"].ToString();
 
-            // Convert userIdObj to the correct type if needed
-            // e.g. int userId = (int)userIdObj; 
-            // If your UserID is string in the DB, adjust accordingly
+          
             string userId = (string)Session["UserID"];
 
 
-            // 2) Prepare a profile view model
+           
             var profileVM = new Profileviewmodel();
 
-            // 3) Depending on role, fetch from correct table
+           
             if (role == "Employee")
             {
                 var emp = _db.Employees.FirstOrDefault(e => e.EmpID == userId);
@@ -265,7 +262,7 @@ namespace WebApplication5.Controllers
             }
             else if (role == "Admin")
             {
-                // Example: If Admin data is stored in StoreAdmins table
+               
                 var admin = _db.StoreAdmins.FirstOrDefault(a => a.StoreAdminID.ToString() == userId);
                 if (admin != null)
                 {
@@ -273,27 +270,13 @@ namespace WebApplication5.Controllers
                     profileVM.ID = admin.StoreAdminID;
                     profileVM.Email = admin.EmailID;
                     profileVM.PhoneNumber = admin.PhoneNumber;
-                    // Admin may not have a department
+                   
                     profileVM.Department = "N/A";
                     profileVM.Role = "Admin";
                 }
             }
 
-            //else if (role == "SuperAdmin")
-            //{
-            //    // Example: If Admin data is stored in StoreAdmins table
-            //    var superadmin = _db.Universities.FirstOrDefault(a => a.UniversityId.ToString() == userId);
-            //    if (superadmin != null)
-            //    {
-            //        profileVM.Name = superadmin.UniversityName;
-            //        profileVM.ID = superadmin.UniversityId;
-            //        //profileVM.Email = admin.EmailID;
-            //        //profileVM.PhoneNumber = admin.PhoneNumber;
-            //        // Admin may not have a department
-            //        profileVM.Department = "N/A";
-            //        profileVM.Role = "SuperAdmin";
-            //    }
-            //}
+     
             else if (role == "LocalAccountant")
             {
                 var hod = _db.LocalAccountants.FirstOrDefault(h => h.LocalAccountantID.ToString() == userId);
@@ -308,19 +291,7 @@ namespace WebApplication5.Controllers
                 }
             }
 
-            //else if (role == "LocalVendor")
-            //{
-            //    var hod = _db.VendorDetails.FirstOrDefault(h => h.VID.ToString() == userId);
-            //    if (hod != null)
-            //    {
-            //        profileVM.Name = hod.FirstName + " " + hod.LastName;
-            //        profileVM.ID = hod.VID;
-            //        profileVM.Email = hod.EmailID;
-            //        profileVM.PhoneNumber = hod.PhoneNumber;
-            //        //profileVM.Department = "N/A";
-            //        profileVM.Role = "LocalVendor";
-            //    }
-            //}
+            
 
             else if (role == "CentralAccountant")
             {
@@ -363,19 +334,7 @@ namespace WebApplication5.Controllers
                 }
             }
 
-            //else if (role == "CentralVendor")
-            //{
-            //    var hod = _db.CentralVendorDetails.FirstOrDefault(h => h.CVID.ToString() == userId);
-            //    if (hod != null)
-            //    {
-            //        profileVM.Name = hod.FirstName + " " + hod.LastName;
-            //        profileVM.ID = hod.CVID;
-            //        profileVM.Email = hod.EmailID;
-            //        profileVM.PhoneNumber = hod.PhoneNumber;
-            //        //profileVM.Department = hod.DepName;
-            //        profileVM.Role = "CentralVendor";
-            //    }
-            //}
+           
 
             else if (role == "localPurchaseD")
             {
@@ -420,7 +379,6 @@ namespace WebApplication5.Controllers
                 }
             }
 
-            // 4) Return partial view with the data
             return PartialView("_MyProfilePartial", profileVM);
         }
 
@@ -449,13 +407,13 @@ namespace WebApplication5.Controllers
                 return View();
             }
 
-            // Generate OTP
+          
             string otp = new Random().Next(100000, 999999).ToString();
 
             Session["OTP"] = otp;
             Session["ResetEmail"] = email;
 
-            // Send OTP Email
+           
             try
             {
                 using (var message = new MailMessage())
@@ -483,14 +441,14 @@ namespace WebApplication5.Controllers
             }
         }
 
-        // Get OTP Verification page
+        
         [HttpGet]
         public ActionResult VerifyOTP()
         {
             return View();
         }
 
-        // Post OTP Verification
+      
        
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -504,7 +462,7 @@ namespace WebApplication5.Controllers
 
             if (otp == Session["OTP"].ToString())
             {
-                // OTP verified
+              
                 return RedirectToAction("ResetPassword");
             }
             else

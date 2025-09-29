@@ -242,6 +242,10 @@
           <Property Name="Status" Type="nvarchar" MaxLength="50" />
           <Property Name="HODRequestID" Type="int" />
           <Property Name="AvailableQuantity" Type="int" />
+          <Property Name="IssuedBy" Type="nchar" MaxLength="100" />
+          <Property Name="IssuedDate" Type="datetime" />
+          <Property Name="ClosingQuantity" Type="int" />
+          <Property Name="Remarks" Type="nvarchar" MaxLength="300" />
         </EntityType>
         <EntityType Name="IssuedQRDetails">
           <Key>
@@ -1396,6 +1400,10 @@
           <Property Name="Status" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="HODRequestID" Type="Int32" />
           <Property Name="AvailableQuantity" Type="Int32" />
+          <Property Name="IssuedBy" Type="String" MaxLength="100" FixedLength="true" Unicode="true" />
+          <Property Name="IssuedDate" Type="DateTime" Precision="3" />
+          <Property Name="ClosingQuantity" Type="Int32" />
+          <Property Name="Remarks" Type="String" MaxLength="300" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="HODIssueMaterial">
           <Key>
@@ -1923,6 +1931,10 @@
           <EntitySetMapping Name="HODRequests">
             <EntityTypeMapping TypeName="ASPModel.HODRequest">
               <MappingFragment StoreEntitySet="HODRequest">
+                <ScalarProperty Name="Remarks" ColumnName="Remarks" />
+                <ScalarProperty Name="ClosingQuantity" ColumnName="ClosingQuantity" />
+                <ScalarProperty Name="IssuedDate" ColumnName="IssuedDate" />
+                <ScalarProperty Name="IssuedBy" ColumnName="IssuedBy" />
                 <ScalarProperty Name="AvailableQuantity" ColumnName="AvailableQuantity" />
                 <ScalarProperty Name="HODRequestID" ColumnName="HODRequestID" />
                 <ScalarProperty Name="Status" ColumnName="Status" />

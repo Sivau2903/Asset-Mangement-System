@@ -47,10 +47,10 @@ namespace WebApplication5.Controllers
 
             var viewModel = new AuditPOViewModel
             {
-                PONumber = po.PONumber.ToString(), // Add this for routing
+                PONumber = po.PONumber.ToString(), 
                 UniversityName = po.UniversityName,
                 IUCDApprovalDoc = po.IUCDApprovalDoc,
-                PODetails = po.PODetails,  // 🟢 Keep as byte[]
+                PODetails = po.PODetails, 
                 StoreUploads = po.StoreUploads,
                 MRVDetails = po.MRVDetails,
                 //InvoiceDetails = po.InvoiceDetails
@@ -74,23 +74,23 @@ namespace WebApplication5.Controllers
         [HttpPost]
         public ActionResult ApprovePO(string PONumber, string AccountantMessage)
         {
-            // Get logged-in Auditor ID
+           
             string auditorId = Session["UserID"]?.ToString();
 
-            // Fetch the PO
+           
             var po = _db.PurchaseOrders.FirstOrDefault(p => p.PONumber.ToString() == PONumber);
             if (po != null)
             {
                 po.Status = "Approved by Auditor";
                 po.Statement = AccountantMessage;
 
-                // Step 1: Get the university
+                
                 var university = _db.Universities
                     .FirstOrDefault(u => u.UniversityName.Trim().Equals(po.UniversityName.Trim(), StringComparison.OrdinalIgnoreCase));
 
                 if (university != null)
                 {
-                    // Step 2: Find Local Accountant for this UniversityID
+                    
                     var localAccountant = _db.LocalAccountants
                         .FirstOrDefault(la => la.UniversityID == university.UniversityId);
 
@@ -100,7 +100,7 @@ namespace WebApplication5.Controllers
                     }
                 }
 
-                // Optionally store who approved it
+                
                 //po.ApprovedBy = auditorId;
 
                 _db.SaveChanges();
@@ -129,13 +129,13 @@ namespace WebApplication5.Controllers
                 }
                 else if (SendBackTo == "StoreDepartment")
                 {
-                    // Get UniversityID from UniversityName
+                   
                     var university = _db.Universities
                         .FirstOrDefault(u => u.UniversityName.Trim().Equals(po.UniversityName.Trim(), StringComparison.OrdinalIgnoreCase));
 
                     if (university != null)
                     {
-                        // Find StoreAdmin for the university
+                        
                         var storeAdmin = _db.StoreAdmins
                             .FirstOrDefault(sa => sa.UniversityID == university.UniversityId);
 

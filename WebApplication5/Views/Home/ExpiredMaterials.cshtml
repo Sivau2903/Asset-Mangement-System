@@ -1,28 +1,63 @@
-﻿@model List<WebApplication5.Models.MaterialMasterList>
-
+﻿@model  List<WebApplication5.Models.MaterialAvailable>
 @{
     ViewBag.Title = "Expired Materials";
 }
 
-<h3 class="text-center">Expired Materials</h3>
+<div class="container mt-4">
+    <h3 class="text-danger mb-4">Expired Materials with Available Stock</h3>
+    <hr />
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>SNo</th>
-            <th>Material Name</th>
-            <th>Expiry Date</th>
-        </tr>
-    </thead>
-    <tbody>
-        @for (int i = 0; i < Model.Count; i++)
-        {
-            <tr>
-                <td>@(i + 1)</td>
-                <td>@Model[i].MaterialSubCategory</td>
-                <td>@string.Format("{0:dd-MM-yyyy}", Model[i].ExpiryDate)</td>
+    <div class="table-responsive" style="max-height:70vh; overflow-y:auto;">
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Material Name</th>
+                    <th>Vendor Name</th>
+                    <th>Available Quantity</th>
+                    <th>Make</th>
+                    <th>Unit</th>
+                    <th>Expiry Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count > 0)
+                {
+                    foreach (var material in Model)
+                    {
+                        <tr>
+                            <td>@material.MaterialName</td>
+                            <td>@material.VendorName</td>
+                            <td>@material.AvailableQty</td>
+                            <td>@material.Make</td>
+                            <td>@material.Unit</td>
+                            <td>@material.ExpiryDate</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">No expired materials found.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 
-            </tr>
-        }
-    </tbody>
-</table>
+    <div class="mt-3">
+        <a href="@Url.Action("StoreAdminDasBoard", "Home")" class="btn btn-secondary">Back</a>
+    </div>
+</div>
+
+<style>
+    .table-responsive {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 10px;
+        background-color: #fff;
+    }
+
+    .table th, .table td {
+        vertical-align: middle;
+    }
+</style>

@@ -17,7 +17,7 @@ namespace WebApplication5.Controllers
     public class CentralPurchaseDepartmentController : BaseController
     {
         private readonly ASPEntities2 _db = new ASPEntities2();
-        // GET: CentralPurchaseDepartment
+       
         public ActionResult CPDDashBoard()
         {
             string userId = Session["UserID"]?.ToString();
@@ -56,7 +56,7 @@ namespace WebApplication5.Controllers
                     file.SaveAs(filePath);
                     var virtualPath = "~/UploadedDocs/" + fileName;
 
-                    // Store in correct field based on input name
+                 
                     if (fileKey == "CommityApprovedDoc")
                     {
                         po.CommityApprovedDoc = virtualPath;
@@ -94,7 +94,7 @@ namespace WebApplication5.Controllers
                                       MaterialName = request.Material,
                                       RequestedDate = request.RequestedDate,
                                       OrderQuantity = request.Order_Quantity,
-                                      IUCDApprovedQty = request.IUCDApprovedQty ?? 0, // Explicitly handle nullable int  
+                                      IUCDApprovedQty = request.IUCDApprovedQty ?? 0,
                                       PurchaseDepartmentUploads = request.PurchaseDepartmentUploads,
                                       CentralID = request.CentralID,
                                       Status = request.Status
@@ -107,7 +107,7 @@ namespace WebApplication5.Controllers
 
         public JsonResult GetAvailableBudget()
         {
-            string sessionID = (string)Session["UserID"]; // Adjust based on your session handling
+            string sessionID = (string)Session["UserID"];
             var budget = _db.CentralPurchaseDepartments
                             .Where(lpd => lpd.CentralID == sessionID)
                             .Select(lpd => lpd.Budget)
@@ -136,7 +136,7 @@ namespace WebApplication5.Controllers
                 TempData["University"] is University university &&
                 TempData["Central"] is CentralPurchaseDepartment user)
             {
-                // Keep TempData alive for potential future reload
+             
                 TempData.Keep("POViewModel");
                 TempData.Keep("University");
                 TempData.Keep("Central");
@@ -147,7 +147,7 @@ namespace WebApplication5.Controllers
                 return View("CentralGeneratePO", model);
             }
 
-            return RedirectToAction("RequestsRecevied"); // Redirect to default if no data
+            return RedirectToAction("RequestsRecevied"); 
         }
 
 
@@ -164,7 +164,7 @@ namespace WebApplication5.Controllers
             Debug.WriteLine("==== CentralGeneratePO (POST) called ====");
             Debug.WriteLine($"University: {UniversityName}, Vendor: {VendorName}");
 
-            // Fetch university
+           
             var university = _db.Universities.FirstOrDefault(u => u.UniversityName == UniversityName);
             if (university == null)
             {
@@ -172,7 +172,7 @@ namespace WebApplication5.Controllers
                 return HttpNotFound("University not found");
             }
 
-            // Fetch central department user
+            
             string userId = (string)Session["UserID"];
             var user = _db.CentralPurchaseDepartments.FirstOrDefault(u => u.CentralID == userId);
             if (user == null)
@@ -183,7 +183,7 @@ namespace WebApplication5.Controllers
             var decodedJson = HttpUtility.UrlDecode(materialsJson);
             Debug.WriteLine("materialsJson: " + materialsJson);
 
-            // Deserialize materials list
+   
             List<PurchaseOrderItem> materials;
             try
             {
@@ -197,18 +197,18 @@ namespace WebApplication5.Controllers
                 return new HttpStatusCodeResult(400, "Invalid materials data");
             }
 
-            // Generate requisition number
+           
             string requisitionNo = "REQ-" + DateTime.Now.ToString("yyyyMMddHHmmss") + "-" +
                                    Guid.NewGuid().ToString("N").Substring(0, 5).ToUpper();
 
-            // Calculate total quantity and total cost
+           
             int totalQuantity = materials.Sum(m => m.QtyOrdered ?? 0);
             decimal totalCost = materials.Sum(m => m.Total ?? 0);
 
            
 
 
-            // Prepare view model
+         
             var viewModel = new CentralGeneratePOViewModel
             {
                 UniversityName = university.UniversityName,
@@ -243,12 +243,12 @@ namespace WebApplication5.Controllers
             ViewBag.University = university;
             ViewBag.Central = user;
 
-            // Store model for GET reload
+           
             TempData["POViewModel"] = viewModel;
             TempData["University"] = university;
             TempData["Central"] = user;
 
-            // Redirect to GET method
+        
             return RedirectToAction("CentralGeneratePO");
         }
 
@@ -258,17 +258,17 @@ namespace WebApplication5.Controllers
         {
             if (TempData["POModel"] is CentralGeneratePOViewModel model)
             {
-                TempData.Keep("POModel"); // Keep it for next reload if needed
+                TempData.Keep("POModel"); 
                 return View(model);
             }
-            return RedirectToAction("CentralGeneratePO"); // fallback if no model found
+            return RedirectToAction("CentralGeneratePO"); 
         }
 
         [HttpPost]
         public ActionResult PreviewPO(CentralGeneratePOViewModel model)
         {
             TempData["POModel"] = model;
-            return View("PreviewPO", model); // POPreview.cshtml is the preview page
+            return View("PreviewPO", model); 
         }
 
 
@@ -280,7 +280,7 @@ namespace WebApplication5.Controllers
 
             if (!ModelState.IsValid)
             {
-                return View("CentralGeneratePO", model); // Fixed: Return the correct view
+                return View("CentralGeneratePO", model); 
             }
 
             if (!string.IsNullOrEmpty(SerializedItems))
@@ -319,7 +319,7 @@ namespace WebApplication5.Controllers
                 };
 
                 _db.PurchaseOrders.Add(po);
-                _db.SaveChanges(); // Generates PONumber
+                _db.SaveChanges(); 
 
                 if (model.PurchaseOrderItems != null)
                 {
@@ -340,7 +340,7 @@ namespace WebApplication5.Controllers
                 else
                 {
                     ModelState.AddModelError("", "No purchase order items were submitted.");
-                    return View("CentralGeneratePO", model); // Fixed fallback
+                    return View("CentralGeneratePO", model); 
                 }
 
                 _db.SaveChanges();
@@ -352,7 +352,7 @@ namespace WebApplication5.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError("", "Error: " + ex.Message);
-                return View("CentralGeneratePO", model); // Fixed fallback
+                return View("CentralGeneratePO", model); 
             }
         }
 
@@ -375,11 +375,7 @@ namespace WebApplication5.Controllers
             Debug.WriteLine("[DEBUG] Purchase Order found.");
 
             var items = _db.PurchaseOrderItems.Where(i => i.PONumber == PONumber).ToList();
-            Debug.WriteLine($"[DEBUG] Retrieved {items.Count} purchase order items.");
-
-
-
-            // Prepare ViewModel for PDF
+ 
             var model = new CentralGeneratePOViewModel
             {
                 PONumber = po.PONumber.ToString(),
@@ -414,11 +410,11 @@ namespace WebApplication5.Controllers
                 }).ToList()
             };
             Debug.WriteLine("[DEBUG] ViewModel for PDF created.");
-            //Debug.WriteLine($"[DEBUG] CopiesOfInvoice in ViewModel = {model.CopiesOfInvoice}");
+           
 
             Debug.WriteLine("[DEBUG] ViewModel for PDF created.");
 
-            // Generate PDF from View
+          
             var pdf = new Rotativa.ViewAsPdf("POPDFView", model)
             {
                 FileName = $"PurchaseOrder_{PONumber}.pdf"
@@ -430,7 +426,7 @@ namespace WebApplication5.Controllers
 
             po.PODetails = pdfBytes;
 
-            // Email Details
+           
             string toEmail = TempData["VendorEmail"]?.ToString() ?? "default@vendor.com";
             string subject = $"Purchase Order – PO No: {PONumber}";
             string body = $"Dear Vendor,\n\nPlease find attached the Purchase Order #{PONumber}.\n\nRegards,\nICFAI Procurement Team";
@@ -457,8 +453,7 @@ namespace WebApplication5.Controllers
                     }
                 }
 
-                // Update status of relevant materials in SavetoCentral table
-                // Update status of all relevant materials in SavetoCentral table
+               
                 foreach (var item in items)
                 {
                     var matchingRequests = _db.SavetoCentrals
@@ -484,7 +479,7 @@ namespace WebApplication5.Controllers
             catch (Exception)
             {
                 TempData["Error"] = "Failed to send PO.";
-                return RedirectToAction("RequestsRecieved"); // fallback
+                return RedirectToAction("RequestsRecieved"); 
             }
         }
 
@@ -492,13 +487,10 @@ namespace WebApplication5.Controllers
         {
             string userId = (string)Session["UserID"];
 
-            // Get all POs created by this user
-            var purchaseOrders = _db.CentralPurchaseOrders
-                                    .Where(po => po.CreatedBy == userId.ToString())
-                                    .OrderByDescending(po => po.PODate)
-                                    .ToList();
 
-            // Create a ViewModel list for each PO with its items
+            var purchaseOrders = _db.CentralPurchaseOrders
+                                    .Where(po => po.CreatedBy == userId.ToString());
+                        
             var viewModel = purchaseOrders.Select(po => new CentralPurchaseOrderGroupedViewModel
             {
                 PONumber = po.PONumber,
@@ -526,7 +518,7 @@ namespace WebApplication5.Controllers
             Session["PONumberToSend"] = PONumber;
             Session["OTPAttempts"] = 0;
 
-            //SendEmail(user.EmailID, "OTP for PO Email Confirmation", $"Your OTP is: {otp}");
+
 
             string toEmail = user.CentralDepartmentEmail;
             string subject = $"Verification OTP for PO Email Confirmation – OTP:{otp}, PO No: {PONumber}";
@@ -542,7 +534,7 @@ namespace WebApplication5.Controllers
                     message.To.Add(toEmail);
                     message.Subject = subject;
                     message.Body = body;
-                    //message.Attachments.Add(new Attachment(new MemoryStream(pdfBytes), $"PO_{PONumber}.pdf"));
+                  
 
                     using (var smtp = new SmtpClient("smtp.gmail.com", 587))
                     {
@@ -554,7 +546,7 @@ namespace WebApplication5.Controllers
                     }
                 }
 
-                //TempData["OTP"] = true;
+               
                 TempData["PONumber"] = PONumber;
 
                 return View("EnterOTP");
@@ -562,7 +554,7 @@ namespace WebApplication5.Controllers
             catch (Exception)
             {
                 TempData["Error"] = "Failed to send PO.";
-                return RedirectToAction("RequestsReceived"); // fallback
+                return RedirectToAction("RequestsReceived"); 
             }
 
 
@@ -646,7 +638,7 @@ namespace WebApplication5.Controllers
                         //UniversityID = universityId,
                         PricePerUnit = material.PricePerUnit,
                         Address = model.Address,
-                        Material = subCategory?.MaterialSubCategory1, // Only MaterialSubCategory saved
+                        Material = subCategory?.MaterialSubCategory1,
                         GSTPercentage = material.GSTPercentage
                     };
                     _db.CentralVendorDetails.Add(vendor);
@@ -668,8 +660,8 @@ namespace WebApplication5.Controllers
             var categories = _db.MaterialCategories
                 .Where(c => c.AssetTypeID == assetTypeId)
                 .Select(c => new {
-                    id = c.MID,                    // ✅ return MID as id
-                    name = c.MaterialCategory1     // ✅ return name
+                    id = c.MID,                  
+                    name = c.MaterialCategory1     
                 })
                 .ToList();
 
@@ -682,8 +674,8 @@ namespace WebApplication5.Controllers
             var subCategories = _db.MaterialSubCategories
                 .Where(sc => sc.MID == categoryId)
                 .Select(sc => new {
-                    id = sc.MSubCategoryID,             // ✅ use proper ID
-                    name = sc.MaterialSubCategory1      // ✅ use proper name
+                    id = sc.MSubCategoryID,             
+                    name = sc.MaterialSubCategory1      
                 })
                 .ToList();
 

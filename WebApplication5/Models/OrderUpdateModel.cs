@@ -7,8 +7,8 @@ namespace WebApplication5.Models
 {
     public class OrderUpdateModel
     {
-        public int ID { get; set; } // ID is used to find the row
-        public int OrderQuantity { get; set; } // Only this value is used
+        public int ID { get; set; } 
+        public int OrderQuantity { get; set; } 
         public int IUCDApprovedQty { get; set; }
     }
 }

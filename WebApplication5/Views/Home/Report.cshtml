@@ -3,42 +3,54 @@
 @{
     ViewBag.Title = "Report";
 
-    // Read date filter parameters to control rendering
     var hasStart = Request.QueryString["startDate"];
     var hasEnd = Request.QueryString["endDate"];
     bool hasFilter = !string.IsNullOrEmpty(hasStart) && !string.IsNullOrEmpty(hasEnd);
 }
 
 <style>
-    footer {
-        position: page;
-        margin-top: 20px;
+    .report-filter {
+        text-align: center;
+        margin-top: 40px;
+        margin-bottom: 30px;
     }
 
-    form {
-        padding-top: 30px;
-    }
+        .report-filter form {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
 
-    h2 {
-        margin-top: 20px;
-    }
+        .report-filter label {
+            font-weight: 600;
+            margin-right: 5px;
+        }
 
-    .btn-secondary {
-        margin-bottom: 15px;
-    }
+        .report-filter input[type="date"] {
+            width: 160px;
+        }
 </style>
-<h3>Use Filter To get Issue Report</h3>
-<form method="get">
-    From: <input type="date" name="startDate" required />
-    To: <input type="date" name="endDate" required />
-    <button type="submit" class="btn btn-primary">Get Report</button>
-</form>
+
+<div class="report-filter">
+    <h3 class="text-primary mb-2">Use Filter To Get Issue Report</h3>
+    <form method="get" id="reportForm" class="d-inline-flex align-items-center gap-2">
+        <label for="startDate">From:</label>
+        <input type="date" id="startDate" name="startDate" required />
+
+        <label for="endDate">To:</label>
+        <input type="date" id="endDate" name="endDate" required />
+
+        <button type="submit" class="btn btn-primary">Get Report</button>
+        <button type="button" class="btn btn-secondary" onclick="clearReportData()">Clear Data</button>
+    </form>
+</div>
 
 @if (hasFilter && Model != null && Model.DetailedReports != null && Model.DetailedReports.Any())
 {
     <div id="detailedReportSection">
         <h2>Detailed Issue Report</h2>
-
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -74,9 +86,8 @@
 
     if (Model.SummaryReports != null && Model.SummaryReports.Any())
     {
-        <div id="summaryReportSection">
+        <div id="summaryReportSection" class="mt-4">
             <h2>Summary Report</h2>
-
             <table class="table table-bordered">
                 <thead>
                     <tr>
@@ -105,8 +116,9 @@
 }
 else if (hasFilter)
 {
-    <p>No data available for the selected date range.</p>
+    <p class="text-center">No data available for the selected date range.</p>
 }
+
 <script>
     function printSection(sectionId) {
         var printContent = document.getElementById(sectionId).innerHTML;
@@ -116,5 +128,17 @@ else if (hasFilter)
         window.print();
         document.body.innerHTML = originalContent;
         location.reload();
+    }
+    function clearReportData() {
+        // Remove detailed report table
+        const detailedSection = document.getElementById('detailedReportSection');
+        if (detailedSection) detailedSection.innerHTML = '';
+
+        // Remove summary report table
+        const summarySection = document.getElementById('summaryReportSection');
+        if (summarySection) summarySection.innerHTML = '';
+
+        // Optional: reset form inputs
+        document.getElementById('reportForm').reset();
     }
 </script>

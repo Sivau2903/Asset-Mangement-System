@@ -14,7 +14,7 @@ namespace WebApplication5.Controllers
     {
         private readonly ASPEntities2 _db = new ASPEntities2();
 
-        // GET: Auditor
+       
         public ActionResult Home()
         {
             string userId = Session["UserID"]?.ToString();
@@ -53,7 +53,7 @@ namespace WebApplication5.Controllers
                     file.SaveAs(filePath);
                     var virtualPath = "~/UploadedDocs/" + fileName;
 
-                    // Store in correct field based on input name
+                 
                     if (fileKey == "CommityApprovedDoc")
                     {
                         po.IUCDApprovalDoc = virtualPath;
@@ -115,10 +115,9 @@ namespace WebApplication5.Controllers
             string purchaseDepartmentID = Session["UserID"]?.ToString();
             var files = Request.Files;
 
-            // ✅ Get the upload folder path
+   
             var uploadPath = Server.MapPath("~/UploadedDocs/");
 
-            // ✅ Ensure the folder exists
             if (!Directory.Exists(uploadPath))
             {
                 Directory.CreateDirectory(uploadPath);
@@ -133,22 +132,22 @@ namespace WebApplication5.Controllers
                     request.Status = "Sent to Central";
                     request.CentralID = "IURCPD1";
 
-                    // ✅ Only one file is expected for all rows
+                   
                     if (files.Count > 0)
                     {
-                        var file = files[0]; // take the first uploaded file
+                        var file = files[0]; 
                         if (file != null && file.ContentLength > 0)
                         {
-                            // Generate a unique file name (optional but safer)
+                         
                             var fileName = $"{Path.GetFileNameWithoutExtension(file.FileName)}_{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
                             var path = Path.Combine(uploadPath, fileName);
 
                             file.SaveAs(path);
 
-                            // Save the virtual path (for link generation)
+                           
                             request.IUCDApprovalDoc = "~/UploadedDocs/" + fileName;
 
-                            // Optional metadata
+                         
                             // request.IUCDDocUploadedBy = purchaseDepartmentID;
                             // request.IUCDDocUploadedDate = DateTime.Now;
                         }
@@ -161,19 +160,9 @@ namespace WebApplication5.Controllers
             return Json(new { success = true, message = "Updated successfully." });
         }
 
-
-
-
-
-
-
-
-
-
-
         public JsonResult GetAvailableBudget()
         {
-            string sessionID = (string)Session["UserID"]; // Adjust based on your session handling
+            string sessionID = (string)Session["UserID"]; 
             var budget = _db.IUCD_
                             .Where(lpd => lpd.ID.ToString() == sessionID)
                             .Select(lpd => lpd.Budget)

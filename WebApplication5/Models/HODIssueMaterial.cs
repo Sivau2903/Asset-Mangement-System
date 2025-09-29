@@ -11,7 +11,7 @@ namespace WebApplication5.Models
 {
     using System;
     using System.Collections.Generic;
-    
+
     public partial class HODIssueMaterial
     {
         public int IssueID { get; set; }
@@ -29,5 +29,7 @@ namespace WebApplication5.Models
         public string Status { get; set; }
         public Nullable<int> PreviousIssuingQuantity { get; set; }
         public Nullable<int> Issue { get; set; }
+        public List<VendorMaterialViewModel> Vendors { get; set; }
     }
+
 }

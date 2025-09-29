@@ -1,11 +1,4 @@
 ﻿
-@*@{
-    ViewBag.Title = "Home";
-}
-
-<h2>Home</h2>*@
-
-
 @{
     Layout = "~/Views/Shared/_AuditorLayout.cshtml";
 
@@ -14,17 +7,17 @@
 
 
 <style>
-    /* Styles specific to the dashboard content within the layout */
+   
     .dashboard-content {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background-color: #f9f9f9; /* Light background for content area */
+        background-color: #f9f9f9; 
         padding: 30px;
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         text-align: center;
         width: 90%;
         max-width: 700px;
-        margin: 30px auto; /* Center with more top margin for navbar */
+        margin: 30px auto;
         transition: box-shadow 0.3s ease-in-out;
     }
 
@@ -41,7 +34,7 @@
     }
 
     .highlight {
-        color: #007bff; /* A modern primary color */
+        color: #007bff; 
     }
 
     footer {
@@ -55,7 +48,7 @@
         margin-top: 8px;
     }
 
-    /* Animation (optional) */
+   
     @@keyframes fadeIn {
         from {
             opacity: 0;
@@ -72,7 +65,7 @@
         animation: fadeIn 0.4s ease-out forwards;
     }
 
-    /* Responsive adjustments */
+   
     @@media (max-width: 600px) {
         .dashboard-content {
             padding: 20px;

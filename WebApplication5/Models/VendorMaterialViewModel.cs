@@ -20,6 +20,6 @@ namespace WebApplication5.Models
 
 
         public int AvailableQuantity { get; set; }
-        public int SelectedQuantity { get; set; } // For user input
+        public int SelectedQuantity { get; set; } 
     }
 }

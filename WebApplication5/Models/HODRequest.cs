@@ -27,5 +27,9 @@ namespace WebApplication5.Models
         public string Status { get; set; }
         public Nullable<int> HODRequestID { get; set; }
         public Nullable<int> AvailableQuantity { get; set; }
+        public string IssuedBy { get; set; }
+        public Nullable<System.DateTime> IssuedDate { get; set; }
+        public Nullable<int> ClosingQuantity { get; set; }
+        public string Remarks { get; set; }
     }
 }

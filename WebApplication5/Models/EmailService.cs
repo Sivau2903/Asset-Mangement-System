@@ -14,9 +14,6 @@ namespace WebApplication4.Models
         private readonly string _email = ConfigurationManager.AppSettings["Email"];
         private readonly string _password = ConfigurationManager.AppSettings["EmailPassword"];
 
-        //private readonly string _email = "shivaupputuri5@gmail.com"; // Your Gmail
-        //private readonly string _password = "uxwvtphmvzhqqqpl"; // Your App Password
-
         public async Task SendEmailAsync(string toEmail, string subject, string body)
         {
             using (var smtp = new SmtpClient("smtp.gmail.com", 587))
@@ -29,7 +26,7 @@ namespace WebApplication4.Models
                     From = new MailAddress(_email),
                     Subject = subject,
                     Body = body,
-                    IsBodyHtml = true // Ensures the email is sent as HTML
+                    IsBodyHtml = true 
                 };
 
                 mailMessage.To.Add(toEmail);
@@ -40,12 +37,9 @@ namespace WebApplication4.Models
                 }
                 catch (Exception ex)
                 {
-                    // Log error (file, db, etc.) or rethrow
                     throw new Exception("Failed to send email: " + ex.Message, ex);
                 }
-
             }
         }
     }
-
 }

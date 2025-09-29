@@ -131,11 +131,21 @@
                                             <td>@asset.RequestingQuantity</td>
                                             @*<td>@asset.ApprovedQuantity</td>*@
                                             <td>
-
-                                                <button class="issue-btn" data-requestid="@request.HODRequestID" data-msubcategory="@asset.MSubCategory ">
+                                            <td>
+                                                <button class="issue-btn btn btn-success btn-sm"
+                                                        data-requestid="@request.HODRequestID"
+                                                        data-msubcategory="@asset.MSubCategory">
                                                     <i class="bi bi-box-arrow-up"></i> Issue
                                                 </button>
+
+                                                <button class="reject-btn btn btn-danger btn-sm ms-2"
+                                                        data-requestid="@request.HODRequestID"
+                                                        data-msubcategory="@asset.MSubCategory">
+                                                    <i class="bi bi-x-circle"></i> Reject
+                                                </button>
                                             </td>
+
+
                                         </tr>
 
                                     }
@@ -184,6 +194,33 @@
             </div>
         </div>
     </div>
+
+    <!-- Reject Modal -->
+    <div class="modal fade" id="rejectModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="rejectForm">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-danger">Reject Request</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="rejectHODRequestId" name="hodrequestId" />
+                        <div class="mb-3">
+                            <label for="rejectReason" class="form-label">Reason for Rejection</label>
+                            <textarea id="rejectReason" name="reason" class="form-control" rows="3" required></textarea>
+                            <div class="invalid-feedback">Please provide a rejection reason.</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-danger">Submit</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 
 
     <!-- Include Bootstrap CSS & JS (if not already included) -->
@@ -235,6 +272,49 @@
 });
 
     });
+
+    $(document).ready(function () {
+    // Reject Button Click
+    $(".reject-btn").click(function () {
+        var hodrequestId = $(this).data("requestid");
+        $("#rejectHODRequestId").val(hodrequestId);
+        $("#rejectReason").val(""); // Clear previous reason
+        $("#rejectModal").modal("show");
+    });
+
+    // Reject Form Submit
+    $("#rejectForm").submit(function (e) {
+        e.preventDefault();
+        var hodrequestId = $("#rejectHODRequestId").val();
+        var reason = $("#rejectReason").val().trim();
+
+        if (!reason) {
+            $("#rejectReason").addClass("is-invalid");
+            return;
+        } else {
+            $("#rejectReason").removeClass("is-invalid");
+        }
+
+        $.ajax({
+            url: '@Url.Action("RejectHODRequest", "Home")',
+            type: 'POST',
+            data: { hodrequestId: hodrequestId, reason: reason },
+            success: function (response) {
+                if (response.success) {
+                    $("#rejectModal").modal("hide");
+                    alert("Request rejected successfully!");
+                    location.reload(); // Refresh page to show updated status
+                } else {
+                    alert(response.message || "Failed to reject request.");
+                }
+            },
+            error: function () {
+                alert("Error occurred while rejecting request.");
+            }
+        });
+    });
+});
+
     </script>
 
 

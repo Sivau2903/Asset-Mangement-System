@@ -1,4 +1,6 @@
 ﻿
+
+
 @model WebApplication5.Models.QRDetailsViewModel
 
 <div class="container mt-4">
@@ -16,9 +18,9 @@
             <h5>Employee Details</h5>
         </div>
         <div class="card-body">
-            <p><strong>Name:</strong> @Model.Employee.FirstName</p>
-            <p><strong>Department:</strong> @Model.Employee.DepName</p>
-            <p><strong>Email:</strong> @Model.Employee.EmailID</p>
+            <p><strong>Name:</strong> @Model.HOD.FirstName</p>
+            <p><strong>Department:</strong> @Model.HOD.DepName</p>
+            <p><strong>Email:</strong> @Model.HOD.EmailID</p>
         </div>
     </div>
 
@@ -60,7 +62,7 @@
                             <td>@vendor.Make</td>
                             <td>@vendor.Unit</td>
                             <td>@vendor.ExpiryDate</td>
-                            
+
                             @*<td>@vendor.IssuedQuantity</td>*@
                         </tr>
                     }
@@ -71,7 +73,7 @@
 
     <!-- Back Button -->
     <div class="mt-4">
-        <a href="@Url.Action("EmployeeRequests", "Home")" class="btn btn-primary">Back to Requests</a>
+        <a href="@Url.Action("HODRequests", "Home")" class="btn btn-primary">Back to Requests</a>
     </div>
 </div>
 

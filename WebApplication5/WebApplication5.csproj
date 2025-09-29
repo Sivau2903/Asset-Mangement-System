@@ -191,7 +191,6 @@
     <Compile Include="Controllers\EmployeeController.cs" />
     <Compile Include="Controllers\HODController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\LMSController.cs" />
     <Compile Include="Controllers\LocalAccountantController.cs" />
     <Compile Include="Controllers\LocalPurchaseDepartmentController.cs" />
     <Compile Include="Controllers\LocalVendorController.cs" />
@@ -540,6 +539,7 @@
     <Content Include="Views\LMS\Home.cshtml" />
     <Content Include="Views\Shared\_LMSLayout.cshtml" />
     <Content Include="Views\LMS\Upload.cshtml" />
+    <Content Include="Views\Home\ViewHODQRDetails.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
