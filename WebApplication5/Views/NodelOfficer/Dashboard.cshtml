@@ -1,0 +1,47 @@
+﻿@model WebApplication5.Models.NodeOfficerDashboardViewModel
+@{
+    Layout = "~/Views/Shared/_NodelLayout.cshtml";
+    ViewBag.Title = "Node Officers Dashboard";
+}
+
+<!-- Heading on the left with style -->
+@*<h2 class="mb-4 text-dark fw-bold" style="border-left: 5px solid #E96C20; padding-left: 15px; margin-top:30px;">
+    Nodel Officer Dashboard
+</h2>*@
+
+<!-- Cards Row -->
+<div class="row mb-4 g-4" style="margin-top:30px;">
+    <div class="col-md-4">
+        <div class="card p-4 shadow-sm text-center border-0 rounded-3" style="background: linear-gradient(135deg, #f9f9f9, #e0e0e0); transition: transform 0.3s;">
+            <h6 class="text-muted">Total Assets</h6>
+            <h3 class="fw-bold text-primary">@Model.TotalAssets</h3>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-4 shadow-sm text-center border-0 rounded-3" style="background: linear-gradient(135deg, #f9f9f9, #d1f0d1); transition: transform 0.3s;">
+            <h6 class="text-muted">QR Issued</h6>
+            <h3 class="fw-bold text-success">@Model.AssetsWithQRCode</h3>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-4 shadow-sm text-center border-0 rounded-3" style="background: linear-gradient(135deg, #f9f9f9, #f8d1d1); transition: transform 0.3s;">
+            <h6 class="text-muted">Expired Assets</h6>
+            <h3 class="fw-bold text-danger">@Model.ExpiredAssets</h3>
+        </div>
+    </div>
+</div>
+
+<!-- Buttons -->
+<div class="text-center mb-5">
+    <a href="@Url.Action("AddAsset", "NodelOfficer")" class="btn btn-primary mx-2 px-4 py-2 shadow-sm">Add Data</a>
+    <a href="@Url.Action("UploadAssets", "NodelOfficer")" class="btn btn-success mx-2 px-4 py-2 shadow-sm">Upload & Preview Data</a>
+    <a href="@Url.Action("IssueQRCode", "NodelOfficer")" class="btn btn-info mx-2 px-4 py-2 shadow-sm">Issue QR Codes</a>
+</div>
+
+<!-- Optional Hover Animation for Cards -->
+<style>
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    }
+</style>

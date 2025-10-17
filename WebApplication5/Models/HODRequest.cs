@@ -31,5 +31,7 @@ namespace WebApplication5.Models
         public Nullable<System.DateTime> IssuedDate { get; set; }
         public Nullable<int> ClosingQuantity { get; set; }
         public string Remarks { get; set; }
+        public Nullable<int> UniversityID { get; set; }
+        public List<VendorMaterialViewModel> Vendors { get; internal set; }
     }
 }

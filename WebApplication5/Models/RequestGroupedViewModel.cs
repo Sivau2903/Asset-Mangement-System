@@ -30,7 +30,7 @@ namespace WebApplication5.Models
         [NotMapped]
         public List<Request> Requests { get; set; }
         public List<HODRequest> HODRequests { get; set; }
-        public List<EmployeeIssueMaterial> EmployeeIssueMaterials { get; set; }
+        //public List<EmployeeIssueMaterial> EmployeeIssueMaterials { get; set; }
         public List<RequestViewModel> AssetDetails { get; set; }  
 
        

@@ -1,0 +1,34 @@
+﻿@{
+    Layout = "~/Views/Shared/_NodelLayout.cshtml";
+    ViewBag.Title = "Upload Assets";
+}
+
+<div class="d-flex justify-content-center align-items-start mt-5">
+    <div class="card shadow p-4" style="width: 450px;">
+        <h2 class="text-center mb-4">Upload Assets (Excel)</h2>
+
+        @using (Html.BeginForm("UploadAssets", "NodeOfficer", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-group mb-3">
+                <label>Select Excel File</label>
+                <input type="file" name="file" class="form-control" />
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-success">Upload</button>
+                <a href="@Url.Action("Dashboard", "NodelOfficer")" class="btn btn-secondary">Back</a>
+            </div>
+        }
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success mt-3 text-center">@TempData["Success"]</div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger mt-3 text-center">@TempData["Error"]</div>
+        }
+    </div>
+</div>

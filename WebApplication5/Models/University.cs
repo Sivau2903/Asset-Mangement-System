@@ -18,12 +18,12 @@ namespace WebApplication5.Models
         public University()
         {
             this.Departments = new HashSet<Department>();
-            this.Employees = new HashSet<Employee>();
-            this.HODs = new HashSet<HOD>();
             this.LocalAccountants = new HashSet<LocalAccountant>();
             this.LocalPurchaseDepartments = new HashSet<LocalPurchaseDepartment>();
             this.StoreAdmins = new HashSet<StoreAdmin>();
             this.VendorDetails = new HashSet<VendorDetail>();
+            this.Employees = new HashSet<Employee>();
+            this.HODs = new HashSet<HOD>();
         }
     
         public int UniversityId { get; set; }
@@ -35,10 +35,6 @@ namespace WebApplication5.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Department> Departments { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Employee> Employees { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<HOD> HODs { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<LocalAccountant> LocalAccountants { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<LocalPurchaseDepartment> LocalPurchaseDepartments { get; set; }
@@ -46,5 +42,9 @@ namespace WebApplication5.Models
         public virtual ICollection<StoreAdmin> StoreAdmins { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<VendorDetail> VendorDetails { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Employee> Employees { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<HOD> HODs { get; set; }
     }
 }

@@ -26,5 +26,6 @@ namespace WebApplication5.Models
         public Nullable<System.DateTime> ExpiryDate { get; set; }
         public System.DateTime ReceivedDate { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
+        public Nullable<int> UniversityID { get; set; }
     }
 }

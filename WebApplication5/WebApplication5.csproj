@@ -196,18 +196,25 @@
     <Compile Include="Controllers\LocalVendorController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\AuditorController.cs" />
+    <Compile Include="Controllers\NodelOfficerController.cs" />
     <Compile Include="Controllers\UniversityController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Models\AssetMaster.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\AssetQuantity.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\AssetType.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\AuditPOViewModel.cs" />
-    <Compile Include="Models\Book.cs">
+    <Compile Include="Models\BookUploadViewModel.cs" />
+    <Compile Include="Models\Building.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\BookUploadViewModel.cs" />
     <Compile Include="Models\BulkPORequest.cs" />
     <Compile Include="Models\CentralAccountant.cs">
       <DependentUpon>Model1.tt</DependentUpon>
@@ -241,18 +248,12 @@
     <Compile Include="Models\Employee.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\EmployeeIssueMaterial.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\GeneratePOViewModel.cs" />
     <Compile Include="Models\HOD.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\HODDashboardViewModel.cs" />
     <Compile Include="Models\HODIssueGroupedViewModel.cs" />
-    <Compile Include="Models\HODIssueMaterial.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\HODRequest.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
@@ -309,6 +310,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Model1.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Models\NodeOfficerDashboardViewModel.cs" />
     <Compile Include="Models\OrderUpdateModel.cs" />
     <Compile Include="Models\OrderUpdateWrapper.cs" />
     <Compile Include="Models\OTPViewModel.cs" />
@@ -343,6 +345,9 @@
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\University.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\User.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\VendorDetail.cs">
@@ -540,6 +545,11 @@
     <Content Include="Views\Shared\_LMSLayout.cshtml" />
     <Content Include="Views\LMS\Upload.cshtml" />
     <Content Include="Views\Home\ViewHODQRDetails.cshtml" />
+    <Content Include="Views\NodelOfficer\Dashboard.cshtml" />
+    <Content Include="Views\NodelOfficer\AddAsset.cshtml" />
+    <Content Include="Views\NodelOfficer\UploadAssets.cshtml" />
+    <Content Include="Views\NodelOfficer\IssueQRCode.cshtml" />
+    <Content Include="Views\Shared\_NodelLayout.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

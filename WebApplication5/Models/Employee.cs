@@ -20,13 +20,12 @@ namespace WebApplication5.Models
         public string EmailID { get; set; }
         public string PhoneNumber { get; set; }
         public string DepName { get; set; }
-        public int HODID { get; set; }
+        public string HODID { get; set; }
         public int DepID { get; set; }
         public int UniversityID { get; set; }
         public string EmpID { get; set; }
     
         public virtual Department Department { get; set; }
-        public virtual HOD HOD { get; set; }
         public virtual University University { get; set; }
     }
 }

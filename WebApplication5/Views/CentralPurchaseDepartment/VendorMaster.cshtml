@@ -6,33 +6,33 @@
     var assetTypes = ViewBag.AssetTypes as List<WebApplication5.Models.AssetType>;
 }
 
-<h2 class="text-center mb-4">Add Vendor</h2>
+<div class="container mt-5 mb-5 p-4 shadow-lg bg-white rounded-3">
+    <h2 class="text-center mb-4 text-primary fw-bold">Add Vendor</h2>
 
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        @TempData["Success"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-}
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
 
-@using (Html.BeginForm("VendorMaster1", "CentralPurchaseDepartment", FormMethod.Post))
-{
-    @Html.AntiForgeryToken()
-    <div class="container">
+    @using (Html.BeginForm("VendorMaster1", "CentralPurchaseDepartment", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
         <div class="row mb-3">
             <div class="col-md-4">
-                @Html.LabelFor(m => m.VendorName)
+                @Html.LabelFor(m => m.VendorName, new { @class = "fw-semibold" })
                 @Html.TextBoxFor(m => m.VendorName, new { @class = "form-control" })
                 @Html.ValidationMessageFor(m => m.VendorName, "", new { @class = "text-danger" })
             </div>
             <div class="col-md-4">
-                @Html.LabelFor(m => m.EmailID)
+                @Html.LabelFor(m => m.EmailID, new { @class = "fw-semibold" })
                 @Html.TextBoxFor(m => m.EmailID, new { @class = "form-control" })
                 @Html.ValidationMessageFor(m => m.EmailID, "", new { @class = "text-danger" })
             </div>
             <div class="col-md-4">
-                @Html.LabelFor(m => m.PhoneNumber)
+                @Html.LabelFor(m => m.PhoneNumber, new { @class = "fw-semibold" })
                 @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control" })
                 @Html.ValidationMessageFor(m => m.PhoneNumber, "", new { @class = "text-danger" })
             </div>
@@ -40,12 +40,12 @@
 
         <div class="row mb-3">
             <div class="col-md-4">
-                @Html.LabelFor(m => m.GSTNO)
+                @Html.LabelFor(m => m.GSTNO, new { @class = "fw-semibold" })
                 @Html.TextBoxFor(m => m.GSTNO, new { @class = "form-control" })
                 @Html.ValidationMessageFor(m => m.GSTNO, "", new { @class = "text-danger" })
             </div>
             <div class="col-md-4">
-                @Html.LabelFor(m => m.PanNumber)
+                @Html.LabelFor(m => m.PanNumber, new { @class = "fw-semibold" })
                 @Html.TextBoxFor(m => m.PanNumber, new { @class = "form-control" })
                 @Html.ValidationMessageFor(m => m.PanNumber, "", new { @class = "text-danger" })
             </div>
@@ -53,17 +53,18 @@
 
         <div class="row mb-3">
             <div class="col-md-6">
-                @Html.LabelFor(m => m.Address)
+                @Html.LabelFor(m => m.Address, new { @class = "fw-semibold" })
                 @Html.TextBoxFor(m => m.Address, new { @class = "form-control" })
                 @Html.ValidationMessageFor(m => m.Address, "", new { @class = "text-danger" })
             </div>
         </div>
 
-        <h4 class="mt-4">Materials Supplied</h4>
+        <h4 class="mt-4 text-secondary fw-bold">Materials Supplied</h4>
+        <hr />
         <div id="materials-section">
             @for (int i = 0; i < Model.Materials.Count; i++)
             {
-                <div class="row mb-2 material-row" data-index="@i">
+                <div class="row mb-2 align-items-center material-row border rounded p-2" data-index="@i">
                     <div class="col-md-2">
                         <select class="form-control assetType" name="Materials[@i].AssetTypeID">
                             <option value="">-- Asset Type --</option>
@@ -94,8 +95,8 @@
                         <input type="number" name="Materials[@i].PricePerUnit" placeholder="PricePerUnit" class="form-control" step="0.01" />
                         @Html.ValidationMessage($"Materials[{i}].PricePerUnit", "", new { @class = "text-danger" })
                     </div>
-                    <div class="col-md-2">
-                        <button type="button" class="btn btn-success add-row">+</button>
+                    <div class="col-md-2 text-center">
+                        <button type="button" class="btn btn-success add-row me-1">+</button>
                         <button type="button" class="btn btn-danger remove-row">−</button>
                     </div>
                 </div>
@@ -103,10 +104,10 @@
         </div>
 
         <div class="text-center mt-4">
-            <button type="submit" class="btn btn-primary">Save Vendor</button>
+            <button type="submit" class="btn btn-primary px-5">Save Vendor</button>
         </div>
-    </div>
-}
+    }
+</div>
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
@@ -155,8 +156,13 @@
         });
     </script>
 }
+
 <style>
     footer {
         position: fixed;
+    }
+
+    .container {
+        max-width: 1100px;
     }
 </style>

@@ -12,34 +12,22 @@
         <EntityTypeShape EntityType="ASPModel.CentralPurchaseOrderItem" Width="1.5" PointX="15" PointY="2" IsExpanded="true" />
         <EntityTypeShape EntityType="ASPModel.CIT" Width="1.5" PointX="11.75" PointY="7.25" IsExpanded="true" />
         <EntityTypeShape EntityType="ASPModel.Department" Width="1.5" PointX="3" PointY="11.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="ASPModel.Employee" Width="1.5" PointX="5.25" PointY="14.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="ASPModel.HOD" Width="1.5" PointX="8.25" PointY="14.375" IsExpanded="true" />
         <EntityTypeShape EntityType="ASPModel.LocalAccountant" Width="1.5" PointX="3" PointY="19" IsExpanded="true" />
         <EntityTypeShape EntityType="ASPModel.LocalPurchaseDepartment" Width="1.5" PointX="3" PointY="26.375" IsExpanded="true" />
         <EntityTypeShape EntityType="ASPModel.Login" Width="1.5" PointX="16.75" PointY="10.75" IsExpanded="true" />
         <EntityTypeShape EntityType="ASPModel.MaterialCategory" Width="1.5" PointX="3" PointY="0.875" IsExpanded="true" />
         <EntityTypeShape EntityType="ASPModel.MaterialSubCategory" Width="1.5" PointX="5.25" PointY="1" IsExpanded="true" />
-        <EntityTypeShape EntityType="ASPModel.PurchaseOrderItem" Width="1.5" PointX="10" PointY="2.125" IsExpanded="true" />
         <EntityTypeShape EntityType="ASPModel.PurchaseOrder" Width="1.5" PointX="7.75" PointY="1.125" IsExpanded="true" />
         <EntityTypeShape EntityType="ASPModel.StoreAdmin" Width="1.5" PointX="5.25" PointY="9.5" IsExpanded="true" />
         <EntityTypeShape EntityType="ASPModel.University" Width="1.5" PointX="0.75" PointY="16.625" IsExpanded="true" />
         <AssociationConnector Association="ASPModel.FK_MaterialCategory_MaterialCategory" ManuallyRouted="false" />
         <AssociationConnector Association="ASPModel.FK_CentralPurchaseOrderItems_CentralPurchaseOrder" ManuallyRouted="false" />
         <AssociationConnector Association="ASPModel.FK_Department_University" ManuallyRouted="false" />
-        <AssociationConnector Association="ASPModel.FK_Employee_Department" ManuallyRouted="false" />
-        <AssociationConnector Association="ASPModel.FK_HOD_Department" ManuallyRouted="false" />
         <AssociationConnector Association="ASPModel.FK_StoreAdmin_DepID" ManuallyRouted="false" />
-        <AssociationConnector Association="ASPModel.FK_Employee_HOD" ManuallyRouted="false" />
-        <AssociationConnector Association="ASPModel.FK_Employee_University" ManuallyRouted="false" />
-        <AssociationConnector Association="ASPModel.FK_HOD_University" ManuallyRouted="false" />
         <AssociationConnector Association="ASPModel.FK__LocalAcco__Unive__690797E6" ManuallyRouted="false" />
         <AssociationConnector Association="ASPModel.FK__LocalPurc__Unive__6442E2C9" ManuallyRouted="false" />
         <AssociationConnector Association="ASPModel.FK_MaterialSubCategory_Material" ManuallyRouted="false" />
-        <AssociationConnector Association="ASPModel.FK__PurchaseO__PONum__3BFFE745" ManuallyRouted="false" />
         <AssociationConnector Association="ASPModel.FK_StoreAdmin_University" ManuallyRouted="false" />
-        <EntityTypeShape EntityType="ASPModel.EmployeeIssueMaterial" Width="1.5" PointX="14.375" PointY="18.75" />
-        <EntityTypeShape EntityType="ASPModel.HODRequest" Width="1.5" PointX="10.375" PointY="10.75" />
-        <EntityTypeShape EntityType="ASPModel.HODIssueMaterial" Width="1.5" PointX="16.375" PointY="18.75" />
         <EntityTypeShape EntityType="ASPModel.TempSelectedMaterial" Width="1.5" PointX="18.375" PointY="18.75" />
         <EntityTypeShape EntityType="ASPModel.CentralVendorDetail" Width="1.5" PointX="7.625" PointY="10" />
         <EntityTypeShape EntityType="ASPModel.VendorDetail" Width="1.5" PointX="3" PointY="7.625" />
@@ -47,12 +35,28 @@
         <EntityTypeShape EntityType="ASPModel.IUCD_" Width="1.5" PointX="12.375" PointY="9.75" />
         <EntityTypeShape EntityType="ASPModel.CentralAuditor" Width="1.5" PointX="0.75" PointY="3.75" />
         <EntityTypeShape EntityType="ASPModel.SavetoCentral" Width="1.5" PointX="14.375" PointY="14.75" />
-        <EntityTypeShape EntityType="ASPModel.MaterialMasterList" Width="1.5" PointX="3.375" PointY="3.75" />
-        <EntityTypeShape EntityType="ASPModel.MaterialAvailable" Width="1.5" PointX="10.375" PointY="15.75" />
         <EntityTypeShape EntityType="ASPModel.IssuedQRDetail" Width="1.5" PointX="16.375" PointY="14.75" />
-        <EntityTypeShape EntityType="ASPModel.Request" Width="1.5" PointX="19.375" PointY="5.75" />
-        <EntityTypeShape EntityType="ASPModel.Book" Width="1.5" PointX="17.375" PointY="0.75" />
-      </Diagram>
+        <EntityTypeShape EntityType="ASPModel.Employee" Width="1.5" PointX="8.25" PointY="20.25" />
+        <EntityTypeShape EntityType="ASPModel.HOD" Width="1.5" PointX="5.25" PointY="14.375" />
+        <AssociationConnector Association="ASPModel.FK_Employee_Department" />
+        <AssociationConnector Association="ASPModel.FK_HOD_Department" />
+        <AssociationConnector Association="ASPModel.FK_Employee_University" />
+        <AssociationConnector Association="ASPModel.FK_HOD_University" />
+        <EntityTypeShape EntityType="ASPModel.MaterialMasterList" Width="1.5" PointX="7.375" PointY="14.75" />
+        <EntityTypeShape EntityType="ASPModel.HODRequest" Width="1.5" PointX="10.375" PointY="13.75" />
+        <EntityTypeShape EntityType="ASPModel.MaterialAvailable" Width="1.5" PointX="17.375" PointY="4.75" />
+        <EntityTypeShape EntityType="ASPModel.PurchaseOrderItem" Width="1.5" PointX="10" PointY="1.125" />
+        <EntityTypeShape EntityType="ASPModel.Request" Width="1.5" PointX="19.375" PointY="0.75" />
+        <AssociationConnector Association="ASPModel.FK__PurchaseO__PONum__1CBC4616" />
+        <EntityTypeShape EntityType="ASPModel.AssetMaster" Width="1.5" PointX="21.625" PointY="7.5" />
+        <EntityTypeShape EntityType="ASPModel.AssetQuantity" Width="1.5" PointX="23.875" PointY="8.75" />
+        <EntityTypeShape EntityType="ASPModel.Building" Width="1.5" PointX="21.625" PointY="10.625" />
+        <EntityTypeShape EntityType="ASPModel.User" Width="1.5" PointX="19.375" PointY="9" />
+        <AssociationConnector Association="ASPModel.FK__AssetMast__Updat__382F5661" />
+        <AssociationConnector Association="ASPModel.FK__AssetQuan__Asset__3DE82FB7" />
+        <AssociationConnector Association="ASPModel.FK__AssetQuan__Build__3EDC53F0" />
+        <AssociationConnector Association="ASPModel.FK__Buildings__Creat__336AA144" />
+        </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
 </edmx:Edmx>

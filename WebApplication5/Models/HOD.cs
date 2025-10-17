@@ -14,13 +14,7 @@ namespace WebApplication5.Models
     
     public partial class HOD
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public HOD()
-        {
-            this.Employees = new HashSet<Employee>();
-        }
-    
-        public int Hod1 { get; set; }
+        public string Hod1 { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string EmailID { get; set; }
@@ -31,8 +25,6 @@ namespace WebApplication5.Models
         public string HODID { get; set; }
     
         public virtual Department Department { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Employee> Employees { get; set; }
         public virtual University University { get; set; }
     }
 }

@@ -34,5 +34,6 @@ namespace WebApplication5.Models
         public Nullable<System.DateTime> IssuedDate { get; set; }
         public string IssuedBy { get; set; }
         public Nullable<int> Issue { get; set; }
+        public Nullable<int> UniversityID { get; set; }
     }
 }

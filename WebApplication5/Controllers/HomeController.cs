@@ -29,6 +29,12 @@ namespace WebApplication5.Controllers
         {
             string userId = Session["UserID"]?.ToString();
 
+            int universityID = _db.StoreAdmins
+                .Where(sa => sa.StoreAdminID.ToString() == userId)
+                .Select(sa => sa.UniversityID)
+                .FirstOrDefault();
+            Session["UniversityID"] = universityID;
+
             var alerts = _db.PurchaseOrders
                 .Where(po => po.AuditorSentID == userId && po.Status.StartsWith("Sent Back"))
                 .ToList();
@@ -215,11 +221,12 @@ namespace WebApplication5.Controllers
                 ApprovedQuantity = request.ApprovedQuantity ?? 0,
                 AvailableQuantity = availableQuantity,
                 IssuingQuantity = issuingQuantity,
+                
                 IssuedBy = storeAdmin.StoreAdminID.ToString()
             };
-
+            int currentUniversityId = Convert.ToInt32(Session["UniversityID"]);
             var vendors = _db.MaterialAvailables
-                .Where(m => m.MaterialName == msubCategory && m.AvailableQty > 0)
+                .Where(m => m.MaterialName == msubCategory && m.AvailableQty > 0 &&m.UniversityID == currentUniversityId)
                 .Select(m => new VendorMaterialViewModel
                 {
                     //VendorID = m.VendorID,
@@ -305,9 +312,10 @@ namespace WebApplication5.Controllers
 
                 foreach (var vendor in model.Vendors)
                 {
+                    int currentUniversityId = Convert.ToInt32(Session["UniversityID"]);
                     var materialAvailable = _db.MaterialAvailables
                         .FirstOrDefault(ma => ma.MaterialName == model.MSubCategory &&
-                                               ma.VendorName == vendor.VendorName);
+                                               ma.VendorName == vendor.VendorName &&ma.UniversityID== currentUniversityId);
 
                     if (materialAvailable != null)
                     {
@@ -546,19 +554,19 @@ namespace WebApplication5.Controllers
             int issuingQuantity = request.IssuingQuantity ?? 0;
             int availableQuantity = request.AvailableQuantity ?? 0;
 
-            var issuingModel = new HODIssueMaterial
+            var issuingModel = new HODRequest
             {
-                RequestID = request.HODRequestID ?? 0,
+                HODRequestID = request.HODRequestID ?? 0,
                 HODID = request.HODID,
                 AssetType = request.AssetType,
                 MaterialCategory = request.MaterialCategory,
-                MaterialSubCategory = request.MSubCategory,
+                MSubCategory = request.MSubCategory,
                 RequestingQuantity = request.RequestingQuantity,
                 AvailableQuantity = availableQuantity,
                 IssuingQuantity = issuingQuantity, 
-                PreviousIssuingQuantity = issuingQuantity,
+                //PreviousIssuingQuantity = issuingQuantity,
                 ClosingQuantity = 0,
-                Issue = 0,
+                //Issue = 0,
                 IssuedBy = storeAdmin.StoreAdminID.ToString()
             };
 
@@ -583,9 +591,9 @@ namespace WebApplication5.Controllers
         }
         
         [HttpPost]
-        public ActionResult HODIssueMaterial(HODIssueMaterial model)
+        public ActionResult HODIssueMaterial(HODRequest model)
         {
-            System.Diagnostics.Debug.WriteLine($"[DEBUG] IssueMaterial => RequestID={model.RequestID}, IssuingQty={model.IssuingQuantity}");
+            System.Diagnostics.Debug.WriteLine($"[DEBUG] IssueMaterial => RequestID={model.HODRequestID}, IssuingQty={model.IssuingQuantity}");
 
             try
             {
@@ -594,7 +602,7 @@ namespace WebApplication5.Controllers
                     model.Vendors = Newtonsoft.Json.JsonConvert
                         .DeserializeObject<List<VendorMaterialViewModel>>(Request["VendorsJson"]);
                 }
-                var request = _db.HODRequests.FirstOrDefault(m => m.HODRequestID == model.RequestID);
+                var request = _db.HODRequests.FirstOrDefault(m => m.HODRequestID == model.HODRequestID);
                 if (request == null)
                 {
                     TempData["ErrorMessage"] = "Request not found.";
@@ -621,7 +629,7 @@ namespace WebApplication5.Controllers
 
                 int closingQty = (request.AvailableQuantity ?? 0) - newIssueInput;
 
-                var existingIssue = _db.HODRequests.FirstOrDefault(e => e.HODRequestID == model.RequestID);
+                var existingIssue = _db.HODRequests.FirstOrDefault(e => e.HODRequestID == model.HODRequestID);
                 if (existingIssue != null)
                 {
                     existingIssue.IssuingQuantity = totalIssuingQty;
@@ -636,23 +644,23 @@ namespace WebApplication5.Controllers
                     model.ClosingQuantity = closingQty;
                     model.IssuedDate = DateTime.Now;
                     model.Status = "Issued";
-                    _db.HODIssueMaterials.Add(model);
+                    _db.HODRequests.Add(model);
                 }
 
                 string qrID = "ISSUE" + new Random().Next(10000, 99999);
                 var issuedData = new IssuedQRDetail
                 {
                     QRID = qrID,
-                    RequestID = model.RequestID,
+                    RequestID = (int)model.HODRequestID,
                     EmployeeID = model.HODID,
-                    MaterialSubCategory = model.MaterialSubCategory,
+                    MaterialSubCategory = model.MSubCategory,
                     TotalIssuedQty = newIssueInput,
                     VendorDetails = Newtonsoft.Json.JsonConvert.SerializeObject(model.Vendors),
                     CreatedDate = DateTime.Now
                 };
                 _db.IssuedQRDetails.Add(issuedData);
 
-                var stock = _db.MaterialMasterLists.FirstOrDefault(s => s.MaterialSubCategory == model.MaterialSubCategory);
+                var stock = _db.MaterialMasterLists.FirstOrDefault(s => s.MaterialSubCategory == model.MSubCategory);
                 if (stock != null)
                 {
                     stock.AvailableQuantity = closingQty;
@@ -664,7 +672,7 @@ namespace WebApplication5.Controllers
                 foreach (var vendor in model.Vendors)
                 {
                     var materialAvailable = _db.MaterialAvailables
-                        .FirstOrDefault(ma => ma.MaterialName == model.MaterialSubCategory &&
+                        .FirstOrDefault(ma => ma.MaterialName == model.MSubCategory &&
                                                ma.VendorName == vendor.VendorName);
                     if (materialAvailable != null)
                     {
@@ -782,17 +790,17 @@ namespace WebApplication5.Controllers
             }
 
             // Step 1: Fetch issued materials
-            var issuedRequests = _db.HODIssueMaterials
+            var issuedRequests = _db.HODRequests
                 .Where(r => r.IssuedBy == storeAdmin.StoreAdminID.ToString() && r.Status == "Issued")
                 .OrderByDescending(r => r.IssuedDate)
                 .ToList();
 
             // Step 2: Group by RequestID
             var groupedData = issuedRequests
-                .GroupBy(r => r.RequestID)
+                .GroupBy(r => r.HODRequestID)
                 .Select(g => new HODIssueGroupedViewModel
                 {
-                    RequestID = g.Key,
+                    RequestID = (int)g.Key,
                     RequestDate = g.First().IssuedDate ?? DateTime.Now,
 
                     Materials = g.ToList() 
@@ -815,76 +823,8 @@ namespace WebApplication5.Controllers
 
         public ActionResult MaterialMasterList()
         {
-            var assetTypes = _db.AssetTypes.Select(a => new
-            {
-                a.AssetTypeID,
-                a.AssetType1
-            }).ToList();
-
-            ViewBag.AssetType = new SelectList(assetTypes, "AssetTypeID", "AssetType1");
-
-            return View(_db.MaterialMasterLists.ToList());
-        }
-
-        [HttpGet]
-        public JsonResult GetMaterialCategories(string assetTypeName)
-        {
-            var categories = _db.MaterialCategories
-                               .Where(m => m.AssetType.AssetType1 == assetTypeName) 
-                               .Select(m => new
-                               {
-                                   m.MaterialCategory1
-                               })
-                               .ToList();
-            return Json(categories, JsonRequestBehavior.AllowGet);
-        }
-
-       [HttpGet]
-        public JsonResult GetMaterialSubCategories(string categoryName)
-        {
-             var subcategories = _db.MaterialSubCategories
-                           .Where(m => m.MaterialCategory.MaterialCategory1 == categoryName) 
-                           .Select(m => new
-                           {
-                               m.MaterialSubCategory1
-                           })
-                           .ToList();
-
-            return Json(subcategories, JsonRequestBehavior.AllowGet);
-        }
-
-        [HttpGet]
-        public JsonResult CheckMaterialMaster(string assetTypes, string categories, string subcategories)
-        {
-            if (string.IsNullOrEmpty(assetTypes) || string.IsNullOrEmpty(categories) || string.IsNullOrEmpty(subcategories))
-            {
-                
-                return Json(new { exists = false }, JsonRequestBehavior.AllowGet);
-            }
-
-            var item = _db.MaterialMasterLists
-                .FirstOrDefault(m =>
-                    m.AssetType.Equals(assetTypes, StringComparison.OrdinalIgnoreCase) &&
-                    m.MaterialCategory.Equals(categories, StringComparison.OrdinalIgnoreCase) &&
-                    m.MaterialSubCategory.Equals(subcategories, StringComparison.OrdinalIgnoreCase)
-                );
-
-            if (item != null)
-            {
-                return Json(new
-                {
-                    exists = true,
-                    availableQuantity = item.AvailableQuantity,
-                    //make = item.Make,
-                    unit = item.Units,
-                    minimumLimit = item.MinimumLimit,
-                    //expiryDate = item.ExpiryDate?.ToString("yyyy-MM-dd")
-                }, JsonRequestBehavior.AllowGet);
-            }
-            else
-            {
-                return Json(new { exists = false }, JsonRequestBehavior.AllowGet);
-            }
+            var materials = _db.MaterialMasterLists.ToList();
+            return View(materials);
         }
 
         [HttpPost]
@@ -894,47 +834,45 @@ namespace WebApplication5.Controllers
                 .FirstOrDefault(m =>
                     m.AssetType == model.AssetType &&
                     m.MaterialCategory == model.MaterialCategory &&
-                    m.MaterialSubCategory == model.MaterialSubCategory
+                    m.MaterialSubCategory == model.MaterialSubCategory &&
+                    m.UniversityID == model.UniversityID
                 );
 
             if (existing != null)
             {
                 existing.AvailableQuantity = model.AvailableQuantity;
-                //existing.Make = model.Make;
-                //existing.Units = model.Units;
-                //existing.ExpiryDate = model.ExpiryDate;
+                existing.Units = model.Units;
                 existing.MinimumLimit = model.MinimumLimit;
                 existing.MaterialUpdatedDate = DateTime.Now;
                 existing.UpdatedBy = "StoreAdmin"; // or from session
-
-                try
-                {
-                    _db.SaveChanges();
-                }
-                catch (DbEntityValidationException ex)
-                {
-                    foreach (var validationErrors in ex.EntityValidationErrors)
-                    {
-                        foreach (var validationError in validationErrors.ValidationErrors)
-                        {
-                            System.Diagnostics.Debug.WriteLine($"Property: {validationError.PropertyName} Error: {validationError.ErrorMessage}");
-                        }
-                    }
-                    throw;
-                }
             }
             else
             {
                 model.MaterialUpdatedDate = DateTime.Now;
                 model.UpdatedBy = "StoreAdmin";
-
                 _db.MaterialMasterLists.Add(model);
-
-                _db.SaveChanges();
             }
-            TempData["SuccessMessage"] = "Material saved successfully!";
+
+            try
+            {
+                _db.SaveChanges();
+                TempData["SuccessMessage"] = "Material saved successfully!";
+            }
+            catch (DbEntityValidationException ex)
+            {
+                foreach (var validationErrors in ex.EntityValidationErrors)
+                {
+                    foreach (var validationError in validationErrors.ValidationErrors)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Property: {validationError.PropertyName} Error: {validationError.ErrorMessage}");
+                    }
+                }
+                TempData["ErrorMessage"] = "Error while saving material!";
+            }
+
             return RedirectToAction("MaterialMasterList", "Home");
         }
+
 
         public JsonResult GetMaterialCategories1(int assetTypeID)
         {
@@ -1081,7 +1019,7 @@ namespace WebApplication5.Controllers
 
                     po.Status = "Delivered";
                 }
-
+                int currentUniversityId = Convert.ToInt32(Session["UniversityID"]);
                 foreach (var item in model.PurchaseOrderItems)
                 {
                     var existingItem = _db.PurchaseOrderItems.FirstOrDefault(p => p.POItemID == item.POItemID);
@@ -1096,6 +1034,7 @@ namespace WebApplication5.Controllers
                         existingItem.Make = item.Make;
                         existingItem.ExpiryDate = item.ExpiryDate;
                         existingItem.Unit = item.Unit;
+                        existingItem.UniversityID = currentUniversityId;
 
                         existingItem.Total = (item.AcceptedQty ?? 0) * (existingItem.UnitPrice ?? 0);
                         existingItem.AuditorID = auditorIdToAssign;
@@ -1156,6 +1095,7 @@ namespace WebApplication5.Controllers
                                         Unit = existingItem.Unit,
                                         Make = item.Make,
                                         ExpiryDate = item.ExpiryDate,
+                                        UniversityID = currentUniversityId,
                                         //Unit = item.Unit;
                                         //UnitPrice = existingItem.UnitPrice ?? 0,
                                         ReceivedDate = DateTime.Now
@@ -1249,11 +1189,11 @@ namespace WebApplication5.Controllers
                 TempData["Error"] = "Please select both start and end dates.";
                 return View(new ReportViewModel()); // empty model  
             }
-
+            int currentUniversityId = Convert.ToInt32(Session["UniversityID"]);
             DateTime fromDate = startDate.Value.Date;
             DateTime toDate = endDate.Value.Date.AddDays(1).AddSeconds(-1);
             var employeeData = _db.Requests
-                .Where(e => e.IssuedDate >= fromDate && e.IssuedDate <= toDate)
+                .Where(e => e.IssuedDate >= fromDate &&e.UniversityID== currentUniversityId && e.IssuedDate <= toDate)
                 .Select(e => new MaterialIssueReportViewModel
                 {
                     MaterialName = e.MSubCategory,
@@ -1265,13 +1205,13 @@ namespace WebApplication5.Controllers
                     Role = "Employee"
                 });
 
-            var hodData = _db.HODIssueMaterials
-                .Where(h => h.IssuedDate >= fromDate && h.IssuedDate <= toDate)
+            var hodData = _db.HODRequests
+                .Where(h => h.IssuedDate >= fromDate &&h.UniversityID == currentUniversityId && h.IssuedDate <= toDate)
                 .Select(h => new MaterialIssueReportViewModel
                 {
-                    MaterialName = h.MaterialSubCategory,
+                    MaterialName = h.MSubCategory,
                     IssuedDate = h.IssuedDate ?? DateTime.MinValue, 
-                    RequestedQuantity = h.RequestingQuantity ?? 0,
+                    RequestedQuantity = h.RequestingQuantity,
                     IssuedQuantity = h.IssuingQuantity ?? 0,
                     ClosingQuantity = h.ClosingQuantity ?? 0,
                     IssuedTo = h.HODID,
@@ -1314,9 +1254,9 @@ namespace WebApplication5.Controllers
             using (var db = new ASPEntities2())
             {
                 DateTime today = DateTime.Today;
-
+                int currentUniversityId = Convert.ToInt32(Session["UniversityID"]);
                 var expiredMaterials = db.MaterialAvailables
-                    .Where(m => m.AvailableQty > 0 && m.ExpiryDate != null && m.ExpiryDate < today)
+                    .Where(m => m.AvailableQty > 0 &&m.UniversityID == currentUniversityId && m.ExpiryDate != null && m.ExpiryDate < today )
                     .OrderBy(m => m.ExpiryDate)
                     .ToList();
 
@@ -1326,10 +1266,18 @@ namespace WebApplication5.Controllers
 
         public ActionResult Materials()
         {
-            var materials = _db.MaterialMasterLists.ToList(); // Fetch all materials
+            // Get the current user's UniversityID from session
+            int currentUniversityId = Convert.ToInt32(Session["UniversityID"]);
+
+            // Fetch materials that match the user's UniversityID
+            var materials = _db.MaterialMasterLists
+                               .Where(m => m.UniversityID == currentUniversityId)
+                               .ToList();
+
             return View(materials);
         }
-      
+
+
         private string GetLocalIPv4()
         {
             foreach (var ip in Dns.GetHostEntry(Dns.GetHostName()).AddressList)

@@ -5,6 +5,30 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="ASPModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="AssetMaster">
+          <Key>
+            <PropertyRef Name="AssetID" />
+          </Key>
+          <Property Name="AssetID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="AssetName" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="Quantity" Type="int" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="UpdatedBy" Type="int" />
+        </EntityType>
+        <EntityType Name="AssetQuantities">
+          <Key>
+            <PropertyRef Name="AssetQuantityID" />
+          </Key>
+          <Property Name="AssetQuantityID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="AssetID" Type="int" Nullable="false" />
+          <Property Name="SerialNumber" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="PurchaseDate" Type="date" Nullable="false" />
+          <Property Name="WarrantyExpiryDate" Type="date" Nullable="false" />
+          <Property Name="IsQRIssued" Type="bit" />
+          <Property Name="IsExpired" Type="bit" />
+          <Property Name="ModifiedDate" Type="datetime" />
+          <Property Name="BuildingID" Type="int" />
+        </EntityType>
         <EntityType Name="AssetType">
           <Key>
             <PropertyRef Name="AssetTypeID" />
@@ -12,23 +36,15 @@
           <Property Name="AssetTypeID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="AssetType" Type="nvarchar" MaxLength="255" Nullable="false" />
         </EntityType>
-        <EntityType Name="Books">
+        <EntityType Name="Buildings">
           <Key>
-            <PropertyRef Name="BookID" />
+            <PropertyRef Name="BuildingID" />
           </Key>
-          <Property Name="BookID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="SlNo" Type="int" Nullable="false" />
-          <Property Name="AccNo" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="CallNo" Type="nvarchar" MaxLength="100" />
-          <Property Name="TitleoftheBook" Type="nvarchar" MaxLength="500" Nullable="false" />
-          <Property Name="Author" Type="nvarchar" MaxLength="300" />
-          <Property Name="PlaceOfPublishers" Type="nvarchar" MaxLength="200" />
-          <Property Name="Year" Type="int" />
-          <Property Name="Edition" Type="nvarchar" MaxLength="100" />
-          <Property Name="pages" Type="nvarchar" MaxLength="50" />
-          <Property Name="Vol" Type="nvarchar" MaxLength="50" />
-          <Property Name="Source" Type="nvarchar" MaxLength="200" />
-          <Property Name="Price" Type="decimal" Precision="10" Scale="2" />
+          <Property Name="BuildingID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="BuildingName" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="Address" Type="nvarchar" MaxLength="250" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="CreatedBy" Type="int" />
         </EntityType>
         <EntityType Name="CentralAccountant">
           <Key>
@@ -149,7 +165,7 @@
           <Key>
             <PropertyRef Name="DepID" />
           </Key>
-          <Property Name="DepID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DepID" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
           <Property Name="DepName" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="DepShortName" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="UniversityID" Type="int" Nullable="false" />
@@ -164,38 +180,16 @@
           <Property Name="EmailID" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="PhoneNumber" Type="nvarchar" MaxLength="20" Nullable="false" />
           <Property Name="DepName" Type="nvarchar" MaxLength="255" Nullable="false" />
-          <Property Name="HODID" Type="int" Nullable="false" />
+          <Property Name="HODID" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="DepID" Type="int" Nullable="false" />
           <Property Name="UniversityID" Type="int" Nullable="false" />
           <Property Name="EmpID" Type="nvarchar" MaxLength="100" />
-        </EntityType>
-        <EntityType Name="EmployeeIssueMaterial">
-          <Key>
-            <PropertyRef Name="IssueID" />
-          </Key>
-          <Property Name="IssueID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="RequestID" Type="int" Nullable="false" />
-          <Property Name="EmpID" Type="nvarchar" MaxLength="255" />
-          <Property Name="HODID" Type="nvarchar" MaxLength="255" />
-          <Property Name="AssetType" Type="nvarchar" MaxLength="100" Nullable="false" />
-          <Property Name="MaterialCategory" Type="nvarchar" MaxLength="100" Nullable="false" />
-          <Property Name="MaterialSubCategory" Type="nvarchar" MaxLength="100" Nullable="false" />
-          <Property Name="RequestingQuantity" Type="int" Nullable="false" />
-          <Property Name="ApprovedQuantity" Type="int" Nullable="false" />
-          <Property Name="AvailableQuantity" Type="int" Nullable="false" />
-          <Property Name="IssuingQuantity" Type="int" Nullable="false" />
-          <Property Name="ClosingQuantity" Type="int" Nullable="false" />
-          <Property Name="IssuedDate" Type="datetime2" Precision="7" Nullable="false" />
-          <Property Name="IssuedBy" Type="nvarchar" MaxLength="100" Nullable="false" />
-          <Property Name="Status" Type="nvarchar" MaxLength="50" />
-          <Property Name="PreviousIssuingQuantity" Type="int" />
-          <Property Name="Issue" Type="int" />
         </EntityType>
         <EntityType Name="HOD">
           <Key>
             <PropertyRef Name="Hod1" />
           </Key>
-          <Property Name="Hod1" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Hod1" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="FirstName" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="LastName" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="EmailID" Type="nvarchar" MaxLength="255" Nullable="false" />
@@ -204,26 +198,6 @@
           <Property Name="DepID" Type="int" Nullable="false" />
           <Property Name="UniversityID" Type="int" Nullable="false" />
           <Property Name="HODID" Type="nvarchar" MaxLength="100" />
-        </EntityType>
-        <EntityType Name="HODIssueMaterials">
-          <Key>
-            <PropertyRef Name="IssueID" />
-          </Key>
-          <Property Name="IssueID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="RequestID" Type="int" Nullable="false" />
-          <Property Name="HODID" Type="nvarchar" MaxLength="55" />
-          <Property Name="AssetType" Type="nvarchar" MaxLength="100" />
-          <Property Name="MaterialCategory" Type="nvarchar" MaxLength="100" />
-          <Property Name="MaterialSubCategory" Type="nvarchar" MaxLength="100" />
-          <Property Name="RequestingQuantity" Type="int" />
-          <Property Name="AvailableQuantity" Type="int" />
-          <Property Name="IssuingQuantity" Type="int" />
-          <Property Name="ClosingQuantity" Type="int" />
-          <Property Name="IssuedDate" Type="datetime" />
-          <Property Name="IssuedBy" Type="nvarchar" MaxLength="100" />
-          <Property Name="Status" Type="nvarchar" MaxLength="50" />
-          <Property Name="PreviousIssuingQuantity" Type="int" />
-          <Property Name="Issue" Type="int" />
         </EntityType>
         <EntityType Name="HODRequest">
           <Key>
@@ -246,6 +220,7 @@
           <Property Name="IssuedDate" Type="datetime" />
           <Property Name="ClosingQuantity" Type="int" />
           <Property Name="Remarks" Type="nvarchar" MaxLength="300" />
+          <Property Name="UniversityID" Type="int" />
         </EntityType>
         <EntityType Name="IssuedQRDetails">
           <Key>
@@ -323,6 +298,7 @@
           <Property Name="ExpiryDate" Type="date" />
           <Property Name="ReceivedDate" Type="datetime" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
+          <Property Name="UniversityID" Type="int" />
         </EntityType>
         <EntityType Name="MaterialCategory">
           <Key>
@@ -346,6 +322,7 @@
           <Property Name="UpdatedBy" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="MinimumLimit" Type="int" Nullable="false" />
           <Property Name="IsLowStockAlertSent" Type="bit" Nullable="false" />
+          <Property Name="UniversityID" Type="int" />
         </EntityType>
         <EntityType Name="MaterialSubCategory">
           <Key>
@@ -375,6 +352,7 @@
           <Property Name="Make" Type="nvarchar" MaxLength="100" />
           <Property Name="ExpiryDate" Type="date" />
           <Property Name="AuditorID" Type="nvarchar" MaxLength="50" />
+          <Property Name="UniversityID" Type="int" />
         </EntityType>
         <EntityType Name="PurchaseOrders">
           <Key>
@@ -443,6 +421,7 @@
           <Property Name="IssuedDate" Type="datetime" />
           <Property Name="IssuedBy" Type="nvarchar" MaxLength="100" />
           <Property Name="Issue" Type="int" />
+          <Property Name="UniversityID" Type="int" />
         </EntityType>
         <EntityType Name="SavetoCentral">
           <Key>
@@ -495,6 +474,17 @@
           <Property Name="UniversityPhone" Type="varchar" MaxLength="100" />
           <Property Name="UniversityEmail" Type="nvarchar" MaxLength="255" />
         </EntityType>
+        <EntityType Name="Users">
+          <Key>
+            <PropertyRef Name="UserID" />
+          </Key>
+          <Property Name="UserID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FullName" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Email" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="Phone" Type="nvarchar" MaxLength="20" />
+          <Property Name="Role" Type="nvarchar" MaxLength="50" />
+          <Property Name="CreatedDate" Type="datetime" />
+        </EntityType>
         <EntityType Name="VendorDetails">
           <Key>
             <PropertyRef Name="VID" />
@@ -512,6 +502,54 @@
           <Property Name="VendorName" Type="varchar" MaxLength="100" />
           <Property Name="GSTPercentage" Type="nvarchar" MaxLength="50" />
         </EntityType>
+        <Association Name="FK__AssetMast__Updat__382F5661">
+          <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
+          <End Role="AssetMaster" Type="Self.AssetMaster" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserID" />
+            </Principal>
+            <Dependent Role="AssetMaster">
+              <PropertyRef Name="UpdatedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__AssetQuan__Asset__3DE82FB7">
+          <End Role="AssetMaster" Type="Self.AssetMaster" Multiplicity="1" />
+          <End Role="AssetQuantities" Type="Self.AssetQuantities" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AssetMaster">
+              <PropertyRef Name="AssetID" />
+            </Principal>
+            <Dependent Role="AssetQuantities">
+              <PropertyRef Name="AssetID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__AssetQuan__Build__3EDC53F0">
+          <End Role="Buildings" Type="Self.Buildings" Multiplicity="0..1" />
+          <End Role="AssetQuantities" Type="Self.AssetQuantities" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Buildings">
+              <PropertyRef Name="BuildingID" />
+            </Principal>
+            <Dependent Role="AssetQuantities">
+              <PropertyRef Name="BuildingID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Buildings__Creat__336AA144">
+          <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
+          <End Role="Buildings" Type="Self.Buildings" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserID" />
+            </Principal>
+            <Dependent Role="Buildings">
+              <PropertyRef Name="CreatedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK__LocalAcco__Unive__17F790F9">
           <End Role="University" Type="Self.University" Multiplicity="1" />
           <End Role="LocalAccountant" Type="Self.LocalAccountant" Multiplicity="*" />
@@ -585,18 +623,6 @@
             </Principal>
             <Dependent Role="Employee">
               <PropertyRef Name="DepID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Employee_HOD">
-          <End Role="HOD" Type="Self.HOD" Multiplicity="1" />
-          <End Role="Employee" Type="Self.Employee" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="HOD">
-              <PropertyRef Name="Hod1" />
-            </Principal>
-            <Dependent Role="Employee">
-              <PropertyRef Name="HODID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -697,8 +723,10 @@
           </ReferentialConstraint>
         </Association>
         <EntityContainer Name="ASPModelStoreContainer">
+          <EntitySet Name="AssetMaster" EntityType="Self.AssetMaster" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AssetQuantities" EntityType="Self.AssetQuantities" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AssetType" EntityType="Self.AssetType" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Books" EntityType="Self.Books" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Buildings" EntityType="Self.Buildings" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CentralAccountant" EntityType="Self.CentralAccountant" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CentralAuditor" EntityType="Self.CentralAuditor" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CentralPurchaseDepartment" EntityType="Self.CentralPurchaseDepartment" Schema="dbo" store:Type="Tables" />
@@ -708,9 +736,7 @@
           <EntitySet Name="CIT" EntityType="Self.CIT" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Department" EntityType="Self.Department" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Employee" EntityType="Self.Employee" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="EmployeeIssueMaterial" EntityType="Self.EmployeeIssueMaterial" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="HOD" EntityType="Self.HOD" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="HODIssueMaterials" EntityType="Self.HODIssueMaterials" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="HODRequest" EntityType="Self.HODRequest" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="IssuedQRDetails" EntityType="Self.IssuedQRDetails" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="IUCD " EntityType="Self.IUCD " Schema="dbo" store:Type="Tables" />
@@ -728,7 +754,24 @@
           <EntitySet Name="StoreAdmin" EntityType="Self.StoreAdmin" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TempSelectedMaterials" EntityType="Self.TempSelectedMaterials" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="University" EntityType="Self.University" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="VendorDetails" EntityType="Self.VendorDetails" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK__AssetMast__Updat__382F5661" Association="Self.FK__AssetMast__Updat__382F5661">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="AssetMaster" EntitySet="AssetMaster" />
+          </AssociationSet>
+          <AssociationSet Name="FK__AssetQuan__Asset__3DE82FB7" Association="Self.FK__AssetQuan__Asset__3DE82FB7">
+            <End Role="AssetMaster" EntitySet="AssetMaster" />
+            <End Role="AssetQuantities" EntitySet="AssetQuantities" />
+          </AssociationSet>
+          <AssociationSet Name="FK__AssetQuan__Build__3EDC53F0" Association="Self.FK__AssetQuan__Build__3EDC53F0">
+            <End Role="Buildings" EntitySet="Buildings" />
+            <End Role="AssetQuantities" EntitySet="AssetQuantities" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Buildings__Creat__336AA144" Association="Self.FK__Buildings__Creat__336AA144">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Buildings" EntitySet="Buildings" />
+          </AssociationSet>
           <AssociationSet Name="FK__LocalAcco__Unive__17F790F9" Association="Self.FK__LocalAcco__Unive__17F790F9">
             <End Role="University" EntitySet="University" />
             <End Role="LocalAccountant" EntitySet="LocalAccountant" />
@@ -751,10 +794,6 @@
           </AssociationSet>
           <AssociationSet Name="FK_Employee_Department" Association="Self.FK_Employee_Department">
             <End Role="Department" EntitySet="Department" />
-            <End Role="Employee" EntitySet="Employee" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Employee_HOD" Association="Self.FK_Employee_HOD">
-            <End Role="HOD" EntitySet="HOD" />
             <End Role="Employee" EntitySet="Employee" />
           </AssociationSet>
           <AssociationSet Name="FK_Employee_University" Association="Self.FK_Employee_University">
@@ -900,44 +939,9 @@
           <Property Name="DepShortName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="UniversityID" Type="Int32" Nullable="false" />
           <NavigationProperty Name="University" Relationship="Self.FK_Department_University" FromRole="Department" ToRole="University" />
-          <NavigationProperty Name="Employees" Relationship="Self.FK_Employee_Department" FromRole="Department" ToRole="Employee" />
-          <NavigationProperty Name="HODs" Relationship="Self.FK_HOD_Department" FromRole="Department" ToRole="HOD" />
           <NavigationProperty Name="StoreAdmins" Relationship="Self.FK_StoreAdmin_DepID" FromRole="Department" ToRole="StoreAdmin" />
-        </EntityType>
-        <EntityType Name="Employee">
-          <Key>
-            <PropertyRef Name="Emp1" />
-          </Key>
-          <Property Name="Emp1" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="FirstName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="LastName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="EmailID" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="PhoneNumber" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="DepName" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="HODID" Type="Int32" Nullable="false" />
-          <Property Name="DepID" Type="Int32" Nullable="false" />
-          <Property Name="UniversityID" Type="Int32" Nullable="false" />
-          <Property Name="EmpID" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Department" Relationship="Self.FK_Employee_Department" FromRole="Employee" ToRole="Department" />
-          <NavigationProperty Name="HOD" Relationship="Self.FK_Employee_HOD" FromRole="Employee" ToRole="HOD" />
-          <NavigationProperty Name="University" Relationship="Self.FK_Employee_University" FromRole="Employee" ToRole="University" />
-        </EntityType>
-        <EntityType Name="HOD">
-          <Key>
-            <PropertyRef Name="Hod1" />
-          </Key>
-          <Property Name="Hod1" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="FirstName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="LastName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="EmailID" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="PhoneNumber" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="DepName" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="DepID" Type="Int32" Nullable="false" />
-          <Property Name="UniversityID" Type="Int32" Nullable="false" />
-          <Property Name="HODID" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Department" Relationship="Self.FK_HOD_Department" FromRole="HOD" ToRole="Department" />
-          <NavigationProperty Name="Employees" Relationship="Self.FK_Employee_HOD" FromRole="HOD" ToRole="Employee" />
-          <NavigationProperty Name="University" Relationship="Self.FK_HOD_University" FromRole="HOD" ToRole="University" />
+          <NavigationProperty Name="Employees" Relationship="ASPModel.FK_Employee_Department" FromRole="Department" ToRole="Employee" />
+          <NavigationProperty Name="HODs" Relationship="ASPModel.FK_HOD_Department" FromRole="Department" ToRole="HOD" />
         </EntityType>
         <EntityType Name="LocalAccountant">
           <Key>
@@ -996,28 +1000,6 @@
           <Property Name="MID" Type="Int32" Nullable="false" />
           <NavigationProperty Name="MaterialCategory" Relationship="Self.FK_MaterialSubCategory_Material" FromRole="MaterialSubCategory" ToRole="MaterialCategory" />
         </EntityType>
-        <EntityType Name="PurchaseOrderItem">
-          <Key>
-            <PropertyRef Name="POItemID" />
-          </Key>
-          <Property Name="POItemID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="PONumber" Type="Int32" />
-          <Property Name="QtyOrdered" Type="Int32" />
-          <Property Name="QtyReceived" Type="Int32" />
-          <Property Name="Description" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
-          <Property Name="UnitPrice" Type="Decimal" Precision="18" Scale="2" />
-          <Property Name="Total" Type="Decimal" Precision="18" Scale="2" />
-          <Property Name="VendorID" Type="Int32" />
-          <Property Name="Remarks" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="VendorEmail" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="PurchaseOrder" Relationship="Self.FK__PurchaseO__PONum__3BFFE745" FromRole="PurchaseOrderItems" ToRole="PurchaseOrders" />
-          <Property Name="AcceptedQty" Type="Int32" />
-          <Property Name="RejectedQty" Type="Int32" />
-          <Property Name="Unit" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Make" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="ExpiryDate" Type="DateTime" Precision="0" />
-          <Property Name="AuditorID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-        </EntityType>
         <EntityType Name="PurchaseOrder">
           <Key>
             <PropertyRef Name="PONumber" />
@@ -1043,7 +1025,6 @@
           <Property Name="Remarks" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="StoreUploads" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
           <Property Name="PurchaseDepartmentUploads" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="PurchaseOrderItems" Relationship="Self.FK__PurchaseO__PONum__3BFFE745" FromRole="PurchaseOrders" ToRole="PurchaseOrderItems" />
           <Property Name="VendorName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
           <Property Name="VendorEmail" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="VendorAddress" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
@@ -1061,6 +1042,7 @@
           <Property Name="InvoiceDetails" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
           <Property Name="CommityApprovedDoc" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
           <Property Name="PhoneNumber" Type="String" MaxLength="15" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="PurchaseOrderItems" Relationship="ASPModel.FK__PurchaseO__PONum__1CBC4616" FromRole="PurchaseOrder" ToRole="PurchaseOrderItem" />
         </EntityType>
         <EntityType Name="StoreAdmin">
           <Key>
@@ -1088,12 +1070,12 @@
           <Property Name="UniversityPhone" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
           <Property Name="UniversityEmail" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Departments" Relationship="Self.FK_Department_University" FromRole="University" ToRole="Department" />
-          <NavigationProperty Name="Employees" Relationship="Self.FK_Employee_University" FromRole="University" ToRole="Employee" />
-          <NavigationProperty Name="HODs" Relationship="Self.FK_HOD_University" FromRole="University" ToRole="HOD" />
           <NavigationProperty Name="LocalAccountants" Relationship="Self.FK__LocalAcco__Unive__690797E6" FromRole="University" ToRole="LocalAccountant" />
           <NavigationProperty Name="LocalPurchaseDepartments" Relationship="Self.FK__LocalPurc__Unive__6442E2C9" FromRole="University" ToRole="LocalPurchaseDepartment" />
           <NavigationProperty Name="StoreAdmins" Relationship="Self.FK_StoreAdmin_University" FromRole="University" ToRole="StoreAdmin" />
           <NavigationProperty Name="VendorDetails" Relationship="ASPModel.FK_University1" FromRole="University" ToRole="VendorDetail" />
+          <NavigationProperty Name="Employees" Relationship="ASPModel.FK_Employee_University" FromRole="University" ToRole="Employee" />
+          <NavigationProperty Name="HODs" Relationship="ASPModel.FK_HOD_University" FromRole="University" ToRole="HOD" />
         </EntityType>
         <Association Name="FK_MaterialCategory_MaterialCategory">
           <End Role="AssetType" Type="Self.AssetType" Multiplicity="1" />
@@ -1135,30 +1117,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Employee_Department">
-          <End Role="Department" Type="Self.Department" Multiplicity="1" />
-          <End Role="Employee" Type="Self.Employee" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Department">
-              <PropertyRef Name="DepID" />
-            </Principal>
-            <Dependent Role="Employee">
-              <PropertyRef Name="DepID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_HOD_Department">
-          <End Role="Department" Type="Self.Department" Multiplicity="1" />
-          <End Role="HOD" Type="Self.HOD" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Department">
-              <PropertyRef Name="DepID" />
-            </Principal>
-            <Dependent Role="HOD">
-              <PropertyRef Name="DepID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_StoreAdmin_DepID">
           <End Role="Department" Type="Self.Department" Multiplicity="0..1" />
           <End Role="StoreAdmin" Type="Self.StoreAdmin" Multiplicity="*" />
@@ -1168,42 +1126,6 @@
             </Principal>
             <Dependent Role="StoreAdmin">
               <PropertyRef Name="DepID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Employee_HOD">
-          <End Role="HOD" Type="Self.HOD" Multiplicity="1" />
-          <End Role="Employee" Type="Self.Employee" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="HOD">
-              <PropertyRef Name="Hod1" />
-            </Principal>
-            <Dependent Role="Employee">
-              <PropertyRef Name="HODID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Employee_University">
-          <End Role="University" Type="Self.University" Multiplicity="1" />
-          <End Role="Employee" Type="Self.Employee" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="University">
-              <PropertyRef Name="UniversityId" />
-            </Principal>
-            <Dependent Role="Employee">
-              <PropertyRef Name="UniversityID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_HOD_University">
-          <End Role="University" Type="Self.University" Multiplicity="1" />
-          <End Role="HOD" Type="Self.HOD" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="University">
-              <PropertyRef Name="UniversityId" />
-            </Principal>
-            <Dependent Role="HOD">
-              <PropertyRef Name="UniversityID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1243,18 +1165,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__PurchaseO__PONum__3BFFE745">
-          <End Role="PurchaseOrders" Type="Self.PurchaseOrder" Multiplicity="0..1" />
-          <End Role="PurchaseOrderItems" Type="Self.PurchaseOrderItem" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="PurchaseOrders">
-              <PropertyRef Name="PONumber" />
-            </Principal>
-            <Dependent Role="PurchaseOrderItems">
-              <PropertyRef Name="PONumber" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_StoreAdmin_University">
           <End Role="University" Type="Self.University" Multiplicity="1" />
           <End Role="StoreAdmin" Type="Self.StoreAdmin" Multiplicity="*" />
@@ -1275,14 +1185,11 @@
           <EntitySet Name="CentralPurchaseOrderItems" EntityType="Self.CentralPurchaseOrderItem" />
           <EntitySet Name="CITs" EntityType="Self.CIT" />
           <EntitySet Name="Departments" EntityType="Self.Department" />
-          <EntitySet Name="Employees" EntityType="Self.Employee" />
-          <EntitySet Name="HODs" EntityType="Self.HOD" />
           <EntitySet Name="LocalAccountants" EntityType="Self.LocalAccountant" />
           <EntitySet Name="LocalPurchaseDepartments" EntityType="Self.LocalPurchaseDepartment" />
           <EntitySet Name="Logins" EntityType="Self.Login" />
           <EntitySet Name="MaterialCategories" EntityType="Self.MaterialCategory" />
           <EntitySet Name="MaterialSubCategories" EntityType="Self.MaterialSubCategory" />
-          <EntitySet Name="PurchaseOrderItems" EntityType="Self.PurchaseOrderItem" />
           <EntitySet Name="PurchaseOrders" EntityType="Self.PurchaseOrder" />
           <EntitySet Name="StoreAdmins" EntityType="Self.StoreAdmin" />
           <EntitySet Name="Universities" EntityType="Self.University" />
@@ -1298,29 +1205,9 @@
             <End Role="University" EntitySet="Universities" />
             <End Role="Department" EntitySet="Departments" />
           </AssociationSet>
-          <AssociationSet Name="FK_Employee_Department" Association="Self.FK_Employee_Department">
-            <End Role="Department" EntitySet="Departments" />
-            <End Role="Employee" EntitySet="Employees" />
-          </AssociationSet>
-          <AssociationSet Name="FK_HOD_Department" Association="Self.FK_HOD_Department">
-            <End Role="Department" EntitySet="Departments" />
-            <End Role="HOD" EntitySet="HODs" />
-          </AssociationSet>
           <AssociationSet Name="FK_StoreAdmin_DepID" Association="Self.FK_StoreAdmin_DepID">
             <End Role="Department" EntitySet="Departments" />
             <End Role="StoreAdmin" EntitySet="StoreAdmins" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Employee_HOD" Association="Self.FK_Employee_HOD">
-            <End Role="HOD" EntitySet="HODs" />
-            <End Role="Employee" EntitySet="Employees" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Employee_University" Association="Self.FK_Employee_University">
-            <End Role="University" EntitySet="Universities" />
-            <End Role="Employee" EntitySet="Employees" />
-          </AssociationSet>
-          <AssociationSet Name="FK_HOD_University" Association="Self.FK_HOD_University">
-            <End Role="University" EntitySet="Universities" />
-            <End Role="HOD" EntitySet="HODs" />
           </AssociationSet>
           <AssociationSet Name="FK__LocalAcco__Unive__690797E6" Association="Self.FK__LocalAcco__Unive__690797E6">
             <End Role="University" EntitySet="Universities" />
@@ -1334,17 +1221,10 @@
             <End Role="MaterialCategory" EntitySet="MaterialCategories" />
             <End Role="MaterialSubCategory" EntitySet="MaterialSubCategories" />
           </AssociationSet>
-          <AssociationSet Name="FK__PurchaseO__PONum__3BFFE745" Association="Self.FK__PurchaseO__PONum__3BFFE745">
-            <End Role="PurchaseOrders" EntitySet="PurchaseOrders" />
-            <End Role="PurchaseOrderItems" EntitySet="PurchaseOrderItems" />
-          </AssociationSet>
           <AssociationSet Name="FK_StoreAdmin_University" Association="Self.FK_StoreAdmin_University">
             <End Role="University" EntitySet="Universities" />
             <End Role="StoreAdmin" EntitySet="StoreAdmins" />
           </AssociationSet>
-          <EntitySet Name="EmployeeIssueMaterials" EntityType="ASPModel.EmployeeIssueMaterial" />
-          <EntitySet Name="HODRequests" EntityType="ASPModel.HODRequest" />
-          <EntitySet Name="HODIssueMaterials" EntityType="ASPModel.HODIssueMaterial" />
           <EntitySet Name="TempSelectedMaterials" EntityType="ASPModel.TempSelectedMaterial" />
           <EntitySet Name="CentralVendorDetails" EntityType="ASPModel.CentralVendorDetail" />
           <EntitySet Name="VendorDetails" EntityType="ASPModel.VendorDetail" />
@@ -1355,76 +1235,55 @@
           <EntitySet Name="IUCD_" EntityType="ASPModel.IUCD_" />
           <EntitySet Name="CentralAuditors" EntityType="ASPModel.CentralAuditor" />
           <EntitySet Name="SavetoCentrals" EntityType="ASPModel.SavetoCentral" />
-          <EntitySet Name="MaterialMasterLists" EntityType="ASPModel.MaterialMasterList" />
-          <EntitySet Name="MaterialAvailables" EntityType="ASPModel.MaterialAvailable" />
           <EntitySet Name="IssuedQRDetails" EntityType="ASPModel.IssuedQRDetail" />
+          <EntitySet Name="Employees" EntityType="ASPModel.Employee" />
+          <EntitySet Name="HODs" EntityType="ASPModel.HOD" />
+          <AssociationSet Name="FK_Employee_Department" Association="ASPModel.FK_Employee_Department">
+            <End Role="Department" EntitySet="Departments" />
+            <End Role="Employee" EntitySet="Employees" />
+          </AssociationSet>
+          <AssociationSet Name="FK_HOD_Department" Association="ASPModel.FK_HOD_Department">
+            <End Role="Department" EntitySet="Departments" />
+            <End Role="HOD" EntitySet="HODs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Employee_University" Association="ASPModel.FK_Employee_University">
+            <End Role="University" EntitySet="Universities" />
+            <End Role="Employee" EntitySet="Employees" />
+          </AssociationSet>
+          <AssociationSet Name="FK_HOD_University" Association="ASPModel.FK_HOD_University">
+            <End Role="University" EntitySet="Universities" />
+            <End Role="HOD" EntitySet="HODs" />
+          </AssociationSet>
+          <EntitySet Name="MaterialMasterLists" EntityType="ASPModel.MaterialMasterList" />
+          <EntitySet Name="HODRequests" EntityType="ASPModel.HODRequest" />
+          <EntitySet Name="MaterialAvailables" EntityType="ASPModel.MaterialAvailable" />
+          <EntitySet Name="PurchaseOrderItems" EntityType="ASPModel.PurchaseOrderItem" />
           <EntitySet Name="Requests" EntityType="ASPModel.Request" />
-          <EntitySet Name="Books" EntityType="ASPModel.Book" />
-        </EntityContainer>
-        <EntityType Name="EmployeeIssueMaterial">
-          <Key>
-            <PropertyRef Name="IssueID" />
-          </Key>
-          <Property Name="IssueID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="RequestID" Type="Int32" Nullable="false" />
-          <Property Name="EmpID" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="HODID" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="AssetType" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="MaterialCategory" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="MaterialSubCategory" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="RequestingQuantity" Type="Int32" Nullable="false" />
-          <Property Name="ApprovedQuantity" Type="Int32" Nullable="false" />
-          <Property Name="AvailableQuantity" Type="Int32" Nullable="false" />
-          <Property Name="IssuingQuantity" Type="Int32" Nullable="false" />
-          <Property Name="ClosingQuantity" Type="Int32" Nullable="false" />
-          <Property Name="IssuedDate" Type="DateTime" Nullable="false" Precision="7" />
-          <Property Name="IssuedBy" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="Status" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="PreviousIssuingQuantity" Type="Int32" />
-          <Property Name="Issue" Type="Int32" />
-        </EntityType>
-        <EntityType Name="HODRequest">
-          <Key>
-            <PropertyRef Name="SNO" />
-          </Key>
-          <Property Name="SNO" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="HODID" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="AssetType" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="MaterialCategory" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="MSubCategory" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="RequestingQuantity" Type="Int32" Nullable="false" />
-          <Property Name="IssuingQuantity" Type="Int32" />
-          <Property Name="RequestedDate" Type="DateTime" Precision="3" />
-          <Property Name="StoreAdminID" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="PendingQuantity" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Status" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="HODRequestID" Type="Int32" />
-          <Property Name="AvailableQuantity" Type="Int32" />
-          <Property Name="IssuedBy" Type="String" MaxLength="100" FixedLength="true" Unicode="true" />
-          <Property Name="IssuedDate" Type="DateTime" Precision="3" />
-          <Property Name="ClosingQuantity" Type="Int32" />
-          <Property Name="Remarks" Type="String" MaxLength="300" FixedLength="false" Unicode="true" />
-        </EntityType>
-        <EntityType Name="HODIssueMaterial">
-          <Key>
-            <PropertyRef Name="IssueID" />
-          </Key>
-          <Property Name="IssueID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="RequestID" Type="Int32" Nullable="false" />
-          <Property Name="HODID" Type="String" MaxLength="55" FixedLength="false" Unicode="true" />
-          <Property Name="AssetType" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="MaterialCategory" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="MaterialSubCategory" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="RequestingQuantity" Type="Int32" />
-          <Property Name="AvailableQuantity" Type="Int32" />
-          <Property Name="IssuingQuantity" Type="Int32" />
-          <Property Name="ClosingQuantity" Type="Int32" />
-          <Property Name="IssuedDate" Type="DateTime" Precision="3" />
-          <Property Name="IssuedBy" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="Status" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="PreviousIssuingQuantity" Type="Int32" />
-          <Property Name="Issue" Type="Int32" />
-        </EntityType>
+          <AssociationSet Name="FK__PurchaseO__PONum__1CBC4616" Association="ASPModel.FK__PurchaseO__PONum__1CBC4616">
+            <End Role="PurchaseOrder" EntitySet="PurchaseOrders" />
+            <End Role="PurchaseOrderItem" EntitySet="PurchaseOrderItems" />
+          </AssociationSet>
+          <EntitySet Name="AssetMasters" EntityType="ASPModel.AssetMaster" />
+          <EntitySet Name="AssetQuantities" EntityType="ASPModel.AssetQuantity" />
+          <EntitySet Name="Buildings" EntityType="ASPModel.Building" />
+          <EntitySet Name="Users" EntityType="ASPModel.User" />
+          <AssociationSet Name="FK__AssetMast__Updat__382F5661" Association="ASPModel.FK__AssetMast__Updat__382F5661">
+            <End Role="User" EntitySet="Users" />
+            <End Role="AssetMaster" EntitySet="AssetMasters" />
+          </AssociationSet>
+          <AssociationSet Name="FK__AssetQuan__Asset__3DE82FB7" Association="ASPModel.FK__AssetQuan__Asset__3DE82FB7">
+            <End Role="AssetMaster" EntitySet="AssetMasters" />
+            <End Role="AssetQuantity" EntitySet="AssetQuantities" />
+          </AssociationSet>
+          <AssociationSet Name="FK__AssetQuan__Build__3EDC53F0" Association="ASPModel.FK__AssetQuan__Build__3EDC53F0">
+            <End Role="Building" EntitySet="Buildings" />
+            <End Role="AssetQuantity" EntitySet="AssetQuantities" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Buildings__Creat__336AA144" Association="ASPModel.FK__Buildings__Creat__336AA144">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Building" EntitySet="Buildings" />
+          </AssociationSet>
+          </EntityContainer>
         <EntityType Name="TempSelectedMaterial">
           <Key>
             <PropertyRef Name="ID" />
@@ -1522,6 +1381,99 @@
           <Property Name="IUCDApprovedQty" Type="Int32" />
           <Property Name="IUCDApprovalDoc" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
         </EntityType>
+        <EntityType Name="IssuedQRDetail">
+          <Key>
+            <PropertyRef Name="QRID" />
+          </Key>
+          <Property Name="QRID" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="RequestID" Type="Int32" Nullable="false" />
+          <Property Name="EmployeeID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="MaterialSubCategory" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="TotalIssuedQty" Type="Int32" />
+          <Property Name="VendorDetails" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="Employee">
+          <Key>
+            <PropertyRef Name="Emp1" />
+          </Key>
+          <Property Name="Emp1" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FirstName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="LastName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="EmailID" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="PhoneNumber" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="DepName" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="HODID" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="DepID" Type="Int32" Nullable="false" />
+          <Property Name="UniversityID" Type="Int32" Nullable="false" />
+          <Property Name="EmpID" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Department" Relationship="ASPModel.FK_Employee_Department" FromRole="Employee" ToRole="Department" />
+          <NavigationProperty Name="University" Relationship="ASPModel.FK_Employee_University" FromRole="Employee" ToRole="University" />
+        </EntityType>
+        <EntityType Name="HOD">
+          <Key>
+            <PropertyRef Name="Hod1" />
+          </Key>
+          <Property Name="Hod1" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="FirstName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="LastName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="EmailID" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="PhoneNumber" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="DepName" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="DepID" Type="Int32" Nullable="false" />
+          <Property Name="UniversityID" Type="Int32" Nullable="false" />
+          <Property Name="HODID" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Department" Relationship="ASPModel.FK_HOD_Department" FromRole="HOD" ToRole="Department" />
+          <NavigationProperty Name="University" Relationship="ASPModel.FK_HOD_University" FromRole="HOD" ToRole="University" />
+        </EntityType>
+        <Association Name="FK_Employee_Department">
+          <End Type="ASPModel.Department" Role="Department" Multiplicity="1" />
+          <End Type="ASPModel.Employee" Role="Employee" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Department">
+              <PropertyRef Name="DepID" />
+            </Principal>
+            <Dependent Role="Employee">
+              <PropertyRef Name="DepID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_HOD_Department">
+          <End Type="ASPModel.Department" Role="Department" Multiplicity="1" />
+          <End Type="ASPModel.HOD" Role="HOD" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Department">
+              <PropertyRef Name="DepID" />
+            </Principal>
+            <Dependent Role="HOD">
+              <PropertyRef Name="DepID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Employee_University">
+          <End Type="ASPModel.University" Role="University" Multiplicity="1" />
+          <End Type="ASPModel.Employee" Role="Employee" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="University">
+              <PropertyRef Name="UniversityId" />
+            </Principal>
+            <Dependent Role="Employee">
+              <PropertyRef Name="UniversityID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_HOD_University">
+          <End Type="ASPModel.University" Role="University" Multiplicity="1" />
+          <End Type="ASPModel.HOD" Role="HOD" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="University">
+              <PropertyRef Name="UniversityId" />
+            </Principal>
+            <Dependent Role="HOD">
+              <PropertyRef Name="UniversityID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityType Name="MaterialMasterList">
           <Key>
             <PropertyRef Name="MasterListID" />
@@ -1536,6 +1488,30 @@
           <Property Name="UpdatedBy" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="MinimumLimit" Type="Int32" Nullable="false" />
           <Property Name="IsLowStockAlertSent" Type="Boolean" Nullable="false" />
+          <Property Name="UniversityID" Type="Int32" />
+        </EntityType>
+        <EntityType Name="HODRequest">
+          <Key>
+            <PropertyRef Name="SNO" />
+          </Key>
+          <Property Name="SNO" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="HODID" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="AssetType" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="MaterialCategory" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="MSubCategory" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="RequestingQuantity" Type="Int32" Nullable="false" />
+          <Property Name="IssuingQuantity" Type="Int32" />
+          <Property Name="RequestedDate" Type="DateTime" Precision="3" />
+          <Property Name="StoreAdminID" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="PendingQuantity" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Status" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="HODRequestID" Type="Int32" />
+          <Property Name="AvailableQuantity" Type="Int32" />
+          <Property Name="IssuedBy" Type="String" MaxLength="100" FixedLength="true" Unicode="true" />
+          <Property Name="IssuedDate" Type="DateTime" Precision="3" />
+          <Property Name="ClosingQuantity" Type="Int32" />
+          <Property Name="Remarks" Type="String" MaxLength="300" FixedLength="false" Unicode="true" />
+          <Property Name="UniversityID" Type="Int32" />
         </EntityType>
         <EntityType Name="MaterialAvailable">
           <Key>
@@ -1553,18 +1529,30 @@
           <Property Name="ExpiryDate" Type="DateTime" Precision="0" />
           <Property Name="ReceivedDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
+          <Property Name="UniversityID" Type="Int32" />
         </EntityType>
-        <EntityType Name="IssuedQRDetail">
+        <EntityType Name="PurchaseOrderItem">
           <Key>
-            <PropertyRef Name="QRID" />
+            <PropertyRef Name="POItemID" />
           </Key>
-          <Property Name="QRID" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="RequestID" Type="Int32" Nullable="false" />
-          <Property Name="EmployeeID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="MaterialSubCategory" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="TotalIssuedQty" Type="Int32" />
-          <Property Name="VendorDetails" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="POItemID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PONumber" Type="Int32" />
+          <Property Name="QtyOrdered" Type="Int32" />
+          <Property Name="QtyReceived" Type="Int32" />
+          <Property Name="Description" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="UnitPrice" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="Total" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="VendorID" Type="Int32" />
+          <Property Name="Remarks" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="VendorEmail" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="AcceptedQty" Type="Int32" />
+          <Property Name="RejectedQty" Type="Int32" />
+          <Property Name="Unit" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Make" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="ExpiryDate" Type="DateTime" Precision="0" />
+          <Property Name="AuditorID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="UniversityID" Type="Int32" />
+          <NavigationProperty Name="PurchaseOrder" Relationship="ASPModel.FK__PurchaseO__PONum__1CBC4616" FromRole="PurchaseOrderItem" ToRole="PurchaseOrder" />
         </EntityType>
         <EntityType Name="Request">
           <Key>
@@ -1590,26 +1578,122 @@
           <Property Name="IssuedDate" Type="DateTime" Precision="3" />
           <Property Name="IssuedBy" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="Issue" Type="Int32" />
+          <Property Name="UniversityID" Type="Int32" />
         </EntityType>
-        <EntityType Name="Book">
+        <Association Name="FK__PurchaseO__PONum__1CBC4616">
+          <End Type="ASPModel.PurchaseOrder" Role="PurchaseOrder" Multiplicity="0..1" />
+          <End Type="ASPModel.PurchaseOrderItem" Role="PurchaseOrderItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PurchaseOrder">
+              <PropertyRef Name="PONumber" />
+            </Principal>
+            <Dependent Role="PurchaseOrderItem">
+              <PropertyRef Name="PONumber" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="AssetMaster">
           <Key>
-            <PropertyRef Name="BookID" />
+            <PropertyRef Name="AssetID" />
           </Key>
-          <Property Name="BookID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="SlNo" Type="Int32" Nullable="false" />
-          <Property Name="AccNo" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="CallNo" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="TitleoftheBook" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="true" />
-          <Property Name="Author" Type="String" MaxLength="300" FixedLength="false" Unicode="true" />
-          <Property Name="PlaceOfPublishers" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="Year" Type="Int32" />
-          <Property Name="Edition" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="pages" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Vol" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Source" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="Price" Type="Decimal" Precision="10" Scale="2" />
+          <Property Name="AssetID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="AssetName" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="Quantity" Type="Int32" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedBy" Type="Int32" />
+          <NavigationProperty Name="User" Relationship="ASPModel.FK__AssetMast__Updat__382F5661" FromRole="AssetMaster" ToRole="User" />
+          <NavigationProperty Name="AssetQuantities" Relationship="ASPModel.FK__AssetQuan__Asset__3DE82FB7" FromRole="AssetMaster" ToRole="AssetQuantity" />
         </EntityType>
-      </Schema>
+        <EntityType Name="AssetQuantity">
+          <Key>
+            <PropertyRef Name="AssetQuantityID" />
+          </Key>
+          <Property Name="AssetQuantityID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="AssetID" Type="Int32" Nullable="false" />
+          <Property Name="SerialNumber" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="PurchaseDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="WarrantyExpiryDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="IsQRIssued" Type="Boolean" />
+          <Property Name="IsExpired" Type="Boolean" />
+          <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
+          <Property Name="BuildingID" Type="Int32" />
+          <NavigationProperty Name="AssetMaster" Relationship="ASPModel.FK__AssetQuan__Asset__3DE82FB7" FromRole="AssetQuantity" ToRole="AssetMaster" />
+          <NavigationProperty Name="Building" Relationship="ASPModel.FK__AssetQuan__Build__3EDC53F0" FromRole="AssetQuantity" ToRole="Building" />
+        </EntityType>
+        <EntityType Name="Building">
+          <Key>
+            <PropertyRef Name="BuildingID" />
+          </Key>
+          <Property Name="BuildingID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="BuildingName" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="Address" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="CreatedBy" Type="Int32" />
+          <NavigationProperty Name="AssetQuantities" Relationship="ASPModel.FK__AssetQuan__Build__3EDC53F0" FromRole="Building" ToRole="AssetQuantity" />
+          <NavigationProperty Name="User" Relationship="ASPModel.FK__Buildings__Creat__336AA144" FromRole="Building" ToRole="User" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="UserID" />
+          </Key>
+          <Property Name="UserID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FullName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Email" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="Phone" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="Role" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="AssetMasters" Relationship="ASPModel.FK__AssetMast__Updat__382F5661" FromRole="User" ToRole="AssetMaster" />
+          <NavigationProperty Name="Buildings" Relationship="ASPModel.FK__Buildings__Creat__336AA144" FromRole="User" ToRole="Building" />
+        </EntityType>
+        <Association Name="FK__AssetMast__Updat__382F5661">
+          <End Type="ASPModel.User" Role="User" Multiplicity="0..1" />
+          <End Type="ASPModel.AssetMaster" Role="AssetMaster" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserID" />
+            </Principal>
+            <Dependent Role="AssetMaster">
+              <PropertyRef Name="UpdatedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__AssetQuan__Asset__3DE82FB7">
+          <End Type="ASPModel.AssetMaster" Role="AssetMaster" Multiplicity="1" />
+          <End Type="ASPModel.AssetQuantity" Role="AssetQuantity" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AssetMaster">
+              <PropertyRef Name="AssetID" />
+            </Principal>
+            <Dependent Role="AssetQuantity">
+              <PropertyRef Name="AssetID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__AssetQuan__Build__3EDC53F0">
+          <End Type="ASPModel.Building" Role="Building" Multiplicity="0..1" />
+          <End Type="ASPModel.AssetQuantity" Role="AssetQuantity" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Building">
+              <PropertyRef Name="BuildingID" />
+            </Principal>
+            <Dependent Role="AssetQuantity">
+              <PropertyRef Name="BuildingID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Buildings__Creat__336AA144">
+          <End Type="ASPModel.User" Role="User" Multiplicity="0..1" />
+          <End Type="ASPModel.Building" Role="Building" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserID" />
+            </Principal>
+            <Dependent Role="Building">
+              <PropertyRef Name="CreatedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -1725,37 +1809,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Employees">
-            <EntityTypeMapping TypeName="ASPModel.Employee">
-              <MappingFragment StoreEntitySet="Employee">
-                <ScalarProperty Name="Emp1" ColumnName="Emp1" />
-                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
-                <ScalarProperty Name="LastName" ColumnName="LastName" />
-                <ScalarProperty Name="EmailID" ColumnName="EmailID" />
-                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
-                <ScalarProperty Name="DepName" ColumnName="DepName" />
-                <ScalarProperty Name="HODID" ColumnName="HODID" />
-                <ScalarProperty Name="DepID" ColumnName="DepID" />
-                <ScalarProperty Name="UniversityID" ColumnName="UniversityID" />
-                <ScalarProperty Name="EmpID" ColumnName="EmpID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="HODs">
-            <EntityTypeMapping TypeName="ASPModel.HOD">
-              <MappingFragment StoreEntitySet="HOD">
-                <ScalarProperty Name="Hod1" ColumnName="Hod1" />
-                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
-                <ScalarProperty Name="LastName" ColumnName="LastName" />
-                <ScalarProperty Name="EmailID" ColumnName="EmailID" />
-                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
-                <ScalarProperty Name="DepName" ColumnName="DepName" />
-                <ScalarProperty Name="DepID" ColumnName="DepID" />
-                <ScalarProperty Name="UniversityID" ColumnName="UniversityID" />
-                <ScalarProperty Name="HODID" ColumnName="HODID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="LocalAccountants">
             <EntityTypeMapping TypeName="ASPModel.LocalAccountant">
               <MappingFragment StoreEntitySet="LocalAccountant">
@@ -1810,28 +1863,6 @@
                 <ScalarProperty Name="MSubCategoryID" ColumnName="MSubCategoryID" />
                 <ScalarProperty Name="MaterialSubCategory1" ColumnName="MaterialSubCategory" />
                 <ScalarProperty Name="MID" ColumnName="MID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="PurchaseOrderItems">
-            <EntityTypeMapping TypeName="ASPModel.PurchaseOrderItem">
-              <MappingFragment StoreEntitySet="PurchaseOrderItems">
-                <ScalarProperty Name="AuditorID" ColumnName="AuditorID" />
-                <ScalarProperty Name="ExpiryDate" ColumnName="ExpiryDate" />
-                <ScalarProperty Name="Make" ColumnName="Make" />
-                <ScalarProperty Name="Unit" ColumnName="Unit" />
-                <ScalarProperty Name="RejectedQty" ColumnName="RejectedQty" />
-                <ScalarProperty Name="AcceptedQty" ColumnName="AcceptedQty" />
-                <ScalarProperty Name="POItemID" ColumnName="POItemID" />
-                <ScalarProperty Name="PONumber" ColumnName="PONumber" />
-                <ScalarProperty Name="QtyOrdered" ColumnName="QtyOrdered" />
-                <ScalarProperty Name="QtyReceived" ColumnName="QtyReceived" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="UnitPrice" ColumnName="UnitPrice" />
-                <ScalarProperty Name="Total" ColumnName="Total" />
-                <ScalarProperty Name="VendorID" ColumnName="VendorID" />
-                <ScalarProperty Name="Remarks" ColumnName="Remarks" />
-                <ScalarProperty Name="VendorEmail" ColumnName="VendorEmail" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1902,73 +1933,6 @@
                 <ScalarProperty Name="Address" ColumnName="Address" />
                 <ScalarProperty Name="UniversityPhone" ColumnName="UniversityPhone" />
                 <ScalarProperty Name="UniversityEmail" ColumnName="UniversityEmail" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="EmployeeIssueMaterials">
-            <EntityTypeMapping TypeName="ASPModel.EmployeeIssueMaterial">
-              <MappingFragment StoreEntitySet="EmployeeIssueMaterial">
-                <ScalarProperty Name="Issue" ColumnName="Issue" />
-                <ScalarProperty Name="PreviousIssuingQuantity" ColumnName="PreviousIssuingQuantity" />
-                <ScalarProperty Name="Status" ColumnName="Status" />
-                <ScalarProperty Name="IssuedBy" ColumnName="IssuedBy" />
-                <ScalarProperty Name="IssuedDate" ColumnName="IssuedDate" />
-                <ScalarProperty Name="ClosingQuantity" ColumnName="ClosingQuantity" />
-                <ScalarProperty Name="IssuingQuantity" ColumnName="IssuingQuantity" />
-                <ScalarProperty Name="AvailableQuantity" ColumnName="AvailableQuantity" />
-                <ScalarProperty Name="ApprovedQuantity" ColumnName="ApprovedQuantity" />
-                <ScalarProperty Name="RequestingQuantity" ColumnName="RequestingQuantity" />
-                <ScalarProperty Name="MaterialSubCategory" ColumnName="MaterialSubCategory" />
-                <ScalarProperty Name="MaterialCategory" ColumnName="MaterialCategory" />
-                <ScalarProperty Name="AssetType" ColumnName="AssetType" />
-                <ScalarProperty Name="HODID" ColumnName="HODID" />
-                <ScalarProperty Name="EmpID" ColumnName="EmpID" />
-                <ScalarProperty Name="RequestID" ColumnName="RequestID" />
-                <ScalarProperty Name="IssueID" ColumnName="IssueID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="HODRequests">
-            <EntityTypeMapping TypeName="ASPModel.HODRequest">
-              <MappingFragment StoreEntitySet="HODRequest">
-                <ScalarProperty Name="Remarks" ColumnName="Remarks" />
-                <ScalarProperty Name="ClosingQuantity" ColumnName="ClosingQuantity" />
-                <ScalarProperty Name="IssuedDate" ColumnName="IssuedDate" />
-                <ScalarProperty Name="IssuedBy" ColumnName="IssuedBy" />
-                <ScalarProperty Name="AvailableQuantity" ColumnName="AvailableQuantity" />
-                <ScalarProperty Name="HODRequestID" ColumnName="HODRequestID" />
-                <ScalarProperty Name="Status" ColumnName="Status" />
-                <ScalarProperty Name="PendingQuantity" ColumnName="PendingQuantity" />
-                <ScalarProperty Name="StoreAdminID" ColumnName="StoreAdminID" />
-                <ScalarProperty Name="RequestedDate" ColumnName="RequestedDate" />
-                <ScalarProperty Name="IssuingQuantity" ColumnName="IssuingQuantity" />
-                <ScalarProperty Name="RequestingQuantity" ColumnName="RequestingQuantity" />
-                <ScalarProperty Name="MSubCategory" ColumnName="MSubCategory" />
-                <ScalarProperty Name="MaterialCategory" ColumnName="MaterialCategory" />
-                <ScalarProperty Name="AssetType" ColumnName="AssetType" />
-                <ScalarProperty Name="HODID" ColumnName="HODID" />
-                <ScalarProperty Name="SNO" ColumnName="SNO" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="HODIssueMaterials">
-            <EntityTypeMapping TypeName="ASPModel.HODIssueMaterial">
-              <MappingFragment StoreEntitySet="HODIssueMaterials">
-                <ScalarProperty Name="Issue" ColumnName="Issue" />
-                <ScalarProperty Name="PreviousIssuingQuantity" ColumnName="PreviousIssuingQuantity" />
-                <ScalarProperty Name="Status" ColumnName="Status" />
-                <ScalarProperty Name="IssuedBy" ColumnName="IssuedBy" />
-                <ScalarProperty Name="IssuedDate" ColumnName="IssuedDate" />
-                <ScalarProperty Name="ClosingQuantity" ColumnName="ClosingQuantity" />
-                <ScalarProperty Name="IssuingQuantity" ColumnName="IssuingQuantity" />
-                <ScalarProperty Name="AvailableQuantity" ColumnName="AvailableQuantity" />
-                <ScalarProperty Name="RequestingQuantity" ColumnName="RequestingQuantity" />
-                <ScalarProperty Name="MaterialSubCategory" ColumnName="MaterialSubCategory" />
-                <ScalarProperty Name="MaterialCategory" ColumnName="MaterialCategory" />
-                <ScalarProperty Name="AssetType" ColumnName="AssetType" />
-                <ScalarProperty Name="HODID" ColumnName="HODID" />
-                <ScalarProperty Name="RequestID" ColumnName="RequestID" />
-                <ScalarProperty Name="IssueID" ColumnName="IssueID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -2062,9 +2026,54 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="IssuedQRDetails">
+            <EntityTypeMapping TypeName="ASPModel.IssuedQRDetail">
+              <MappingFragment StoreEntitySet="IssuedQRDetails">
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="VendorDetails" ColumnName="VendorDetails" />
+                <ScalarProperty Name="TotalIssuedQty" ColumnName="TotalIssuedQty" />
+                <ScalarProperty Name="MaterialSubCategory" ColumnName="MaterialSubCategory" />
+                <ScalarProperty Name="EmployeeID" ColumnName="EmployeeID" />
+                <ScalarProperty Name="RequestID" ColumnName="RequestID" />
+                <ScalarProperty Name="QRID" ColumnName="QRID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Employees">
+            <EntityTypeMapping TypeName="ASPModel.Employee">
+              <MappingFragment StoreEntitySet="Employee">
+                <ScalarProperty Name="EmpID" ColumnName="EmpID" />
+                <ScalarProperty Name="UniversityID" ColumnName="UniversityID" />
+                <ScalarProperty Name="DepID" ColumnName="DepID" />
+                <ScalarProperty Name="HODID" ColumnName="HODID" />
+                <ScalarProperty Name="DepName" ColumnName="DepName" />
+                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
+                <ScalarProperty Name="EmailID" ColumnName="EmailID" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="Emp1" ColumnName="Emp1" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="HODs">
+            <EntityTypeMapping TypeName="ASPModel.HOD">
+              <MappingFragment StoreEntitySet="HOD">
+                <ScalarProperty Name="HODID" ColumnName="HODID" />
+                <ScalarProperty Name="UniversityID" ColumnName="UniversityID" />
+                <ScalarProperty Name="DepID" ColumnName="DepID" />
+                <ScalarProperty Name="DepName" ColumnName="DepName" />
+                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
+                <ScalarProperty Name="EmailID" ColumnName="EmailID" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="Hod1" ColumnName="Hod1" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="MaterialMasterLists">
             <EntityTypeMapping TypeName="ASPModel.MaterialMasterList">
               <MappingFragment StoreEntitySet="MaterialMasterList">
+                <ScalarProperty Name="UniversityID" ColumnName="UniversityID" />
                 <ScalarProperty Name="IsLowStockAlertSent" ColumnName="IsLowStockAlertSent" />
                 <ScalarProperty Name="MinimumLimit" ColumnName="MinimumLimit" />
                 <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
@@ -2078,9 +2087,34 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="HODRequests">
+            <EntityTypeMapping TypeName="ASPModel.HODRequest">
+              <MappingFragment StoreEntitySet="HODRequest">
+                <ScalarProperty Name="UniversityID" ColumnName="UniversityID" />
+                <ScalarProperty Name="Remarks" ColumnName="Remarks" />
+                <ScalarProperty Name="ClosingQuantity" ColumnName="ClosingQuantity" />
+                <ScalarProperty Name="IssuedDate" ColumnName="IssuedDate" />
+                <ScalarProperty Name="IssuedBy" ColumnName="IssuedBy" />
+                <ScalarProperty Name="AvailableQuantity" ColumnName="AvailableQuantity" />
+                <ScalarProperty Name="HODRequestID" ColumnName="HODRequestID" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="PendingQuantity" ColumnName="PendingQuantity" />
+                <ScalarProperty Name="StoreAdminID" ColumnName="StoreAdminID" />
+                <ScalarProperty Name="RequestedDate" ColumnName="RequestedDate" />
+                <ScalarProperty Name="IssuingQuantity" ColumnName="IssuingQuantity" />
+                <ScalarProperty Name="RequestingQuantity" ColumnName="RequestingQuantity" />
+                <ScalarProperty Name="MSubCategory" ColumnName="MSubCategory" />
+                <ScalarProperty Name="MaterialCategory" ColumnName="MaterialCategory" />
+                <ScalarProperty Name="AssetType" ColumnName="AssetType" />
+                <ScalarProperty Name="HODID" ColumnName="HODID" />
+                <ScalarProperty Name="SNO" ColumnName="SNO" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="MaterialAvailables">
             <EntityTypeMapping TypeName="ASPModel.MaterialAvailable">
               <MappingFragment StoreEntitySet="MaterialAvailable">
+                <ScalarProperty Name="UniversityID" ColumnName="UniversityID" />
                 <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
                 <ScalarProperty Name="ReceivedDate" ColumnName="ReceivedDate" />
                 <ScalarProperty Name="ExpiryDate" ColumnName="ExpiryDate" />
@@ -2096,22 +2130,33 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="IssuedQRDetails">
-            <EntityTypeMapping TypeName="ASPModel.IssuedQRDetail">
-              <MappingFragment StoreEntitySet="IssuedQRDetails">
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="VendorDetails" ColumnName="VendorDetails" />
-                <ScalarProperty Name="TotalIssuedQty" ColumnName="TotalIssuedQty" />
-                <ScalarProperty Name="MaterialSubCategory" ColumnName="MaterialSubCategory" />
-                <ScalarProperty Name="EmployeeID" ColumnName="EmployeeID" />
-                <ScalarProperty Name="RequestID" ColumnName="RequestID" />
-                <ScalarProperty Name="QRID" ColumnName="QRID" />
+          <EntitySetMapping Name="PurchaseOrderItems">
+            <EntityTypeMapping TypeName="ASPModel.PurchaseOrderItem">
+              <MappingFragment StoreEntitySet="PurchaseOrderItems">
+                <ScalarProperty Name="UniversityID" ColumnName="UniversityID" />
+                <ScalarProperty Name="AuditorID" ColumnName="AuditorID" />
+                <ScalarProperty Name="ExpiryDate" ColumnName="ExpiryDate" />
+                <ScalarProperty Name="Make" ColumnName="Make" />
+                <ScalarProperty Name="Unit" ColumnName="Unit" />
+                <ScalarProperty Name="RejectedQty" ColumnName="RejectedQty" />
+                <ScalarProperty Name="AcceptedQty" ColumnName="AcceptedQty" />
+                <ScalarProperty Name="VendorEmail" ColumnName="VendorEmail" />
+                <ScalarProperty Name="Remarks" ColumnName="Remarks" />
+                <ScalarProperty Name="VendorID" ColumnName="VendorID" />
+                <ScalarProperty Name="Total" ColumnName="Total" />
+                <ScalarProperty Name="UnitPrice" ColumnName="UnitPrice" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="QtyReceived" ColumnName="QtyReceived" />
+                <ScalarProperty Name="QtyOrdered" ColumnName="QtyOrdered" />
+                <ScalarProperty Name="PONumber" ColumnName="PONumber" />
+                <ScalarProperty Name="POItemID" ColumnName="POItemID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Requests">
             <EntityTypeMapping TypeName="ASPModel.Request">
               <MappingFragment StoreEntitySet="Request">
+                <ScalarProperty Name="UniversityID" ColumnName="UniversityID" />
                 <ScalarProperty Name="Issue" ColumnName="Issue" />
                 <ScalarProperty Name="IssuedBy" ColumnName="IssuedBy" />
                 <ScalarProperty Name="IssuedDate" ColumnName="IssuedDate" />
@@ -2135,22 +2180,52 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Books">
-            <EntityTypeMapping TypeName="ASPModel.Book">
-              <MappingFragment StoreEntitySet="Books">
-                <ScalarProperty Name="Price" ColumnName="Price" />
-                <ScalarProperty Name="Source" ColumnName="Source" />
-                <ScalarProperty Name="Vol" ColumnName="Vol" />
-                <ScalarProperty Name="pages" ColumnName="pages" />
-                <ScalarProperty Name="Edition" ColumnName="Edition" />
-                <ScalarProperty Name="Year" ColumnName="Year" />
-                <ScalarProperty Name="PlaceOfPublishers" ColumnName="PlaceOfPublishers" />
-                <ScalarProperty Name="Author" ColumnName="Author" />
-                <ScalarProperty Name="TitleoftheBook" ColumnName="TitleoftheBook" />
-                <ScalarProperty Name="CallNo" ColumnName="CallNo" />
-                <ScalarProperty Name="AccNo" ColumnName="AccNo" />
-                <ScalarProperty Name="SlNo" ColumnName="SlNo" />
-                <ScalarProperty Name="BookID" ColumnName="BookID" />
+          <EntitySetMapping Name="AssetMasters">
+            <EntityTypeMapping TypeName="ASPModel.AssetMaster">
+              <MappingFragment StoreEntitySet="AssetMaster">
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="AssetName" ColumnName="AssetName" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AssetQuantities">
+            <EntityTypeMapping TypeName="ASPModel.AssetQuantity">
+              <MappingFragment StoreEntitySet="AssetQuantities">
+                <ScalarProperty Name="BuildingID" ColumnName="BuildingID" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="IsExpired" ColumnName="IsExpired" />
+                <ScalarProperty Name="IsQRIssued" ColumnName="IsQRIssued" />
+                <ScalarProperty Name="WarrantyExpiryDate" ColumnName="WarrantyExpiryDate" />
+                <ScalarProperty Name="PurchaseDate" ColumnName="PurchaseDate" />
+                <ScalarProperty Name="SerialNumber" ColumnName="SerialNumber" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="AssetQuantityID" ColumnName="AssetQuantityID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Buildings">
+            <EntityTypeMapping TypeName="ASPModel.Building">
+              <MappingFragment StoreEntitySet="Buildings">
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="BuildingName" ColumnName="BuildingName" />
+                <ScalarProperty Name="BuildingID" ColumnName="BuildingID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Users">
+            <EntityTypeMapping TypeName="ASPModel.User">
+              <MappingFragment StoreEntitySet="Users">
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="Role" ColumnName="Role" />
+                <ScalarProperty Name="Phone" ColumnName="Phone" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="FullName" ColumnName="FullName" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

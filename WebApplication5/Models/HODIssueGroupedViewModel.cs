@@ -9,6 +9,7 @@ namespace WebApplication5.Models
     {
         public int RequestID { get; set; }
         public DateTime RequestDate { get; set; }
-        public List<HODIssueMaterial> Materials { get; set; }
+        public List<HODRequest> Materials { get; internal set; }
+        //public List<HODIssueMaterial> Materials { get; set; }
     }
 }

@@ -1270,28 +1270,28 @@ namespace WebApplication5.Controllers
 
 
 
-        //public ActionResult MyRequests()
-        //{
-        //    string userId = (string)Session["UserID"];
+        public ActionResult MyRequests()
+        {
+            string userId = (string)Session["UserID"];
 
-        //    // Get all POs created by this user
-        //    var purchaseOrders = _db.PurchaseOrders
-        //                            .Where(po => po.CreatedBy == userId.ToString())
-        //                            .OrderByDescending(po => po.PODate)
-        //                            .ToList();
+            // Get all POs created by this user
+            var purchaseOrders = _db.PurchaseOrders
+                                    .Where(po => po.CreatedBy == userId.ToString())
+                                    .OrderByDescending(po => po.PODate)
+                                    .ToList();
 
-        //    // Create a ViewModel list for each PO with its items
-        //    var viewModel = purchaseOrders.Select(po => new PurchaseOrderGroupedViewModel
-        //    {
-        //        PONumber = po.PONumber,
-        //        PODate = (DateTime)po.PODate,
-        //        PurchaseOrderItems = _db.PurchaseOrderItems
-        //                                .Where(item => item.PONumber == po.PONumber)
-        //                                .ToList()
-        //    }).ToList();
+            // Create a ViewModel list for each PO with its items
+            var viewModel = purchaseOrders.Select(po => new PurchaseOrderGroupedViewModel
+            {
+                PONumber = po.PONumber,
+                PODate = (DateTime)po.PODate,
+                PurchaseOrderItems = _db.PurchaseOrderItems
+                                        .Where(item => item.PONumber == po.PONumber)
+                                        .ToList()
+            }).ToList();
 
-        //    return View(viewModel);
-        //}
+            return View(viewModel);
+        }
     }
 
 }

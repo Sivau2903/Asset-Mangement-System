@@ -24,5 +24,6 @@ namespace WebApplication5.Models
         public string UpdatedBy { get; set; }
         public int MinimumLimit { get; set; }
         public bool IsLowStockAlertSent { get; set; }
+        public Nullable<int> UniversityID { get; set; }
     }
 }

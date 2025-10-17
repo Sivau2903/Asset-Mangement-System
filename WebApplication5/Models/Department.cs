@@ -17,9 +17,9 @@ namespace WebApplication5.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Department()
         {
+            this.StoreAdmins = new HashSet<StoreAdmin>();
             this.Employees = new HashSet<Employee>();
             this.HODs = new HashSet<HOD>();
-            this.StoreAdmins = new HashSet<StoreAdmin>();
         }
     
         public int DepID { get; set; }
@@ -29,10 +29,10 @@ namespace WebApplication5.Models
     
         public virtual University University { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<StoreAdmin> StoreAdmins { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Employee> Employees { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<HOD> HODs { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<StoreAdmin> StoreAdmins { get; set; }
     }
 }

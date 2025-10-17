@@ -1,0 +1,87 @@
+﻿@model WebApplication5.Models.AssetQuantity
+
+@{
+    Layout = "~/Views/Shared/_NodelLayout.cshtml";
+    ViewBag.Title = "Add Asset";
+}
+
+<div class="d-flex justify-content-center align-items-start mt-5">
+    <div class="card shadow p-4" style="width: 500px;">
+        <h2 class="text-center mb-4">Add New Asset</h2>
+
+        @using (Html.BeginForm("AddAsset", "NodelOfficer", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            <!-- Serial Number -->
+            @*<div class="form-group mb-3">
+                @Html.LabelFor(m => m.SerialNumber)
+                @Html.TextBoxFor(m => m.SerialNumber, new { @class = "form-control", placeholder = "Enter Serial Number" })
+                @Html.ValidationMessageFor(m => m.SerialNumber, "", new { @class = "text-danger" })
+            </div>*@
+
+            <!-- Asset Name -->
+            @*<div class="form-group mb-3">
+                @Html.LabelFor(m => m.AssetName)
+                @Html.TextBoxFor(m => m.AssetName, new { @class = "form-control", placeholder = "Enter Asset Name" })
+                @Html.ValidationMessageFor(m => m.AssetName, "", new { @class = "text-danger" })
+            </div>*@
+
+            <!-- Purchase Date -->
+            <div class="form-group mb-3">
+                @Html.LabelFor(m => m.PurchaseDate)
+                @Html.TextBoxFor(m => m.PurchaseDate, new { @class = "form-control", type = "date" })
+                @Html.ValidationMessageFor(m => m.PurchaseDate, "", new { @class = "text-danger" })
+            </div>
+
+            <!-- Warranty Expiry Date -->
+            <div class="form-group mb-3">
+                @Html.LabelFor(m => m.WarrantyExpiryDate)
+                @Html.TextBoxFor(m => m.WarrantyExpiryDate, new { @class = "form-control", type = "date" })
+                @Html.ValidationMessageFor(m => m.WarrantyExpiryDate, "", new { @class = "text-danger" })
+            </div>
+
+            <!-- QR Code Issued -->
+            @*<div class="form-group mb-3">
+                @Html.LabelFor(m => m.QRCodeIssued)
+                @Html.CheckBoxFor(m => m.QRCodeIssued, new { @class = "form-check-input" })
+            </div>*@
+
+            <!-- Is Expired -->
+            @*<div class="form-group mb-3">
+                @Html.LabelFor(m => m.IsExpired)
+                @Html.CheckBoxFor(m => m.IsExpired, new { @class = "form-check-input" })
+            </div>*@
+
+            <!-- Created Date -->
+            @*<div class="form-group mb-3">
+                @Html.LabelFor(m => m.CreatedDate)
+                @Html.TextBoxFor(m => m.CreatedDate, new { @class = "form-control", type = "datetime-local" })
+                @Html.ValidationMessageFor(m => m.CreatedDate, "", new { @class = "text-danger" })
+            </div>*@
+
+            <!-- Modified Date -->
+            <div class="form-group mb-3">
+                @Html.LabelFor(m => m.ModifiedDate)
+                @Html.TextBoxFor(m => m.ModifiedDate, new { @class = "form-control", type = "datetime-local" })
+                @Html.ValidationMessageFor(m => m.ModifiedDate, "", new { @class = "text-danger" })
+            </div>
+
+            <!-- Buttons -->
+            <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a href="@Url.Action("Dashboard", "NodelOfficer")" class="btn btn-secondary">Back</a>
+            </div>
+        }
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success mt-3 text-center">@TempData["Success"]</div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger mt-3 text-center">@TempData["Error"]</div>
+        }
+    </div>
+</div>

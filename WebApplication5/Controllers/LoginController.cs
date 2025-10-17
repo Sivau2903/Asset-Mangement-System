@@ -124,6 +124,11 @@ namespace WebApplication5.Controllers
                         Debug.WriteLine("Redirecting to Summarizer Dashboard.");
                         return RedirectToAction("Home", "LMS");
                     }
+                    if (user.Role == "NoidelOfficer")
+                    {
+                        Debug.WriteLine("Redirecting to Summarizer Dashboard.");
+                        return RedirectToAction("Dashboard", "NodelOfficer");
+                    }
 
                     Debug.WriteLine("Access Denied! Invalid Role.");
                     TempData["Message"] = "Access Denied! Invalid Role.";
@@ -148,7 +153,7 @@ namespace WebApplication5.Controllers
 
         public ActionResult CaptchaImage()
         {
-            string captchaText = GenerateCaptchaText(5);
+            string captchaText = GenerateCaptchaText(1);
             Session["Captcha"] = captchaText;
 
             byte[] imageBytes = GenerateCaptchaImage(captchaText);
@@ -334,7 +339,19 @@ namespace WebApplication5.Controllers
                 }
             }
 
-           
+            else if (role == "NoidelOfficer")
+            {
+                var hod = _db.Employees.FirstOrDefault(h => h.EmpID == userId);
+                if (hod != null)
+                {
+                    profileVM.Name = hod.FirstName + " " + hod.LastName;
+                    profileVM.ID = hod.HODID;
+                    profileVM.Email = hod.EmailID;
+                    profileVM.PhoneNumber = hod.PhoneNumber;
+                    profileVM.Department = hod.DepName;
+                    profileVM.Role = "NodelOfficer";
+                }
+            }
 
             else if (role == "localPurchaseD")
             {

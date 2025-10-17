@@ -32,30 +32,31 @@ namespace WebApplication5.Models
         public virtual DbSet<CentralPurchaseOrderItem> CentralPurchaseOrderItems { get; set; }
         public virtual DbSet<CIT> CITs { get; set; }
         public virtual DbSet<Department> Departments { get; set; }
-        public virtual DbSet<Employee> Employees { get; set; }
-        public virtual DbSet<HOD> HODs { get; set; }
         public virtual DbSet<LocalAccountant> LocalAccountants { get; set; }
         public virtual DbSet<LocalPurchaseDepartment> LocalPurchaseDepartments { get; set; }
         public virtual DbSet<Login> Logins { get; set; }
         public virtual DbSet<MaterialCategory> MaterialCategories { get; set; }
         public virtual DbSet<MaterialSubCategory> MaterialSubCategories { get; set; }
-        public virtual DbSet<PurchaseOrderItem> PurchaseOrderItems { get; set; }
         public virtual DbSet<PurchaseOrder> PurchaseOrders { get; set; }
         public virtual DbSet<StoreAdmin> StoreAdmins { get; set; }
         public virtual DbSet<University> Universities { get; set; }
-        public virtual DbSet<EmployeeIssueMaterial> EmployeeIssueMaterials { get; set; }
-        public virtual DbSet<HODRequest> HODRequests { get; set; }
-        public virtual DbSet<HODIssueMaterial> HODIssueMaterials { get; set; }
         public virtual DbSet<TempSelectedMaterial> TempSelectedMaterials { get; set; }
         public virtual DbSet<CentralVendorDetail> CentralVendorDetails { get; set; }
         public virtual DbSet<VendorDetail> VendorDetails { get; set; }
         public virtual DbSet<IUCD_> IUCD_ { get; set; }
         public virtual DbSet<CentralAuditor> CentralAuditors { get; set; }
         public virtual DbSet<SavetoCentral> SavetoCentrals { get; set; }
-        public virtual DbSet<MaterialMasterList> MaterialMasterLists { get; set; }
-        public virtual DbSet<MaterialAvailable> MaterialAvailables { get; set; }
         public virtual DbSet<IssuedQRDetail> IssuedQRDetails { get; set; }
+        public virtual DbSet<Employee> Employees { get; set; }
+        public virtual DbSet<HOD> HODs { get; set; }
+        public virtual DbSet<MaterialMasterList> MaterialMasterLists { get; set; }
+        public virtual DbSet<HODRequest> HODRequests { get; set; }
+        public virtual DbSet<MaterialAvailable> MaterialAvailables { get; set; }
+        public virtual DbSet<PurchaseOrderItem> PurchaseOrderItems { get; set; }
         public virtual DbSet<Request> Requests { get; set; }
-        public virtual DbSet<Book> Books { get; set; }
+        public virtual DbSet<AssetMaster> AssetMasters { get; set; }
+        public virtual DbSet<AssetQuantity> AssetQuantities { get; set; }
+        public virtual DbSet<Building> Buildings { get; set; }
+        public virtual DbSet<User> Users { get; set; }
     }
 }

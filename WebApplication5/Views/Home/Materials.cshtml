@@ -30,9 +30,9 @@
                                         <th scope="col">S.No</th>
                                         <th scope="col">Material Subcategory</th>
                                         <th scope="col">Available Quantity</th>
-                                        <th scope="col">Make</th>
+                                      
                                             <th scope="col">Units</th>
-                                        <th scope="col">Expiry Date</th>
+                                      
                                        
                                     </tr>
                                 </thead>
@@ -46,10 +46,7 @@
                                             <td>@sno</td>
                                             <td>@item.MaterialSubCategory</td>
                                             <td>@item.AvailableQuantity</td>
-                                            <td>@item.Make</td>
                                                 <td>@item.Units</td>
-                                            <td>@(item.ExpiryDate != null ? item.ExpiryDate.Value.ToString("dd-MMM-yyyy") : "N/A")</td>
-                                          
                                         </tr>
                                         sno++;
                                     }
