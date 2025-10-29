@@ -1,4 +1,4 @@
-﻿@model IEnumerable<WebApplication5.Models.Asset>
+﻿@model IEnumerable<WebApplication5.Models.AssetQuantity>
 
 @{
     Layout = "~/Views/Shared/_NodelLayout.cshtml";
@@ -24,10 +24,10 @@
             {
                 <tr>
                     <td>
-                        <input type="checkbox" name="selectedAssetIds" value="@item.AssetId" />
+                        <input type="checkbox" name="selectedAssetIds" value="@item.AssetID" />
                     </td>
                     <td>@item.SerialNumber</td>
-                    <td>@item.AssetName</td>
+                    <td>@item.AssetID</td>
                 </tr>
             }
         </tbody>
