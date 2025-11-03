@@ -12,26 +12,26 @@ namespace WebApplication5.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Login
+    public partial class Job
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Login()
+        public Job()
         {
-            this.BDSAssets = new HashSet<BDSAsset>();
-            this.BuildingDepartments = new HashSet<BuildingDepartment>();
+            this.JobParameters = new HashSet<JobParameter>();
+            this.States = new HashSet<State>();
         }
     
-        public int LoginID { get; set; }
-        public string UserID { get; set; }
-        public string PasswordHash { get; set; }
-        public string Role { get; set; }
-        public Nullable<bool> IsActive { get; set; }
-        public Nullable<System.DateTime> CreatedDate { get; set; }
-        public string EmailID { get; set; }
+        public long Id { get; set; }
+        public Nullable<long> StateId { get; set; }
+        public string StateName { get; set; }
+        public string InvocationData { get; set; }
+        public string Arguments { get; set; }
+        public System.DateTime CreatedAt { get; set; }
+        public Nullable<System.DateTime> ExpireAt { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<BDSAsset> BDSAssets { get; set; }
+        public virtual ICollection<JobParameter> JobParameters { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<BuildingDepartment> BuildingDepartments { get; set; }
+        public virtual ICollection<State> States { get; set; }
     }
 }

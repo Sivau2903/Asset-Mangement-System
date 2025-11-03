@@ -58,5 +58,23 @@ namespace WebApplication5.Models
         public virtual DbSet<AssetQuantity> AssetQuantities { get; set; }
         public virtual DbSet<Building> Buildings { get; set; }
         public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<BDSAsset> BDSAssets { get; set; }
+        public virtual DbSet<BuildingDepartment> BuildingDepartments { get; set; }
+        public virtual DbSet<EmployeeIssueMaterial> EmployeeIssueMaterials { get; set; }
+        public virtual DbSet<HODIssueMaterial> HODIssueMaterials { get; set; }
+        public virtual DbSet<LocalAuditor> LocalAuditors { get; set; }
+        public virtual DbSet<MaterialStock> MaterialStocks { get; set; }
+        public virtual DbSet<Student> Students { get; set; }
+        public virtual DbSet<AggregatedCounter> AggregatedCounters { get; set; }
+        public virtual DbSet<Counter> Counters { get; set; }
+        public virtual DbSet<Hash> Hashes { get; set; }
+        public virtual DbSet<Job> Jobs { get; set; }
+        public virtual DbSet<JobParameter> JobParameters { get; set; }
+        public virtual DbSet<JobQueue> JobQueues { get; set; }
+        public virtual DbSet<List> Lists { get; set; }
+        public virtual DbSet<Schema> Schemata { get; set; }
+        public virtual DbSet<Server> Servers { get; set; }
+        public virtual DbSet<Set> Sets { get; set; }
+        public virtual DbSet<State> States { get; set; }
     }
 }

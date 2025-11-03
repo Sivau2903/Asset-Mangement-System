@@ -14,6 +14,12 @@ namespace WebApplication5.Models
     
     public partial class MaterialMasterList
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public MaterialMasterList()
+        {
+            this.MaterialStocks = new HashSet<MaterialStock>();
+        }
+    
         public int MasterListID { get; set; }
         public string AssetType { get; set; }
         public string MaterialCategory { get; set; }
@@ -25,5 +31,8 @@ namespace WebApplication5.Models
         public int MinimumLimit { get; set; }
         public bool IsLowStockAlertSent { get; set; }
         public Nullable<int> UniversityID { get; set; }
+    
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<MaterialStock> MaterialStocks { get; set; }
     }
 }

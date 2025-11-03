@@ -1,87 +1,337 @@
-﻿@model WebApplication5.Models.AssetQuantity
+﻿@model WebApplication5.Models.BDSAsset
 
 @{
     Layout = "~/Views/Shared/_NodelLayout.cshtml";
     ViewBag.Title = "Add Asset";
 }
 
-<div class="d-flex justify-content-center align-items-start mt-5">
-    <div class="card shadow p-4" style="width: 500px;">
-        <h2 class="text-center mb-4">Add New Asset</h2>
+<div class="container mt-5" style="margin-top: 2rem !important;">
+    <div class="card shadow-lg border-0 rounded-3 p-4">
+        <h2 class="text-center mb-4 fw-semibold text-primary">Add New Asset</h2>
 
-        @using (Html.BeginForm("AddAsset", "NodelOfficer", FormMethod.Post))
+        @using (Html.BeginForm("AddAsset", "NodelOfficer", FormMethod.Post, new { @class = "needs-validation", novalidate = "novalidate" }))
         {
             @Html.AntiForgeryToken()
 
-            <!-- Serial Number -->
-            @*<div class="form-group mb-3">
-                @Html.LabelFor(m => m.SerialNumber)
-                @Html.TextBoxFor(m => m.SerialNumber, new { @class = "form-control", placeholder = "Enter Serial Number" })
-                @Html.ValidationMessageFor(m => m.SerialNumber, "", new { @class = "text-danger" })
-            </div>*@
+            <div class="row g-4">
+                <!--  Asset Selection -->
+                <div class="col-md-4">
+                    <h5 class="text-secondary mb-3 border-bottom pb-2">Asset Selection</h5>
 
-            <!-- Asset Name -->
-            @*<div class="form-group mb-3">
-                @Html.LabelFor(m => m.AssetName)
-                @Html.TextBoxFor(m => m.AssetName, new { @class = "form-control", placeholder = "Enter Asset Name" })
-                @Html.ValidationMessageFor(m => m.AssetName, "", new { @class = "text-danger" })
-            </div>*@
+                    <div class="form-group mb-3">
+                        @Html.Label("Asset Type")
+                        @Html.DropDownListFor(m => m.AssetType,
+                            (SelectList)ViewBag.AssetTypes,
+                            "-- Select Asset Type --",
+                            new { @class = "form-control", id = "AssetTypeDropdown" })
+                        @Html.ValidationMessageFor(m => m.AssetType, "", new { @class = "text-danger" })
+                        <small><a href="#" class="text-primary" id="addNewTypeLink">+ Add new Asset Type</a></small>
+                    </div>
 
-            <!-- Purchase Date -->
-            <div class="form-group mb-3">
-                @Html.LabelFor(m => m.PurchaseDate)
-                @Html.TextBoxFor(m => m.PurchaseDate, new { @class = "form-control", type = "date" })
-                @Html.ValidationMessageFor(m => m.PurchaseDate, "", new { @class = "text-danger" })
-            </div>
+                    <div class="form-group mb-3">
+                        @Html.Label("Material Category")
+                        <select id="CategoryDropdown" name="MaterialCategory" class="form-control">
+                            <option value="">-- Select Material Category --</option>
+                        </select>
+                        @Html.ValidationMessageFor(m => m.MaterialCategory, "", new { @class = "text-danger" })
+                        <small><a href="#" class="text-primary" id="addNewCategoryLink">+ Add new Material Category</a></small>
+                    </div>
 
-            <!-- Warranty Expiry Date -->
-            <div class="form-group mb-3">
-                @Html.LabelFor(m => m.WarrantyExpiryDate)
-                @Html.TextBoxFor(m => m.WarrantyExpiryDate, new { @class = "form-control", type = "date" })
-                @Html.ValidationMessageFor(m => m.WarrantyExpiryDate, "", new { @class = "text-danger" })
-            </div>
+                    <div class="form-group mb-3">
+                        @Html.Label("Material SubCategory")
+                        <select id="SubCategoryDropdown" name="MaterialSubCategory" class="form-control">
+                            <option value="">-- Select Material SubCategory --</option>
+                        </select>
+                        @Html.ValidationMessageFor(m => m.MaterialSubCategory, "", new { @class = "text-danger" })
+                        <small><a href="#" class="text-primary" id="addNewSubCategoryLink">+ Add new Material Subcategory</a></small>
+                    </div>
+                </div>
 
-            <!-- QR Code Issued -->
-            @*<div class="form-group mb-3">
-                @Html.LabelFor(m => m.QRCodeIssued)
-                @Html.CheckBoxFor(m => m.QRCodeIssued, new { @class = "form-check-input" })
-            </div>*@
+                <!-- User Details  -->
+                <div class="col-md-4">
+                    <h5 class="text-secondary mb-3 border-bottom pb-2">User Details</h5>
 
-            <!-- Is Expired -->
-            @*<div class="form-group mb-3">
-                @Html.LabelFor(m => m.IsExpired)
-                @Html.CheckBoxFor(m => m.IsExpired, new { @class = "form-check-input" })
-            </div>*@
+                    <div class="form-group mb-3">
+                        @Html.LabelFor(m => m.UserName, htmlAttributes: new { @class = "form-label fw-semibold" })
+                        @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", placeholder = "Enter User Name" })
+                        @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-danger small" })
+                    </div>
 
-            <!-- Created Date -->
-            @*<div class="form-group mb-3">
-                @Html.LabelFor(m => m.CreatedDate)
-                @Html.TextBoxFor(m => m.CreatedDate, new { @class = "form-control", type = "datetime-local" })
-                @Html.ValidationMessageFor(m => m.CreatedDate, "", new { @class = "text-danger" })
-            </div>*@
+                    <div class="form-group mb-3">
+                        @Html.LabelFor(m => m.Designation, htmlAttributes: new { @class = "form-label fw-semibold" })
+                        @Html.TextBoxFor(m => m.Designation, new { @class = "form-control", placeholder = "Enter Designation" })
+                        @Html.ValidationMessageFor(m => m.Designation, "", new { @class = "text-danger small" })
+                    </div>
 
-            <!-- Modified Date -->
-            <div class="form-group mb-3">
-                @Html.LabelFor(m => m.ModifiedDate)
-                @Html.TextBoxFor(m => m.ModifiedDate, new { @class = "form-control", type = "datetime-local" })
-                @Html.ValidationMessageFor(m => m.ModifiedDate, "", new { @class = "text-danger" })
+                    <div class="form-group mb-3">
+                        @Html.LabelFor(m => m.Location, htmlAttributes: new { @class = "form-label fw-semibold" })
+                        @Html.TextBoxFor(m => m.Location, new { @class = "form-control", placeholder = "Enter Location" })
+                        @Html.ValidationMessageFor(m => m.Location, "", new { @class = "text-danger small" })
+                    </div>
+                    <div class="form-group mb-3">
+                        @Html.LabelFor(m => m.IsQRIssued, "Is QR Issued?", new { @class = "form-label fw-semibold" })
+                        @Html.DropDownListFor(
+                            m => m.IsQRIssued,
+                            new List<SelectListItem>
+                            {
+                                new SelectListItem { Text = "-- Select --", Value = "" },
+                                new SelectListItem { Text = "Yes", Value = "true" },
+                                new SelectListItem { Text = "No", Value = "false" }
+                            },
+                            new { @class = "form-control" }
+                        )
+                        @Html.ValidationMessageFor(m => m.IsQRIssued, "", new { @class = "text-danger small" })
+                    </div>
+                </div>
+
+                <!-- Date Details  -->
+                <div class="col-md-4">
+                    <h5 class="text-secondary mb-3 border-bottom pb-2">Date Details</h5>
+
+                    <div class="form-group mb-3">
+                        @Html.LabelFor(m => m.PurchaseDate, htmlAttributes: new { @class = "form-label fw-semibold" })
+                        @Html.TextBoxFor(m => m.PurchaseDate, new { @class = "form-control", type = "date" })
+                        @Html.ValidationMessageFor(m => m.PurchaseDate, "", new { @class = "text-danger small" })
+                    </div>
+
+                    <div class="form-group mb-3">
+                        @Html.LabelFor(m => m.MfgDate, htmlAttributes: new { @class = "form-label fw-semibold" })
+                        @Html.TextBoxFor(m => m.MfgDate, new { @class = "form-control", type = "date" })
+                        @Html.ValidationMessageFor(m => m.MfgDate, "", new { @class = "text-danger small" })
+                    </div>
+
+                    <div class="form-group mb-3">
+                        @Html.LabelFor(m => m.WarrantyDate, htmlAttributes: new { @class = "form-label fw-semibold" })
+                        @Html.TextBoxFor(m => m.WarrantyDate, new { @class = "form-control", type = "date" })
+                        @Html.ValidationMessageFor(m => m.WarrantyDate, "", new { @class = "text-danger small" })
+                    </div>
+
+                    <div class="form-group mb-3">
+                        @Html.LabelFor(m => m.ExpiryDate, htmlAttributes: new { @class = "form-label fw-semibold" })
+                        @Html.TextBoxFor(m => m.ExpiryDate, new { @class = "form-control", type = "date" })
+                        @Html.ValidationMessageFor(m => m.ExpiryDate, "", new { @class = "text-danger small" })
+                    </div>
+                </div>
             </div>
 
             <!-- Buttons -->
-            <div class="d-flex justify-content-between">
-                <button type="submit" class="btn btn-primary">Save</button>
-                <a href="@Url.Action("Dashboard", "NodelOfficer")" class="btn btn-secondary">Back</a>
+            <div class="d-flex justify-content-end mt-4">
+                <a href="@Url.Action("Dashboard", "NodelOfficer")" class="btn btn-secondary px-4 me-2">Back</a>
+                <button type="submit" class="btn btn-primary px-4">Save</button>
             </div>
         }
 
-        @if (TempData["Success"] != null)
-        {
-            <div class="alert alert-success mt-3 text-center">@TempData["Success"]</div>
-        }
-
-        @if (TempData["Error"] != null)
-        {
-            <div class="alert alert-danger mt-3 text-center">@TempData["Error"]</div>
-        }
     </div>
 </div>
+<!-- Toast Container -->
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 1055;">
+    @if (TempData["Success"] != null)
+    {
+        <div class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    @TempData["Success"]
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    @TempData["Error"]
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- add new asset model -->
+<div class="modal fade" id="AddMetaModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Add Missing Asset Metadata</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="metaForm">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="fw-semibold">Asset Type</label>
+                            <input type="text" id="NewAssetType" class="form-control" placeholder="Enter new asset type" />
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="fw-semibold">Material Category</label>
+                            <input type="text" id="NewCategory" class="form-control" placeholder="Enter new material category" />
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="fw-semibold">Material Subcategory</label>
+                            <input type="text" id="NewSubCategory" class="form-control" placeholder="Enter new subcategory" />
+                        </div>
+                    </div>
+                    <button type="submit" id="btnSave" class="btn btn-primary px-4" disabled>Save</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function () {
+    $('#AssetTypeDropdown').change(function () {
+        var assetTypeId = $(this).val();
+
+        $('#CategoryDropdown').empty().append('<option value="">Loading...</option>');
+        $('#SubCategoryDropdown').empty().append('<option value="">-- Select Material SubCategory --</option>');
+
+        if (assetTypeId) {
+            $.getJSON('@Url.Action("GetCategories", "NodelOfficer")', { assetTypeId: assetTypeId }, function (data) {
+                $('#CategoryDropdown').empty().append('<option value="">-- Select Material Category --</option>');
+                $.each(data, function (i, item) {
+                    $('#CategoryDropdown').append($('<option>', {
+                        value: item.MID,
+                        text: item.MaterialCategory1
+                    }));
+                });
+            });
+        } else {
+            $('#CategoryDropdown').empty().append('<option value="">-- Select Material Category --</option>');
+        }
+    });
+
+    $('#CategoryDropdown').change(function () {
+        var categoryId = $(this).val();
+
+        $('#SubCategoryDropdown').empty().append('<option value="">Loading...</option>');
+
+        if (categoryId) {
+            $.getJSON('@Url.Action("GetSubCategories", "NodelOfficer")', { categoryId: categoryId }, function (data) {
+                $('#SubCategoryDropdown').empty().append('<option value="">-- Select Material SubCategory --</option>');
+                $.each(data, function (i, item) {
+                    $('#SubCategoryDropdown').append($('<option>', {
+                        value: item.MSubCategoryID,
+                        text: item.MaterialSubCategory1
+                    }));
+                });
+            });
+        } else {
+            $('#SubCategoryDropdown').empty().append('<option value="">-- Select Material SubCategory --</option>');
+        }
+    });
+});
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+        toastElList.forEach(function (toastEl) {
+            var toast = new bootstrap.Toast(toastEl, { delay: 4000 });
+            toast.show();
+        });
+    });
+</script>
+<script>
+    let currentLevel = "";
+
+    $("#addNewTypeLink").click(function () {
+        currentLevel = "type";
+        resetModal();
+        $("#AddMetaModal").modal("show");
+    });
+
+    $("#addNewCategoryLink").click(function () {
+        currentLevel = "category";
+        resetModal();
+        $("#AddMetaModal").modal("show");
+
+        let selectedType = $("#AssetTypeDropdown option:selected").text();
+        if (selectedType && selectedType !== "-- Select Asset Type --") {
+            $("#NewAssetType").val(selectedType).prop("readonly", true);
+        }
+    });
+
+    $("#addNewSubCategoryLink").click(function () {
+        currentLevel = "subcategory";
+        resetModal();
+        $("#AddMetaModal").modal("show");
+
+        let selectedType = $("#AssetTypeDropdown option:selected").text();
+        let selectedCat = $("#CategoryDropdown option:selected").text();
+
+        if (selectedType && selectedType !== "-- Select Asset Type --")
+            $("#NewAssetType").val(selectedType).prop("readonly", true);
+
+        if (selectedCat && selectedCat !== "-- Select Material Category --")
+            $("#NewCategory").val(selectedCat).prop("readonly", true);
+    });
+
+    function resetModal() {
+        $("#NewAssetType, #NewCategory, #NewSubCategory").val("").prop("readonly", false);
+    }
+
+    // AJAX save
+    $("#metaForm").submit(function (e) {
+        e.preventDefault();
+        $.ajax({
+            url: '@Url.Action("AddAssetMetaDataAjax", "NodelOfficer")',
+            type: 'POST',
+            data: {
+                AssetType: $("#NewAssetType").val(),
+                MaterialCategory: $("#NewCategory").val(),
+                MaterialSubCategory: $("#NewSubCategory").val()
+            },
+            success: function (res) {
+                if (res.success) {
+                    alert(res.message);
+                    $("#AddMetaModal").modal("hide");
+                    location.reload();
+                } else {
+                    alert("Error: " + res.message);
+                }
+            },
+            error: function () {
+                alert("Something went wrong.");
+            }
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+
+        // Disable button on load (extra safety)
+        $("#btnSave").prop("disabled", true);
+
+        // Function to check if any input or select has value
+        function checkFormFilled() {
+            let filled = false;
+
+            // Check if at least one field has a non-empty value
+            $('input[type="text"], input[type="date"], select').each(function () {
+                if ($(this).val() && $(this).val().trim() !== "") {
+                    filled = true;
+                    return false; // stop loop once something is filled
+                }
+            });
+
+            // Enable or disable Save based on filled
+            $("#btnSave").prop("disabled", !filled);
+        }
+
+        // Recheck whenever user types or selects something
+        $(document).on("input change", "input, select", checkFormFilled);
+
+        // Prevent submit if still disabled
+        $("form").on("submit", function (e) {
+            if ($("#btnSave").prop("disabled")) {
+                e.preventDefault();
+                alert("Please fill in all the required field before saving.");
+            }
+        });
+    });
+</script>
+
+

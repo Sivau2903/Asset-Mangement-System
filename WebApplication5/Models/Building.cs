@@ -18,6 +18,7 @@ namespace WebApplication5.Models
         public Building()
         {
             this.AssetQuantities = new HashSet<AssetQuantity>();
+            this.BuildingDepartments = new HashSet<BuildingDepartment>();
         }
     
         public int BuildingID { get; set; }
@@ -29,5 +30,7 @@ namespace WebApplication5.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<AssetQuantity> AssetQuantities { get; set; }
         public virtual User User { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<BuildingDepartment> BuildingDepartments { get; set; }
     }
 }

@@ -56,6 +56,31 @@
         <AssociationConnector Association="ASPModel.FK__AssetQuan__Asset__3DE82FB7" />
         <AssociationConnector Association="ASPModel.FK__AssetQuan__Build__3EDC53F0" />
         <AssociationConnector Association="ASPModel.FK__Buildings__Creat__336AA144" />
+        <EntityTypeShape EntityType="ASPModel.BDSAsset" Width="1.5" PointX="19.375" PointY="13.25" />
+        <EntityTypeShape EntityType="ASPModel.BuildingDepartment" Width="1.5" PointX="24.25" PointY="13" />
+        <EntityTypeShape EntityType="ASPModel.EmployeeIssueMaterial" Width="1.5" PointX="15.75" PointY="19.75" />
+        <EntityTypeShape EntityType="ASPModel.HODIssueMaterial" Width="1.5" PointX="20.75" PointY="17.75" />
+        <EntityTypeShape EntityType="ASPModel.LocalAuditor" Width="1.5" PointX="3.375" PointY="30.125" />
+        <EntityTypeShape EntityType="ASPModel.MaterialStock" Width="1.5" PointX="10" PointY="25.5" />
+        <EntityTypeShape EntityType="ASPModel.Student" Width="1.5" PointX="3.75" PointY="3.75" />
+        <EntityTypeShape EntityType="ASPModel.AggregatedCounter" Width="1.5" PointX="21.75" PointY="0.75" />
+        <EntityTypeShape EntityType="ASPModel.Counter" Width="1.5" PointX="21.75" PointY="3.75" />
+        <EntityTypeShape EntityType="ASPModel.Hash" Width="1.5" PointX="17.75" PointY="21.75" />
+        <EntityTypeShape EntityType="ASPModel.Job" Width="1.5" PointX="10.75" PointY="21.125" />
+        <EntityTypeShape EntityType="ASPModel.JobParameter" Width="1.5" PointX="13" PointY="23.125" />
+        <EntityTypeShape EntityType="ASPModel.JobQueue" Width="1.5" PointX="0.75" PointY="22.75" />
+        <EntityTypeShape EntityType="ASPModel.List" Width="1.5" PointX="2.75" PointY="22.75" />
+        <EntityTypeShape EntityType="ASPModel.Schema" Width="1.5" PointX="14.75" PointY="8.75" />
+        <EntityTypeShape EntityType="ASPModel.Server" Width="1.5" PointX="22.75" PointY="16.75" />
+        <EntityTypeShape EntityType="ASPModel.Set" Width="1.5" PointX="22.75" PointY="19.75" />
+        <EntityTypeShape EntityType="ASPModel.State" Width="1.5" PointX="13" PointY="20.125" />
+        <AssociationConnector Association="ASPModel.FK_Asset_AddedBy" />
+        <AssociationConnector Association="ASPModel.FK_Department_Building" />
+        <AssociationConnector Association="ASPModel.FK_Department_Login" />
+        <AssociationConnector Association="ASPModel.FK_Auditor_University" />
+        <AssociationConnector Association="ASPModel.FK_StockAvailablity_MaterialMaster" />
+        <AssociationConnector Association="ASPModel.FK_HangFire_JobParameter_Job" />
+        <AssociationConnector Association="ASPModel.FK_HangFire_State_Job" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

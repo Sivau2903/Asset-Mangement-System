@@ -1,0 +1,19 @@
+﻿@model WebApplication5.Models.BDSAsset
+
+<!-- Printable QR Sticker -->
+<div id="printableQR"
+     style="width:2in; height:1in; border:1px solid #000; padding:4px; display:flex; align-items:center; font-family:Arial, sans-serif;">
+
+    <!-- QR Code Section -->
+    <div style="width:40%; text-align:center;">
+        <img src="@Url.Action("GenerateQRCode", "NodelOfficer", new { id = Model.AssetID })"
+             alt="QR Code"
+             style="width:0.8in; height:0.8in;" />
+    </div>
+
+    <!-- Details Section -->
+    <div style="width:60%; padding-left:4px; display:flex; flex-direction:column; justify-content:center;">
+        <p style="font-size:9pt; margin:0;"><strong>Loc:</strong> @Model.Location</p>
+        <p style="font-size:9pt; margin:0;"><strong>Desig:</strong> @Model.Designation</p>
+    </div>
+</div>
